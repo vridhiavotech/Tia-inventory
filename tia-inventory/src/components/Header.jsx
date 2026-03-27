@@ -3,71 +3,56 @@ import {
   Typography,
   InputBase,
   IconButton,
-  Button,
   Avatar,
 } from "@mui/material";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import NotificationsNoneOutlinedIcon from "@mui/icons-material/NotificationsNoneOutlined";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
-import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 
-export default function Header({ pageTitle = "Inventory Dashboard" }) {
+export default function Header() {
   return (
     <Box
       sx={{
         display: "flex",
         alignItems: "center",
-        justifyContent: "space-between",
+        justifyContent: "space-between", // ← CHANGE 1: flex-end → space-between
         px: 3.5,
         py: 1.5,
         bgcolor: "#fff",
         borderBottom: "1px solid #ececec",
         gap: 2,
-        flexShrink: 0, // ← prevents header from shrinking
+        flexShrink: 0,
       }}
     >
-      {/* ── Page Title (left) ── */}
-      <Typography
+      {/* CHANGE 2: Search bar moved here (left side) */}
+      <Box
         sx={{
-          fontSize: 15,
-          fontWeight: 700,
-          color: "#6366f1",
-          whiteSpace: "nowrap",
+          display: "flex",
+          alignItems: "center",
+          gap: 1,
+          bgcolor: "#f9fafb",
+          border: "1px solid #e5e7eb",
+          borderRadius: "10px",
+          px: 1.5,
+          py: 0.8,
+          width: 220,
+          flexShrink: 0,
         }}
       >
-        {pageTitle}
-      </Typography>
-
-      {/* ── Right Controls ── */}
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, ml: "auto" }}>
-
-        {/* Search — fixed width, not stretching */}
-        <Box
+        <SearchOutlinedIcon sx={{ color: "#bbb", fontSize: 16 }} />
+        <InputBase
+          placeholder="Search"
           sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: 1,
-            bgcolor: "#f9fafb",
-            border: "1px solid #e5e7eb",
-            borderRadius: "10px",
-            px: 1.5,
-            py: 0.8,
-            width: 220,        // ← fixed width
-            flexShrink: 0,     // ← never stretches
+            fontSize: 13,
+            color: "#555",
+            "& input::placeholder": { color: "#bbb" },
+            flex: 1,
           }}
-        >
-          <SearchOutlinedIcon sx={{ color: "#bbb", fontSize: 16 }} />
-          <InputBase
-            placeholder="Search"
-            sx={{
-              fontSize: 13,
-              color: "#555",
-              "& input::placeholder": { color: "#bbb" },
-              flex: 1,
-            }}
-          />
-        </Box>
+        />
+      </Box>
 
+      {/* Right Controls (Bell + User Profile) */}
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
         {/* Bell */}
         <IconButton
           sx={{
@@ -118,30 +103,6 @@ export default function Header({ pageTitle = "Inventory Dashboard" }) {
           </Box>
           <KeyboardArrowDownOutlinedIcon sx={{ fontSize: 16, color: "#aaa" }} />
         </Box>
-
-        {/* Add Item Button */}
-        <Button
-          startIcon={<AddOutlinedIcon />}
-          variant="contained"
-          sx={{
-            background: "linear-gradient(135deg, #6366f1, #818cf8)",
-            borderRadius: "10px",
-            textTransform: "none",
-            fontWeight: 700,
-            fontSize: 13,
-            px: 2,
-            py: 1,
-            boxShadow: "none",
-            whiteSpace: "nowrap",
-            flexShrink: 0,
-            "&:hover": {
-              background: "linear-gradient(135deg, #4f46e5, #6366f1)",
-              boxShadow: "none",
-            },
-          }}
-        >
-          Add Item
-        </Button>
       </Box>
     </Box>
   );
