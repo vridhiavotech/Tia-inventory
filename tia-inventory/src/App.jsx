@@ -12,6 +12,8 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Login from "./pages/Login";
 import Header from "./components/Header";
 import Sidebar from "./components/Sidebar";
+import Dashboard from "./pages/Dashboard/dashboard";
+import AddItem from "./pages/Dashboard/additem";
 
 // ── Theme: removes focus outlines globally ──
 const theme = createTheme({
@@ -87,23 +89,23 @@ function App() {
             element={
               <PrivateRoute>
                 <DashboardLayout>
-                  {/* <Dashboard /> goes here */}
+                 <Dashboard />  
+                 
                 </DashboardLayout>
               </PrivateRoute>
             }
           />
-
-          {/* Add more protected routes the same way:
-          <Route
-            path="/admin/inventory"
-            element={
-              <PrivateRoute>
-                <DashboardLayout>
-                  <InventoryPage />
-                </DashboardLayout>
-              </PrivateRoute>
-            }
-          /> */}
+         
+         <Route
+  path="/admin/inventory/add"
+  element={
+    <PrivateRoute>
+      <DashboardLayout>
+        <AddItem />
+      </DashboardLayout>
+    </PrivateRoute>
+  }
+/>
         </Routes>
       </Router>
     </ThemeProvider>
