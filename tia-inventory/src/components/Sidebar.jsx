@@ -24,6 +24,7 @@ import HistoryOutlinedIcon from "@mui/icons-material/HistoryOutlined";
 const navItems = [
   { icon: <GridViewOutlinedIcon fontSize="small" />,      label: "Dashboard",         path: "/admin/dashboard",       badge: null },
   { icon: <PeopleOutlinedIcon fontSize="small" />,        label: "Inventory Items",   path: "/admin/inventory/items", badge: null },
+    { icon: <PeopleOutlinedIcon fontSize="small" />,        label: "Indent/Procurement",   path: "/admin/inventory/indent", badge: null },
   { icon: <EditNoteOutlinedIcon fontSize="small" />,      label: "Purchase Orders",   path: "/admin/purchase-orders", badge: null },
   { icon: <InboxOutlinedIcon fontSize="small" />,         label: "Goods Receipt",path: "/admin/goods-receipt",   badge: null },
   { icon: <OutputOutlinedIcon fontSize="small" />,        label: "Stock Issue",       path: "/admin/stock-issue",     badge: null }, // ✅ fixed icon
