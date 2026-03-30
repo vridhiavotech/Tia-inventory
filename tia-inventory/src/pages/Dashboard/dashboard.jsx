@@ -261,7 +261,7 @@ const navigate = useNavigate();
                       height: 28,
                       borderRadius: 5,
                       background: s.color,
-                      fontSize: 12,
+                      fontSize: 11,
                       color: "#fff",
                       fontWeight: 600,
                       display: "flex",

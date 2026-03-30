@@ -14,6 +14,7 @@ import Header from "./components/Header";
 import Sidebar from "./components/Sidebar";
 import Dashboard from "./pages/Dashboard/dashboard";
 import AddItem from "./pages/Dashboard/additem";
+import InventoryItems from "./pages/InventoryItems/InventoryItems";
 
 // ── Theme: removes focus outlines globally ──
 const theme = createTheme({
@@ -105,7 +106,18 @@ function App() {
       </DashboardLayout>
     </PrivateRoute>
   }
+/> 
+<Route
+  path="/admin/inventory/items"
+  element={
+    <PrivateRoute>
+      <DashboardLayout>
+        <InventoryItems />
+      </DashboardLayout>
+    </PrivateRoute>
+  }
 />
+
         </Routes>
       </Router>
     </ThemeProvider>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Box, Typography, ButtonBase, Badge, Divider } from "@mui/material";
 
 import GridViewOutlinedIcon from "@mui/icons-material/GridViewOutlined";
@@ -19,29 +20,32 @@ import ArticleOutlinedIcon from "@mui/icons-material/ArticleOutlined";
 import KeyOutlinedIcon from "@mui/icons-material/KeyOutlined";
 
 const navItems = [
-  { icon: <GridViewOutlinedIcon fontSize="small" />,      label: "Dashboard",       badge: null },
-  { icon: <PeopleOutlinedIcon fontSize="small" />,        label: "Inventory Items", badge: null },
-  { icon: <EditNoteOutlinedIcon fontSize="small" />,      label: "Purchase Orders", badge: null },
-  { icon: <InboxOutlinedIcon fontSize="small" />,         label: "Goods Receipt",   badge: null },
-  { icon: <CompareArrowsOutlinedIcon fontSize="small" />, label: "Transfers",       badge: null },
-  { icon: <FactoryOutlinedIcon fontSize="small" />,       label: "Manufacturing",   badge: null },
-  { icon: <AccessTimeOutlinedIcon fontSize="small" />,    label: "Expiry Tracking", badge: null },
-  { icon: <TrendingUpOutlinedIcon fontSize="small" />,    label: "Replacement",     badge: 1    },
-  { icon: <BarChartOutlinedIcon fontSize="small" />,      label: "Reports",         badge: null },
+  { icon: <GridViewOutlinedIcon fontSize="small" />,      label: "Dashboard",       path: "/admin/dashboard",         badge: null },
+  { icon: <PeopleOutlinedIcon fontSize="small" />,        label: "Inventory Items", path: "/admin/inventory/items",   badge: null },
+  { icon: <EditNoteOutlinedIcon fontSize="small" />,      label: "Purchase Orders", path: "/admin/purchase-orders",   badge: null },
+  { icon: <InboxOutlinedIcon fontSize="small" />,         label: "Goods Receipt",   path: "/admin/goods-receipt",     badge: null },
+  { icon: <CompareArrowsOutlinedIcon fontSize="small" />, label: "Transfers",       path: "/admin/transfers",         badge: null },
+  { icon: <FactoryOutlinedIcon fontSize="small" />,       label: "Manufacturing",   path: "/admin/manufacturing",     badge: null },
+  { icon: <AccessTimeOutlinedIcon fontSize="small" />,    label: "Expiry Tracking", path: "/admin/expiry-tracking",   badge: null },
+  { icon: <TrendingUpOutlinedIcon fontSize="small" />,    label: "Replacement",     path: "/admin/replacement",       badge: 1    },
+  { icon: <BarChartOutlinedIcon fontSize="small" />,      label: "Reports",         path: "/admin/reports",           badge: null },
 ];
 
 const adminItems = [
-  { icon: <EmailOutlinedIcon fontSize="small" />,         label: "Admin Overview" },
-  { icon: <GroupOutlinedIcon fontSize="small" />,         label: "Users & Roles"  },
-  { icon: <LocationOnOutlinedIcon fontSize="small" />,    label: "Locations"      },
-  { icon: <ViewListOutlinedIcon fontSize="small" />,      label: "Categories"     },
-  { icon: <LocalShippingOutlinedIcon fontSize="small" />, label: "Suppliers"      },
-  { icon: <ArticleOutlinedIcon fontSize="small" />,       label: "Documents"      },
-  { icon: <KeyOutlinedIcon fontSize="small" />,           label: "Settings"       },
+  { icon: <EmailOutlinedIcon fontSize="small" />,         label: "Admin Overview",  path: "/admin/overview"   },
+  { icon: <GroupOutlinedIcon fontSize="small" />,         label: "Users & Roles",   path: "/admin/users"      },
+  { icon: <LocationOnOutlinedIcon fontSize="small" />,    label: "Locations",       path: "/admin/locations"  },
+  { icon: <ViewListOutlinedIcon fontSize="small" />,      label: "Categories",      path: "/admin/categories" },
+  { icon: <LocalShippingOutlinedIcon fontSize="small" />, label: "Suppliers",       path: "/admin/suppliers"  },
+  { icon: <ArticleOutlinedIcon fontSize="small" />,       label: "Documents",       path: "/admin/documents"  },
+  { icon: <KeyOutlinedIcon fontSize="small" />,           label: "Settings",        path: "/admin/settings"   },
 ];
 
 export default function Sidebar() {
-  const [activeNav, setActiveNav] = useState("Dashboard");
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const isActive = (path) => location.pathname === path;
 
   return (
     <Box
@@ -84,11 +88,11 @@ export default function Sidebar() {
 
       {/* ── Main Nav ── */}
       {navItems.map((item) => {
-        const isActive = activeNav === item.label;
+        const active = isActive(item.path);
         return (
           <ButtonBase
             key={item.label}
-            onClick={() => setActiveNav(item.label)}
+            onClick={() => navigate(item.path)}
             sx={{
               display: "flex",
               alignItems: "center",
@@ -97,23 +101,15 @@ export default function Sidebar() {
               px: 2.5,
               py: 1.1,
               width: "100%",
-              bgcolor: isActive ? "#ede9fe" : "transparent",
-              outline: "none",                              // ← no focus ring
+              bgcolor: active ? "#ede9fe" : "transparent",
+              outline: "none",
               "&:focus": { outline: "none" },
               "&:focus-visible": { outline: "none" },
               transition: "background 0.15s",
-              "&:hover": {
-                bgcolor: isActive ? "#ede9fe" : "#f5f5f5",
-              },
+              "&:hover": { bgcolor: active ? "#ede9fe" : "#f5f5f5" },
             }}
           >
-            <Box
-              sx={{
-                display: "flex",
-                color: isActive ? "#6366f1" : "#999",
-                flexShrink: 0,
-              }}
-            >
+            <Box sx={{ display: "flex", color: active ? "#6366f1" : "#999", flexShrink: 0 }}>
               {item.badge ? (
                 <Badge
                   badgeContent={item.badge}
@@ -136,8 +132,8 @@ export default function Sidebar() {
             <Typography
               sx={{
                 fontSize: 13,
-                fontWeight: isActive ? 700 : 500,
-                color: isActive ? "#6366f1" : "#666",
+                fontWeight: active ? 700 : 500,
+                color: active ? "#6366f1" : "#666",
                 lineHeight: 1,
               }}
             >
@@ -151,42 +147,58 @@ export default function Sidebar() {
       <Divider sx={{ mx: 2.5, my: 1.5 }} />
 
       {/* ── Admin Nav ── */}
-      {adminItems.map((item) => (
-        <ButtonBase
-          key={item.label}
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "flex-start",
-            gap: 1.2,
-            px: 2.5,
-            py: 1.1,
-            width: "100%",
-            outline: "none",                              // ← no focus ring
-            "&:focus": { outline: "none" },
-            "&:focus-visible": { outline: "none" },
-            transition: "color 0.15s, background 0.15s",
-            "&:hover": {
-              bgcolor: "#f5f5f5",
-              "& .admin-icon": { color: "#6366f1" },
-              "& .admin-label": { color: "#6366f1" },
-            },
-          }}
-        >
-          <Box
-            className="admin-icon"
-            sx={{ display: "flex", color: "#aaa", flexShrink: 0, transition: "color 0.15s" }}
+      {adminItems.map((item) => {
+        const active = isActive(item.path);
+        return (
+          <ButtonBase
+            key={item.label}
+            onClick={() => navigate(item.path)}
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "flex-start",
+              gap: 1.2,
+              px: 2.5,
+              py: 1.1,
+              width: "100%",
+              bgcolor: active ? "#ede9fe" : "transparent",
+              outline: "none",
+              "&:focus": { outline: "none" },
+              "&:focus-visible": { outline: "none" },
+              transition: "color 0.15s, background 0.15s",
+              "&:hover": {
+                bgcolor: "#f5f5f5",
+                "& .admin-icon": { color: "#6366f1" },
+                "& .admin-label": { color: "#6366f1" },
+              },
+            }}
           >
-            {item.icon}
-          </Box>
-          <Typography
-            className="admin-label"
-            sx={{ fontSize: 13, fontWeight: 500, color: "#777", lineHeight: 1, transition: "color 0.15s" }}
-          >
-            {item.label}
-          </Typography>
-        </ButtonBase>
-      ))}
+            <Box
+              className="admin-icon"
+              sx={{
+                display: "flex",
+                color: active ? "#6366f1" : "#aaa",
+                flexShrink: 0,
+                transition: "color 0.15s",
+              }}
+            >
+              {item.icon}
+            </Box>
+            <Typography
+              className="admin-label"
+              sx={{
+                fontSize: 13,
+                fontWeight: active ? 700 : 500,
+                color: active ? "#6366f1" : "#777",
+                lineHeight: 1,
+                transition: "color 0.15s",
+              }}
+            >
+              {item.label}
+            </Typography>
+          </ButtonBase>
+        );
+      })}
     </Box>
   );
 }
