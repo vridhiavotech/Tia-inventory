@@ -6,8 +6,9 @@ import GridViewOutlinedIcon from "@mui/icons-material/GridViewOutlined";
 import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
 import EditNoteOutlinedIcon from "@mui/icons-material/EditNoteOutlined";
 import InboxOutlinedIcon from "@mui/icons-material/InboxOutlined";
+import OutputOutlinedIcon from "@mui/icons-material/OutputOutlined";        // ✅ Stock Issue
 import CompareArrowsOutlinedIcon from "@mui/icons-material/CompareArrowsOutlined";
-import FactoryOutlinedIcon from "@mui/icons-material/FactoryOutlined";
+import FactoryOutlinedIcon from "@mui/icons-material/FactoryOutlined";      // ✅ Manufacturers
 import AccessTimeOutlinedIcon from "@mui/icons-material/AccessTimeOutlined";
 import TrendingUpOutlinedIcon from "@mui/icons-material/TrendingUpOutlined";
 import BarChartOutlinedIcon from "@mui/icons-material/BarChartOutlined";
@@ -18,27 +19,30 @@ import ViewListOutlinedIcon from "@mui/icons-material/ViewListOutlined";
 import LocalShippingOutlinedIcon from "@mui/icons-material/LocalShippingOutlined";
 import ArticleOutlinedIcon from "@mui/icons-material/ArticleOutlined";
 import KeyOutlinedIcon from "@mui/icons-material/KeyOutlined";
+import HistoryOutlinedIcon from "@mui/icons-material/HistoryOutlined";
 
 const navItems = [
-  { icon: <GridViewOutlinedIcon fontSize="small" />,      label: "Dashboard",       path: "/admin/dashboard",         badge: null },
-  { icon: <PeopleOutlinedIcon fontSize="small" />,        label: "Inventory Items", path: "/admin/inventory/items",   badge: null },
-  { icon: <EditNoteOutlinedIcon fontSize="small" />,      label: "Purchase Orders", path: "/admin/purchase-orders",   badge: null },
-  { icon: <InboxOutlinedIcon fontSize="small" />,         label: "Goods Receipt",   path: "/admin/goods-receipt",     badge: null },
-  { icon: <CompareArrowsOutlinedIcon fontSize="small" />, label: "Transfers",       path: "/admin/transfers",         badge: null },
-  { icon: <FactoryOutlinedIcon fontSize="small" />,       label: "Manufacturing",   path: "/admin/manufacturing",     badge: null },
-  { icon: <AccessTimeOutlinedIcon fontSize="small" />,    label: "Expiry Tracking", path: "/admin/expiry-tracking",   badge: null },
-  { icon: <TrendingUpOutlinedIcon fontSize="small" />,    label: "Replacement",     path: "/admin/replacement",       badge: 1    },
-  { icon: <BarChartOutlinedIcon fontSize="small" />,      label: "Reports",         path: "/admin/reports",           badge: null },
+  { icon: <GridViewOutlinedIcon fontSize="small" />,      label: "Dashboard",         path: "/admin/dashboard",       badge: null },
+  { icon: <PeopleOutlinedIcon fontSize="small" />,        label: "Inventory Items",   path: "/admin/inventory/items", badge: null },
+  { icon: <EditNoteOutlinedIcon fontSize="small" />,      label: "Purchase Orders",   path: "/admin/purchase-orders", badge: null },
+  { icon: <InboxOutlinedIcon fontSize="small" />,         label: "Goods Receipt",path: "/admin/goods-receipt",   badge: null },
+  { icon: <OutputOutlinedIcon fontSize="small" />,        label: "Stock Issue",       path: "/admin/stock-issue",     badge: null }, // ✅ fixed icon
+  { icon: <CompareArrowsOutlinedIcon fontSize="small" />, label: "Transfers",         path: "/admin/transfers",       badge: null },
+  { icon: <AccessTimeOutlinedIcon fontSize="small" />,    label: "Expiry Tracking",   path: "/admin/expiry-tracking", badge: null },
+  { icon: <TrendingUpOutlinedIcon fontSize="small" />,    label: "Replacement",       path: "/admin/replacement",     badge: 1    },
+  { icon: <BarChartOutlinedIcon fontSize="small" />,      label: "Reports",           path: "/admin/reports",         badge: null },
 ];
 
 const adminItems = [
-  { icon: <EmailOutlinedIcon fontSize="small" />,         label: "Admin Overview",  path: "/admin/overview"   },
-  { icon: <GroupOutlinedIcon fontSize="small" />,         label: "Users & Roles",   path: "/admin/users"      },
-  { icon: <LocationOnOutlinedIcon fontSize="small" />,    label: "Locations",       path: "/admin/locations"  },
-  { icon: <ViewListOutlinedIcon fontSize="small" />,      label: "Categories",      path: "/admin/categories" },
-  { icon: <LocalShippingOutlinedIcon fontSize="small" />, label: "Suppliers",       path: "/admin/suppliers"  },
-  { icon: <ArticleOutlinedIcon fontSize="small" />,       label: "Documents",       path: "/admin/documents"  },
-  { icon: <KeyOutlinedIcon fontSize="small" />,           label: "Settings",        path: "/admin/settings"   },
+  { icon: <EmailOutlinedIcon fontSize="small" />,         label: "Admin Overview",  path: "/admin/overview"       },
+  { icon: <GroupOutlinedIcon fontSize="small" />,         label: "Users & Roles",   path: "/admin/users"          },
+  { icon: <LocationOnOutlinedIcon fontSize="small" />,    label: "Locations",       path: "/admin/locations"      },
+  { icon: <ViewListOutlinedIcon fontSize="small" />,      label: "Categories",      path: "/admin/categories"     },
+  { icon: <ArticleOutlinedIcon fontSize="small" />,       label: "Documents",       path: "/admin/documents"      },
+  { icon: <LocalShippingOutlinedIcon fontSize="small" />, label: "Suppliers",       path: "/admin/suppliers"      },
+  { icon: <FactoryOutlinedIcon fontSize="small" />,       label: "Manufacturers",   path: "/admin/manufacturers"  }, // ✅ fixed icon
+  { icon: <HistoryOutlinedIcon fontSize="small" />,       label: "Audit Log",       path: "/admin/audit-log"      },
+  { icon: <KeyOutlinedIcon fontSize="small" />,           label: "Settings",        path: "/admin/settings"       },
 ];
 
 export default function Sidebar() {
@@ -57,13 +61,13 @@ export default function Sidebar() {
         borderRight: "1px solid #ececec",
         display: "flex",
         flexDirection: "column",
-        overflow: "hidden",
+        overflow: "hidden",          // outer container clips
         flexShrink: 0,
         py: 2.5,
       }}
     >
-      {/* ── Logo ── */}
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1, px: 2.5, pb: 3 }}>
+      {/* ── Logo (fixed, never scrolls) ── */}
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1, px: 2.5, pb: 3, flexShrink: 0 }}>
         <Box
           sx={{
             width: 32,
@@ -86,119 +90,136 @@ export default function Sidebar() {
         </Typography>
       </Box>
 
-      {/* ── Main Nav ── */}
-      {navItems.map((item) => {
-        const active = isActive(item.path);
-        return (
-          <ButtonBase
-            key={item.label}
-            onClick={() => navigate(item.path)}
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "flex-start",
-              gap: 1.2,
-              px: 2.5,
-              py: 1.1,
-              width: "100%",
-              bgcolor: active ? "#ede9fe" : "transparent",
-              outline: "none",
-              "&:focus": { outline: "none" },
-              "&:focus-visible": { outline: "none" },
-              transition: "background 0.15s",
-              "&:hover": { bgcolor: active ? "#ede9fe" : "#f5f5f5" },
-            }}
-          >
-            <Box sx={{ display: "flex", color: active ? "#6366f1" : "#999", flexShrink: 0 }}>
-              {item.badge ? (
-                <Badge
-                  badgeContent={item.badge}
-                  sx={{
-                    "& .MuiBadge-badge": {
-                      bgcolor: "#3b82f6",
-                      color: "#fff",
-                      fontSize: 10,
-                      minWidth: 16,
-                      height: 16,
-                    },
-                  }}
-                >
-                  {item.icon}
-                </Badge>
-              ) : (
-                item.icon
-              )}
-            </Box>
-            <Typography
-              sx={{
-                fontSize: 13,
-                fontWeight: active ? 700 : 500,
-                color: active ? "#6366f1" : "#666",
-                lineHeight: 1,
-              }}
-            >
-              {item.label}
-            </Typography>
-          </ButtonBase>
-        );
-      })}
-
-      {/* ── Divider ── */}
-      <Divider sx={{ mx: 2.5, my: 1.5 }} />
-
-      {/* ── Admin Nav ── */}
-      {adminItems.map((item) => {
-        const active = isActive(item.path);
-        return (
-          <ButtonBase
-            key={item.label}
-            onClick={() => navigate(item.path)}
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "flex-start",
-              gap: 1.2,
-              px: 2.5,
-              py: 1.1,
-              width: "100%",
-              bgcolor: active ? "#ede9fe" : "transparent",
-              outline: "none",
-              "&:focus": { outline: "none" },
-              "&:focus-visible": { outline: "none" },
-              transition: "color 0.15s, background 0.15s",
-              "&:hover": {
-                bgcolor: "#f5f5f5",
-                "& .admin-icon": { color: "#6366f1" },
-                "& .admin-label": { color: "#6366f1" },
-              },
-            }}
-          >
-            <Box
-              className="admin-icon"
+      {/* ── Scrollable nav area ── */}
+      <Box
+        sx={{
+          flex: 1,
+          overflowY: "auto",
+          overflowX: "hidden",
+          // thin custom scrollbar
+          "&::-webkit-scrollbar": { width: 4 },
+          "&::-webkit-scrollbar-track": { background: "transparent" },
+          "&::-webkit-scrollbar-thumb": {
+            background: "#d1d5db",
+            borderRadius: 4,
+          },
+          "&::-webkit-scrollbar-thumb:hover": { background: "#a1a1aa" },
+        }}
+      >
+        {/* ── Main Nav ── */}
+        {navItems.map((item) => {
+          const active = isActive(item.path);
+          return (
+            <ButtonBase
+              key={item.label}
+              onClick={() => navigate(item.path)}
               sx={{
                 display: "flex",
-                color: active ? "#6366f1" : "#aaa",
-                flexShrink: 0,
-                transition: "color 0.15s",
+                alignItems: "center",
+                justifyContent: "flex-start",
+                gap: 1.2,
+                px: 2.5,
+                py: 1.1,
+                width: "100%",
+                bgcolor: active ? "#ede9fe" : "transparent",
+                outline: "none",
+                "&:focus": { outline: "none" },
+                "&:focus-visible": { outline: "none" },
+                transition: "background 0.15s",
+                "&:hover": { bgcolor: active ? "#ede9fe" : "#f5f5f5" },
               }}
             >
-              {item.icon}
-            </Box>
-            <Typography
-              className="admin-label"
+              <Box sx={{ display: "flex", color: active ? "#6366f1" : "#999", flexShrink: 0 }}>
+                {item.badge ? (
+                  <Badge
+                    badgeContent={item.badge}
+                    sx={{
+                      "& .MuiBadge-badge": {
+                        bgcolor: "#3b82f6",
+                        color: "#fff",
+                        fontSize: 10,
+                        minWidth: 16,
+                        height: 16,
+                      },
+                    }}
+                  >
+                    {item.icon}
+                  </Badge>
+                ) : (
+                  item.icon
+                )}
+              </Box>
+              <Typography
+                sx={{
+                  fontSize: 13,
+                  fontWeight: active ? 700 : 500,
+                  color: active ? "#6366f1" : "#666",
+                  lineHeight: 1,
+                }}
+              >
+                {item.label}
+              </Typography>
+            </ButtonBase>
+          );
+        })}
+
+        {/* ── Divider ── */}
+        <Divider sx={{ mx: 2.5, my: 1.5 }} />
+
+        {/* ── Admin Nav ── */}
+        {adminItems.map((item) => {
+          const active = isActive(item.path);
+          return (
+            <ButtonBase
+              key={item.label}
+              onClick={() => navigate(item.path)}
               sx={{
-                fontSize: 13,
-                fontWeight: active ? 700 : 500,
-                color: active ? "#6366f1" : "#777",
-                lineHeight: 1,
-                transition: "color 0.15s",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "flex-start",
+                gap: 1.2,
+                px: 2.5,
+                py: 1.1,
+                width: "100%",
+                bgcolor: active ? "#ede9fe" : "transparent",
+                outline: "none",
+                "&:focus": { outline: "none" },
+                "&:focus-visible": { outline: "none" },
+                transition: "color 0.15s, background 0.15s",
+                "&:hover": {
+                  bgcolor: "#f5f5f5",
+                  "& .admin-icon": { color: "#6366f1" },
+                  "& .admin-label": { color: "#6366f1" },
+                },
               }}
             >
-              {item.label}
-            </Typography>
-          </ButtonBase>
-        );
-      })}
+              <Box
+                className="admin-icon"
+                sx={{
+                  display: "flex",
+                  color: active ? "#6366f1" : "#aaa",
+                  flexShrink: 0,
+                  transition: "color 0.15s",
+                }}
+              >
+                {item.icon}
+              </Box>
+              <Typography
+                className="admin-label"
+                sx={{
+                  fontSize: 13,
+                  fontWeight: active ? 700 : 500,
+                  color: active ? "#6366f1" : "#777",
+                  lineHeight: 1,
+                  transition: "color 0.15s",
+                }}
+              >
+                {item.label}
+              </Typography>
+            </ButtonBase>
+          );
+        })}
+      </Box>
     </Box>
   );
 }
