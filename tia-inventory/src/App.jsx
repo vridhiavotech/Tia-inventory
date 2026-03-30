@@ -15,6 +15,9 @@ import Sidebar from "./components/Sidebar";
 import Dashboard from "./pages/Dashboard/dashboard";
 import AddItem from "./pages/Dashboard/additem";
 import InventoryItems from "./pages/InventoryItems/InventoryItems";
+import Replacement from "./pages/Replacement";
+import ExpiryTracking from "./pages/ExpiryTracking";
+import Transfers from "./pages/Transfers";
 
 // ── Theme: removes focus outlines globally ──
 const theme = createTheme({
@@ -45,8 +48,8 @@ const TitleUpdater = () => {
 
   useEffect(() => {
     const pathToTitle = {
-      "/":                  "Login",
-      "/admin/dashboard":   "Admin Dashboard",
+      "/": "Login",
+      "/admin/dashboard": "Admin Dashboard",
     };
     document.title = pathToTitle[location.pathname] || "App";
   }, [location.pathname]);
@@ -61,7 +64,14 @@ const DashboardLayout = ({ children }) => (
     <Sidebar />
 
     {/* Right column */}
-    <Box sx={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+    <Box
+      sx={{
+        flex: 1,
+        display: "flex",
+        flexDirection: "column",
+        overflow: "hidden",
+      }}
+    >
       {/* Header — locked at top */}
       <Header />
 
@@ -90,34 +100,67 @@ function App() {
             element={
               <PrivateRoute>
                 <DashboardLayout>
-                 <Dashboard />  
-                 
+                  <Dashboard />
                 </DashboardLayout>
               </PrivateRoute>
             }
           />
-         
-         <Route
-  path="/admin/inventory/add"
-  element={
-    <PrivateRoute>
-      <DashboardLayout>
-        <AddItem />
-      </DashboardLayout>
-    </PrivateRoute>
-  }
-/> 
-<Route
-  path="/admin/inventory/items"
-  element={
-    <PrivateRoute>
-      <DashboardLayout>
-        <InventoryItems />
-      </DashboardLayout>
-    </PrivateRoute>
-  }
-/>
 
+          <Route
+            path="/admin/inventory/add"
+            element={
+              <PrivateRoute>
+                <DashboardLayout>
+                  <AddItem />
+                </DashboardLayout>
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/admin/inventory/items"
+            element={
+              <PrivateRoute>
+                <DashboardLayout>
+                  <InventoryItems />
+                </DashboardLayout>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/admin/replacement"
+            element={
+              <PrivateRoute>
+                <DashboardLayout>
+                  <Replacement />
+                </DashboardLayout>
+              </PrivateRoute>
+            }
+          />
+          
+          <Route
+            path="/admin/expiry-tracking"
+            element={
+              <PrivateRoute>
+                <DashboardLayout>
+                  <ExpiryTracking />
+                </DashboardLayout>
+              </PrivateRoute>
+            }
+          />
+
+          <Route 
+          path="/admin/transfers"
+          element={
+            <PrivateRoute>
+              <DashboardLayout>
+                <Transfers />
+              </DashboardLayout>
+            </PrivateRoute>
+          }
+          />
+
+        
         </Routes>
       </Router>
     </ThemeProvider>
