@@ -7,6 +7,9 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import MedicationIcon from "@mui/icons-material/Medication";
 import CategoryIcon from "@mui/icons-material/Category";
+import LocalPharmacyIcon from "@mui/icons-material/LocalPharmacy";
+import DevicesIcon from "@mui/icons-material/Devices";
+import MedicalServicesIcon from "@mui/icons-material/MedicalServices";
 
 // ─── Reusable Field Components ────────────────────────────────────────────────
 
@@ -72,11 +75,34 @@ function DateInput({ value, onChange }) {
           e.target.style.background = "#f9fafb";
         }}
       />
+      <style>{`
+        input[type="date"]::-webkit-calendar-picker-indicator {
+          display: none;
+          pointer-events: none;
+        }
+      `}</style>
       <CalendarMonthIcon
-        onClick={() => document.querySelector('input[type="date"]')?.click()}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setTimeout(() => {
+            const inputs = document.querySelectorAll('input[type="date"]');
+            if (inputs && inputs.length > 0) {
+              inputs[inputs.length - 1].showPicker?.();
+            }
+          }, 0);
+        }}
         style={{
-          position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)",
-          color: "#3b82f6", fontSize: 18, pointerEvents: "auto", cursor: "pointer",
+          position: "absolute", 
+          right: 10, 
+          top: "50%", 
+          transform: "translateY(-50%)",
+          color: "#3b82f6", 
+          fontSize: 18, 
+          cursor: "pointer",
+          userSelect: "none",
+          pointerEvents: "auto",
+          zIndex: 10
         }}
       />
     </div>
@@ -116,7 +142,6 @@ function SelectInput({ placeholder, value, onChange, options = [], icon: Icon, i
 
 function NumberSpinInput({ value, onChange, placeholder, step = 1, min = 0 }) {
   const num = parseFloat(value) || 0;
-  const isDecimal = step < 1;
 
   const increment = () => {
     const next = parseFloat((num + step).toFixed(2));
@@ -174,10 +199,49 @@ function Row({ children, cols = 3 }) {
   );
 }
 
+function ItemTypeTab({ label, icon: Icon, isSelected, onClick, description }) {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: 8,
+        padding: "12px 20px",
+        border: isSelected ? "2px solid #2563eb" : "1px solid #e5e7eb",
+        borderRadius: 8,
+        background: isSelected ? "#eff6ff" : "#fff",
+        cursor: "pointer",
+        outline: "none",
+        transition: "all 0.2s ease",
+      }}
+      onFocus={(e) => {
+        if (!isSelected) e.target.style.borderColor = "#d1d5db";
+      }}
+      onBlur={(e) => {
+        if (!isSelected) e.target.style.borderColor = "#e5e7eb";
+      }}
+    >
+      <Icon style={{ fontSize: 24, color: isSelected ? "#2563eb" : "#9ca3af" }} />
+      <span style={{ fontSize: 13, fontWeight: 600, color: isSelected ? "#2563eb" : "#374151" }}>
+        {label}
+      </span>
+      {description && (
+        <span style={{ fontSize: 12, color: "#9ca3af" }}>
+          {description}
+        </span>
+      )}
+    </button>
+  );
+}
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function AddItem() {
   const navigate = useNavigate();
+
+  const [itemType, setItemType] = useState("consumable");
 
   const [form, setForm] = useState({
     itemName: "",
@@ -185,21 +249,32 @@ export default function AddItem() {
     category: "",
     subcategory: "",
     manufacturer: "",
-    unitOfMeasure: "Each (EA)",
-    qtyInHand: "0",
-    parLevel: "0",
-    unitCost: "0.00",
-    supplier: "",
-    location: "",
-    lotNumber: "LOT2025A",
-    expireDate: "",
+    unitOfMeasure: "Vial",
+    qtyInHand: "4",
+    parLevel: "20",
+    unitCost: "18.5",
+    supplier: "Cardinal Health",
+    location: "Central Store",
+    lotNumber: "EP24B",
+    expireDate: "2026-09-15",
     notes: "",
+    // Equipment fields
+    modelNo: "",
+    serialNo: "",
+    purchaseDate: "",
+    warrantyExpiry: "",
+    nextServiceDue: "",
+    calibrationDue: "",
+    condition: "Good",
+    itemStatus: "Quarantined",
+    // Device fields
+    deaSchedule: "None — Not Controlled",
   });
 
   const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
 
   const handleSave = () => {
-    console.log("Saving item:", form);
+    console.log("Saving item:", { itemType, ...form });
     navigate("/admin/dashboard");
   };
 
@@ -221,7 +296,7 @@ export default function AddItem() {
         <div>
           <h2 style={{ margin: 0, fontSize: 20, fontWeight: 700, color: "#111827" }}>Add to Inventory</h2>
           <p style={{ margin: "4px 0 0", fontSize: 13, color: "#9ca3af" }}>
-            Complete the provider profile, credentials and location assignment.
+            Complete the {itemType === "consumable" ? "medicine" : itemType === "equipment" ? "equipment" : "device"} details.
           </p>
         </div>
       </div>
@@ -232,7 +307,37 @@ export default function AddItem() {
         boxShadow: "0 1px 4px rgba(0,0,0,0.04)", padding: "28px 32px", marginBottom: 16,
       }}>
 
-        {/* ITEM DETAILS */}
+        {/* ITEM TYPE */}
+        <div style={{ marginBottom: 28 }}>
+          <label style={{ fontSize: 13, fontWeight: 600, color: "#374151", marginBottom: 12, display: "block" }}>
+            ITEM TYPE <span style={{ color: "#ef4444" }}>*</span>
+          </label>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 }}>
+            <ItemTypeTab
+              label="Consumable"
+              description="Medicines, supplies"
+              icon={LocalPharmacyIcon}
+              isSelected={itemType === "consumable"}
+              onClick={() => setItemType("consumable")}
+            />
+            <ItemTypeTab
+              label="Equipment"
+              description="Reusable equipment"
+              icon={DevicesIcon}
+              isSelected={itemType === "equipment"}
+              onClick={() => setItemType("equipment")}
+            />
+            <ItemTypeTab
+              label="Device"
+              description="Medical devices"
+              icon={MedicalServicesIcon}
+              isSelected={itemType === "device"}
+              onClick={() => setItemType("device")}
+            />
+          </div>
+        </div>
+
+        {/* ALWAYS SHOW - ITEM DETAILS */}
         <SectionTitle>ITEM DETAILS</SectionTitle>
         <Row>
           <div>
@@ -260,6 +365,7 @@ export default function AddItem() {
             />
           </div>
         </Row>
+        
         <Row>
           <div>
             <Label>Subcategory</Label>
@@ -275,19 +381,54 @@ export default function AddItem() {
           <div>
             <Label>Manufacturer</Label>
             <SelectInput
-              placeholder="e.g. Teva"
+              placeholder="Select manufacturer..."
               value={form.manufacturer}
               onChange={set("manufacturer")}
-              options={["Teva", "Pfizer", "Abbott", "Baxter", "B. Braun"]}
+              options={["Cardinal Health", "Teva", "Pfizer", "Abbott", "Baxter", "B. Braun", "Johnson & Johnson", "Medtronic"]}
             />
           </div>
           <div>
             <Label>Unit of Measure</Label>
-            <TextInput placeholder="Each (EA)" value={form.unitOfMeasure} onChange={set("unitOfMeasure")} />
+            <SelectInput
+              placeholder="Select"
+              value={form.unitOfMeasure}
+              onChange={set("unitOfMeasure")}
+              options={["Each (EA)", "Box", "Vial", "mL", "Tablet", "Pack", "Set", "Unit"]}
+            />
+          </div>
+        </Row>
+        
+        <Row>
+          <div>
+            <Label>Supplier</Label>
+            <SelectInput
+              placeholder="Select supplier..."
+              value={form.supplier}
+              onChange={set("supplier")}
+              options={["Cardinal Health", "McKesson", "Medline", "Owens & Minor", "Henry Schein"]}
+            />
+          </div>
+          <div>
+            <Label>Item Status</Label>
+            <SelectInput
+              placeholder="Select status..."
+              value={form.itemStatus}
+              onChange={set("itemStatus")}
+              options={["Active", "Quarantined", "Recalled", "Disposed"]}
+            />
+          </div>
+          <div>
+            <Label>DEA Schedule</Label>
+            <SelectInput
+              placeholder="Select schedule..."
+              value={form.deaSchedule}
+              onChange={set("deaSchedule")}
+              options={["None — Not Controlled", "Schedule I", "Schedule II", "Schedule III", "Schedule IV", "Schedule V"]}
+            />
           </div>
         </Row>
 
-        {/* STOCK & PRICING */}
+        {/* ALWAYS SHOW - STOCK & PRICING */}
         <SectionTitle>STOCK &amp; PRICING</SectionTitle>
         <Row>
           <div>
@@ -303,16 +444,8 @@ export default function AddItem() {
             <NumberSpinInput value={form.unitCost} onChange={set("unitCost")} placeholder="0.00" step={0.01} />
           </div>
         </Row>
+        
         <Row cols={2}>
-          <div>
-            <Label>Supplier</Label>
-            <SelectInput
-              placeholder="Select"
-              value={form.supplier}
-              onChange={set("supplier")}
-              options={["Cardinal Health", "McKesson", "Medline", "Owens & Minor"]}
-            />
-          </div>
           <div>
             <Label>Location</Label>
             <SelectInput
@@ -322,9 +455,12 @@ export default function AddItem() {
               options={["Central Store", "ICU", "Emergency Dept", "Pharmacy", "Surgery", "Laboratory"]}
             />
           </div>
+          <div>
+            {/* Empty div for spacing */}
+          </div>
         </Row>
 
-        {/* LOT & EXPIRY */}
+        {/* ALWAYS SHOW - LOT & EXPIRY */}
         <SectionTitle>LOT &amp; EXPIRY</SectionTitle>
         <Row cols={2}>
           <div>
@@ -337,7 +473,7 @@ export default function AddItem() {
           </div>
         </Row>
 
-        {/* Notes */}
+        {/* ALWAYS SHOW - NOTES */}
         <div>
           <Label>Notes</Label>
           <textarea
@@ -361,6 +497,248 @@ export default function AddItem() {
             }}
           />
         </div>
+
+        {/* CONDITIONAL - EQUIPMENT DETAILS */}
+        {itemType === "equipment" && (
+          <>
+            <SectionTitle>EQUIPMENT DETAILS</SectionTitle>
+            <Row cols={3}>
+              <div>
+                <Label>Model No.</Label>
+                <TextInput placeholder="e.g. BeneVision N15" value={form.modelNo} onChange={set("modelNo")} />
+              </div>
+              <div>
+                <Label>Serial No.</Label>
+                <TextInput placeholder="e.g. MR2024-0012" value={form.serialNo} onChange={set("serialNo")} />
+              </div>
+              <div>
+                {/* Removed DEA Schedule from here since it's now in ITEM DETAILS */}
+                <div></div>
+              </div>
+            </Row>
+            <Row cols={2}>
+              <div>
+                <Label>Purchase Date</Label>
+                <DateInput value={form.purchaseDate} onChange={set("purchaseDate")} />
+              </div>
+              <div>
+                <Label>Warranty Expiry</Label>
+                <DateInput value={form.warrantyExpiry} onChange={set("warrantyExpiry")} />
+              </div>
+            </Row>
+            <Row cols={2}>
+              <div>
+                <Label>Next Service Due</Label>
+                <DateInput value={form.nextServiceDue} onChange={set("nextServiceDue")} />
+              </div>
+              <div>
+                <Label>Calibration Due</Label>
+                <DateInput value={form.calibrationDue} onChange={set("calibrationDue")} />
+              </div>
+            </Row>
+
+            <SectionTitle>CONDITION &amp; STATUS</SectionTitle>
+            <Row cols={2}>
+              <div>
+                <Label>Condition</Label>
+                <SelectInput
+                  placeholder="Select"
+                  value={form.condition}
+                  onChange={set("condition")}
+                  options={["Good", "Fair", "Poor", "Needs Repair"]}
+                />
+              </div>
+              <div>
+                {/* Removed Item Status from here since it's now in ITEM DETAILS */}
+                <div></div>
+              </div>
+            </Row>
+
+            <SectionTitle>STOCK &amp; PRICING</SectionTitle>
+            <Row cols={2}>
+              <div>
+                <Label>Quantity (Units)</Label>
+                <NumberSpinInput value={form.qtyInHand} onChange={set("qtyInHand")} placeholder="0" step={1} />
+              </div>
+              <div>
+                <Label>Min. Qty Required</Label>
+                <NumberSpinInput value={form.parLevel} onChange={set("parLevel")} placeholder="0" step={1} />
+              </div>
+            </Row>
+            <Row cols={2}>
+              <div>
+                <Label>Unit Cost ($)</Label>
+                <NumberSpinInput value={form.unitCost} onChange={set("unitCost")} placeholder="0.00" step={0.01} />
+              </div>
+              <div>
+                <Label>Location</Label>
+                <SelectInput
+                  placeholder="Select"
+                  value={form.location}
+                  onChange={set("location")}
+                  options={["Central Store", "ICU", "Emergency Dept", "Pharmacy", "Surgery", "Laboratory"]}
+                />
+              </div>
+            </Row>
+
+            <SectionTitle>ASSET INFO</SectionTitle>
+            <Row cols={2}>
+              <div>
+                <Label>Asset / LOT Tag</Label>
+                <TextInput placeholder="e.g. EP24B" value={form.lotNumber} onChange={set("lotNumber")} />
+              </div>
+              <div>
+                <Label>Warranty Expiry</Label>
+                <DateInput value={form.warrantyExpiry} onChange={set("warrantyExpiry")} />
+              </div>
+            </Row>
+
+            <div>
+              <Label>Notes</Label>
+              <textarea
+                value={form.notes}
+                onChange={set("notes")}
+                placeholder="Type here"
+                rows={3}
+                style={{
+                  width: "100%",
+                  padding: "10px 12px",
+                  fontSize: 13,
+                  border: "1px solid #e5e7eb",
+                  borderRadius: 8,
+                  outline: "none",
+                  resize: "vertical",
+                  fontFamily: "inherit",
+                  color: "#111827",
+                  backgroundColor: "#f9fafb",
+                  boxSizing: "border-box",
+                  colorScheme: "light",
+                }}
+              />
+            </div>
+          </>
+        )}
+
+        {/* CONDITIONAL - DEVICE DETAILS */}
+        {itemType === "device" && (
+          <>
+            <SectionTitle>DEVICE DETAILS</SectionTitle>
+            <Row cols={3}>
+              <div>
+                <Label>Model No.</Label>
+                <TextInput placeholder="e.g. BeneVision N15" value={form.modelNo} onChange={set("modelNo")} />
+              </div>
+              <div>
+                <Label>Serial No.</Label>
+                <TextInput placeholder="e.g. MR2024-0012" value={form.serialNo} onChange={set("serialNo")} />
+              </div>
+              <div>
+                {/* Removed DEA Schedule from here since it's now in ITEM DETAILS */}
+                <div></div>
+              </div>
+            </Row>
+            <Row cols={2}>
+              <div>
+                <Label>Purchase Date</Label>
+                <DateInput value={form.purchaseDate} onChange={set("purchaseDate")} />
+              </div>
+              <div>
+                <Label>Warranty Expiry</Label>
+                <DateInput value={form.warrantyExpiry} onChange={set("warrantyExpiry")} />
+              </div>
+            </Row>
+            <Row cols={2}>
+              <div>
+                <Label>Next Service Due</Label>
+                <DateInput value={form.nextServiceDue} onChange={set("nextServiceDue")} />
+              </div>
+              <div>
+                <Label>Calibration Due</Label>
+                <DateInput value={form.calibrationDue} onChange={set("calibrationDue")} />
+              </div>
+            </Row>
+
+            <SectionTitle>CONDITION &amp; STATUS</SectionTitle>
+            <Row cols={2}>
+              <div>
+                <Label>Condition</Label>
+                <SelectInput
+                  placeholder="Select"
+                  value={form.condition}
+                  onChange={set("condition")}
+                  options={["Good", "Fair", "Poor", "Needs Repair"]}
+                />
+              </div>
+              <div>
+                {/* Removed Item Status from here since it's now in ITEM DETAILS */}
+                <div></div>
+              </div>
+            </Row>
+
+            <SectionTitle>STOCK &amp; PRICING</SectionTitle>
+            <Row cols={2}>
+              <div>
+                <Label>Quantity (Units)</Label>
+                <NumberSpinInput value={form.qtyInHand} onChange={set("qtyInHand")} placeholder="0" step={1} />
+              </div>
+              <div>
+                <Label>Min. Qty Required</Label>
+                <NumberSpinInput value={form.parLevel} onChange={set("parLevel")} placeholder="0" step={1} />
+              </div>
+            </Row>
+            <Row cols={2}>
+              <div>
+                <Label>Unit Cost ($)</Label>
+                <NumberSpinInput value={form.unitCost} onChange={set("unitCost")} placeholder="0.00" step={0.01} />
+              </div>
+              <div>
+                <Label>Location</Label>
+                <SelectInput
+                  placeholder="Select"
+                  value={form.location}
+                  onChange={set("location")}
+                  options={["Central Store", "ICU", "Emergency Dept", "Pharmacy", "Surgery", "Laboratory"]}
+                />
+              </div>
+            </Row>
+
+            <SectionTitle>ASSET INFO</SectionTitle>
+            <Row cols={2}>
+              <div>
+                <Label>Asset / LOT Tag</Label>
+                <TextInput placeholder="e.g. EP24B" value={form.lotNumber} onChange={set("lotNumber")} />
+              </div>
+              <div>
+                <Label>Warranty Expiry</Label>
+                <DateInput value={form.warrantyExpiry} onChange={set("warrantyExpiry")} />
+              </div>
+            </Row>
+
+            <div>
+              <Label>Notes</Label>
+              <textarea
+                value={form.notes}
+                onChange={set("notes")}
+                placeholder="Type here"
+                rows={3}
+                style={{
+                  width: "100%",
+                  padding: "10px 12px",
+                  fontSize: 13,
+                  border: "1px solid #e5e7eb",
+                  borderRadius: 8,
+                  outline: "none",
+                  resize: "vertical",
+                  fontFamily: "inherit",
+                  color: "#111827",
+                  backgroundColor: "#f9fafb",
+                  boxSizing: "border-box",
+                  colorScheme: "light",
+                }}
+              />
+            </div>
+          </>
+        )}
       </div>
 
       {/* ── Footer Buttons ── */}
