@@ -15,9 +15,13 @@ import Sidebar from "./components/Sidebar";
 import Dashboard from "./pages/Dashboard/dashboard";
 import AddItem from "./pages/Dashboard/additem";
 import InventoryItems from "./pages/InventoryItems/InventoryItems";
+
 import Replacement from "./pages/Replacement";
 import ExpiryTracking from "./pages/ExpiryTracking";
 import Transfers from "./pages/Transfers";
+
+import GoodsReceipt from "./pages/GoodsReceipt/GoodsReceipt";
+
 
 // ── Theme: removes focus outlines globally ──
 const theme = createTheme({
@@ -105,6 +109,39 @@ function App() {
               </PrivateRoute>
             }
           />
+
+         
+         <Route
+  path="/admin/inventory/add"
+  element={
+    <PrivateRoute>
+      <DashboardLayout>
+        <AddItem />
+      </DashboardLayout>
+    </PrivateRoute>
+  }
+/> 
+<Route
+  path="/admin/inventory/items"
+  element={
+    <PrivateRoute>
+      <DashboardLayout>
+        <InventoryItems />
+      </DashboardLayout>
+    </PrivateRoute>
+  }
+/>
+<Route
+  path="/admin/goods-receipt"
+  element={
+    <PrivateRoute>
+      <DashboardLayout>
+        <GoodsReceipt />
+      </DashboardLayout>
+    </PrivateRoute>
+  }
+/>
+
 
           <Route
             path="/admin/inventory/add"
