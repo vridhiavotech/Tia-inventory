@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Box, Typography, Button, TextField, Select, MenuItem, FormControl,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
@@ -110,21 +111,8 @@ function StatusChip({ label, color, icon }) {
 // ─── Delete Confirmation Dialog ───────────────────────────────────────────────
 function DeleteConfirmDialog({ open, item, onCancel, onConfirm, deleting }) {
   return (
-    <Dialog
-      open={open}
-      onClose={deleting ? undefined : onCancel}
-      maxWidth="xs"
-      fullWidth
-      PaperProps={{
-        sx: {
-          borderRadius: "14px",
-          boxShadow: "0 20px 60px rgba(0,0,0,0.15)",
-          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-          overflow: "hidden",
-        },
-      }}
-    >
-      {/* Header */}
+    <Dialog open={open} onClose={deleting ? undefined : onCancel} maxWidth="xs" fullWidth
+      PaperProps={{ sx: { borderRadius: "14px", boxShadow: "0 20px 60px rgba(0,0,0,0.15)", fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', overflow: "hidden" } }}>
       <Box sx={{ px: "24px", pt: "20px", pb: "16px", display: "flex", alignItems: "flex-start", justifyContent: "space-between", borderBottom: "1px solid #f3f4f6" }}>
         <Box sx={{ display: "flex", alignItems: "center", gap: "12px" }}>
           <Box sx={{ width: 38, height: 38, borderRadius: "10px", background: "#fef2f2", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -135,59 +123,38 @@ function DeleteConfirmDialog({ open, item, onCancel, onConfirm, deleting }) {
             <Typography sx={{ fontSize: 12, color: "#9ca3af", mt: "1px" }}>This action cannot be undone</Typography>
           </Box>
         </Box>
-        <IconButton
-          size="small"
-          onClick={onCancel}
-          disabled={deleting}
-          sx={{ color: "#9ca3af", border: "1px solid #e5e7eb", borderRadius: "8px", width: 30, height: 30, "&:hover": { background: "#f3f4f6", color: "#374151" } }}
-        >
+        <IconButton size="small" onClick={onCancel} disabled={deleting}
+          sx={{ color: "#9ca3af", border: "1px solid #e5e7eb", borderRadius: "8px", width: 30, height: 30, "&:hover": { background: "#f3f4f6" } }}>
           <CloseIcon sx={{ fontSize: 15 }} />
         </IconButton>
       </Box>
-
       <DialogContent sx={{ px: "24px", py: "20px" }}>
         <Typography sx={{ fontSize: 13, color: "#374151", lineHeight: 1.6 }}>
           Are you sure you want to delete{" "}
           <span style={{ fontWeight: 700, color: "#111827" }}>{item?.name}</span>
-          {item?.ndc && (
-            <span style={{ color: "#9ca3af" }}> ({item.ndc})</span>
-          )}
-          ? All associated records will be permanently removed.
+          {item?.ndc && <span style={{ color: "#9ca3af" }}> ({item.ndc})</span>}?
+          All associated records will be permanently removed.
         </Typography>
-
-        {/* Item summary pill */}
         {item && (
           <Box sx={{ mt: "16px", p: "12px", borderRadius: "8px", background: "#fef2f2", border: "1px solid #fecaca", display: "flex", alignItems: "center", gap: "10px" }}>
             <CategoryTile category={item.category} />
             <Box>
               <Typography sx={{ fontSize: 12, fontWeight: 600, color: "#111827" }}>{item.name}</Typography>
-              <Typography sx={{ fontSize: 11, color: "#9ca3af" }}>
-                {item.location} · Qty: {item.qty} · {item.category}
-              </Typography>
+              <Typography sx={{ fontSize: 11, color: "#9ca3af" }}>{item.location} · Qty: {item.qty} · {item.category}</Typography>
             </Box>
           </Box>
         )}
       </DialogContent>
-
-      {/* Footer */}
       <Box sx={{ px: "24px", py: "16px", borderTop: "1px solid #f3f4f6", display: "flex", justifyContent: "flex-end", gap: "10px", background: "#fff" }}>
-        <Button
-          onClick={onCancel}
-          disabled={deleting}
-          sx={{ fontSize: 13, fontWeight: 600, color: "#374151", textTransform: "none", borderRadius: "8px", px: "20px", py: "9px", border: "1px solid #e5e7eb", background: "#fff", "&:hover": { background: "#f9fafb" } }}
-        >
+        <Button onClick={onCancel} disabled={deleting}
+          sx={{ fontSize: 13, fontWeight: 600, color: "#374151", textTransform: "none", borderRadius: "8px", px: "20px", py: "9px", border: "1px solid #e5e7eb", background: "#fff", "&:hover": { background: "#f9fafb" } }}>
           Cancel
         </Button>
-        <Button
-          onClick={onConfirm}
-          disabled={deleting}
-          startIcon={
-            deleting
-              ? <Box component="span" sx={{ width: 14, height: 14, border: "2px solid rgba(255,255,255,0.3)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.7s linear infinite", "@keyframes spin": { to: { transform: "rotate(360deg)" } } }} />
-              : <DeleteOutlineIcon sx={{ fontSize: 15 }} />
-          }
-          sx={{ fontSize: 13, fontWeight: 600, color: "#fff", textTransform: "none", borderRadius: "8px", px: "20px", py: "9px", background: "#dc2626", boxShadow: "0 2px 8px rgba(220,38,38,0.25)", "&:hover": { background: "#b91c1c" }, "&.Mui-disabled": { opacity: 0.6, color: "#fff" } }}
-        >
+        <Button onClick={onConfirm} disabled={deleting}
+          startIcon={deleting
+            ? <Box component="span" sx={{ width: 14, height: 14, border: "2px solid rgba(255,255,255,0.3)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.7s linear infinite", "@keyframes spin": { to: { transform: "rotate(360deg)" } } }} />
+            : <DeleteOutlineIcon sx={{ fontSize: 15 }} />}
+          sx={{ fontSize: 13, fontWeight: 600, color: "#fff", textTransform: "none", borderRadius: "8px", px: "20px", py: "9px", background: "#dc2626", "&:hover": { background: "#b91c1c" }, "&.Mui-disabled": { opacity: 0.6, color: "#fff" } }}>
           {deleting ? "Deleting…" : "Delete Item"}
         </Button>
       </Box>
@@ -197,6 +164,8 @@ function DeleteConfirmDialog({ open, item, onCancel, onConfirm, deleting }) {
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function InventoryItems() {
+  const navigate = useNavigate();
+
   const [inventoryItems, setInventoryItems] = useState(initialInventory);
   const [search, setSearch]               = useState("");
   const [location, setLocation]           = useState("All Locations");
@@ -204,8 +173,6 @@ export default function InventoryItems() {
   const [filter, setFilter]               = useState("All");
   const [issueModal, setIssueModal]       = useState({ open: false, item: null });
   const [transferModal, setTransferModal] = useState({ open: false, item: null });
-
-  // Delete state
   const [deleteDialog, setDeleteDialog]   = useState({ open: false, item: null });
   const [deleting, setDeleting]           = useState(false);
   const [toast, setToast]                 = useState({ open: false, message: "", severity: "success" });
@@ -223,14 +190,12 @@ export default function InventoryItems() {
     return matchSearch && matchLoc && matchCat && matchFilter;
   });
 
-  // ── Delete handlers ──────────────────────────────────────────────────────
-  const openDeleteDialog = (item) => setDeleteDialog({ open: true, item });
+  const openDeleteDialog  = (item) => setDeleteDialog({ open: true, item });
   const closeDeleteDialog = () => { if (!deleting) setDeleteDialog({ open: false, item: null }); };
 
   const handleConfirmDelete = async () => {
     setDeleting(true);
     try {
-      // Simulate API call
       await new Promise((res) => setTimeout(res, 900));
       const name = deleteDialog.item.name;
       setInventoryItems((prev) => prev.filter((i) => i.id !== deleteDialog.item.id));
@@ -258,8 +223,18 @@ export default function InventoryItems() {
           <Typography sx={{ fontSize: 20, fontWeight: 700, color: "#111827" }}>Inventory Items</Typography>
           <Typography sx={{ fontSize: 12, color: "#9ca3af", mt: "4px" }}>{inventoryItems.length} items across all locations</Typography>
         </Box>
-        <Button startIcon={<AddIcon sx={{ fontSize: 16 }} />}
-          sx={{ background: "#2563eb", color: "#fff", borderRadius: "8px", px: "18px", py: "10px", fontSize: 13, fontWeight: 600, textTransform: "none", boxShadow: "0 2px 8px rgba(37,99,235,0.25)", "&:hover": { background: "#1d4ed8" } }}>
+
+        {/* ── Add Item → /admin/inventory/add ── */}
+        <Button
+          startIcon={<AddIcon sx={{ fontSize: 16 }} />}
+          onClick={() => navigate("/admin/inventory/add")}
+          sx={{
+            background: "#2563eb", color: "#fff", borderRadius: "8px",
+            px: "18px", py: "10px", fontSize: 13, fontWeight: 600,
+            textTransform: "none", boxShadow: "0 2px 8px rgba(37,99,235,0.25)",
+            "&:hover": { background: "#1d4ed8" },
+          }}
+        >
           Add Item
         </Button>
       </Box>
@@ -371,17 +346,21 @@ export default function InventoryItems() {
 
                   <TableCell>
                     <Box sx={{ display: "flex", gap: "4px" }}>
+
+                      {/* ── Edit → /admin/inventory/add?id=X&edit=true ── */}
                       <Tooltip title="Edit">
-                        <IconButton size="small"
+                        <IconButton
+                          size="small"
+                          onClick={() => navigate(`/admin/inventory/add?id=${item.id}&edit=true`)}
                           sx={{ color: "#6b7280", border: "1px solid #e5e7eb", borderRadius: "6px", width: 28, height: 28,
-                            "&:hover": { background: "#f3f4f6", color: "#2563eb" } }}>
+                            "&:hover": { background: "#eff6ff", color: "#2563eb", borderColor: "#bfdbfe" } }}
+                        >
                           <EditIcon sx={{ fontSize: 14 }} />
                         </IconButton>
                       </Tooltip>
 
                       <Tooltip title="Transfer">
-                        <IconButton size="small"
-                          onClick={() => setTransferModal({ open: true, item: item.name })}
+                        <IconButton size="small" onClick={() => setTransferModal({ open: true, item: item.name })}
                           sx={{ color: "#6b7280", border: "1px solid #e5e7eb", borderRadius: "6px", width: 28, height: 28,
                             "&:hover": { background: "#f5f3ff", color: "#7c3aed", borderColor: "#ddd6fe" } }}>
                           <SwapHorizIcon sx={{ fontSize: 14 }} />
@@ -389,22 +368,17 @@ export default function InventoryItems() {
                       </Tooltip>
 
                       <Tooltip title="Issue Stock">
-                        <IconButton size="small"
-                          onClick={() => setIssueModal({ open: true, item: item.name })}
+                        <IconButton size="small" onClick={() => setIssueModal({ open: true, item: item.name })}
                           sx={{ color: "#6b7280", border: "1px solid #e5e7eb", borderRadius: "6px", width: 28, height: 28,
                             "&:hover": { background: "#f0fdf4", color: "#16a34a", borderColor: "#bbf7d0" } }}>
                           <AssignmentIcon sx={{ fontSize: 14 }} />
                         </IconButton>
                       </Tooltip>
 
-                      {/* ── Delete — now wired ── */}
                       <Tooltip title="Delete">
-                        <IconButton
-                          size="small"
-                          onClick={() => openDeleteDialog(item)}
+                        <IconButton size="small" onClick={() => openDeleteDialog(item)}
                           sx={{ color: "#6b7280", border: "1px solid #e5e7eb", borderRadius: "6px", width: 28, height: 28,
-                            "&:hover": { background: "#fef2f2", color: "#dc2626", borderColor: "#fecaca" } }}
-                        >
+                            "&:hover": { background: "#fef2f2", color: "#dc2626", borderColor: "#fecaca" } }}>
                           <DeleteIcon sx={{ fontSize: 14 }} />
                         </IconButton>
                       </Tooltip>
@@ -438,42 +412,14 @@ export default function InventoryItems() {
         </Box>
       </Paper>
 
-      {/* ── Issue Stock Modal ── */}
-      <IssueStockModal
-        open={issueModal.open}
-        onClose={() => setIssueModal({ open: false, item: null })}
-        prefillItem={issueModal.item}
-      />
-
-      {/* ── Create Transfer Modal ── */}
-      <CreateTransferModal
-        open={transferModal.open}
-        onClose={() => setTransferModal({ open: false, item: null })}
-        prefillItem={transferModal.item}
-      />
-
-      {/* ── Delete Confirmation Dialog ── */}
-      <DeleteConfirmDialog
-        open={deleteDialog.open}
-        item={deleteDialog.item}
-        onCancel={closeDeleteDialog}
-        onConfirm={handleConfirmDelete}
-        deleting={deleting}
-      />
+      {/* ── Modals ── */}
+      <IssueStockModal open={issueModal.open} onClose={() => setIssueModal({ open: false, item: null })} prefillItem={issueModal.item} />
+      <CreateTransferModal open={transferModal.open} onClose={() => setTransferModal({ open: false, item: null })} prefillItem={transferModal.item} />
+      <DeleteConfirmDialog open={deleteDialog.open} item={deleteDialog.item} onCancel={closeDeleteDialog} onConfirm={handleConfirmDelete} deleting={deleting} />
 
       {/* ── Toast ── */}
-      <Snackbar
-        open={toast.open}
-        autoHideDuration={3500}
-        onClose={() => setToast((p) => ({ ...p, open: false }))}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      >
-        <Alert
-          onClose={() => setToast((p) => ({ ...p, open: false }))}
-          severity={toast.severity}
-          variant="filled"
-          sx={{ fontSize: 13, borderRadius: "10px", minWidth: 280 }}
-        >
+      <Snackbar open={toast.open} autoHideDuration={3500} onClose={() => setToast((p) => ({ ...p, open: false }))} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
+        <Alert onClose={() => setToast((p) => ({ ...p, open: false }))} severity={toast.severity} variant="filled" sx={{ fontSize: 13, borderRadius: "10px", minWidth: 280 }}>
           {toast.message}
         </Alert>
       </Snackbar>
