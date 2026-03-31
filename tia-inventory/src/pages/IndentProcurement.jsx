@@ -282,8 +282,7 @@ const IndentProcurement = () => {
               {indentDetails.indentNo}
             </Typography>
             <Button 
-              variant="outlined" 
-              startIcon={<RefreshIcon />} 
+              variant="outlined"  
               onClick={handleNewIndent}
               sx={{
                 borderRadius: '8px',
