@@ -29,6 +29,8 @@ import ReportsAnalytics from "./pages/ReportsAnalytics";
 import StockIssue from "./pages/Stockissue";
 import AdminOverview from "./pages/Admin/Adminoverview";
 
+import Categories from "./pages/Categories";
+
 // ── Theme: removes focus outlines globally ──
 const theme = createTheme({
   components: {
@@ -118,7 +120,7 @@ function App() {
             }
           />
 
-          <Route 
+          <Route
             path="/admin/goods-receipt"
             element={
               <PrivateRoute>
@@ -139,7 +141,7 @@ function App() {
               </PrivateRoute>
             }
           />
-          
+
           <Route
             path="/admin/inventory/items"
             element={
@@ -183,7 +185,7 @@ function App() {
               </PrivateRoute>
             }
           />
-          
+
           <Route
             path="/admin/expiry-tracking"
             element={
@@ -195,7 +197,7 @@ function App() {
             }
           />
 
-          <Route 
+          <Route
             path="/admin/transfers"
             element={
               <PrivateRoute>
@@ -217,35 +219,46 @@ function App() {
             }
           />
           <Route
-  path="/admin/reports"
-  element={
-    <PrivateRoute>
-      <DashboardLayout>
-        <ReportsAnalytics />
-      </DashboardLayout>
-    </PrivateRoute>
-  }
-/>
-<Route path="/admin/stock-issue" 
-element=
-{<PrivateRoute>
-  <DashboardLayout>
-    <StockIssue />
-    </DashboardLayout>
-    </PrivateRoute>}
-     />
-      <Route
-  path="/admin/overview"
-  element={
-    <PrivateRoute>
-      <DashboardLayout>
-        <AdminOverview />
-      </DashboardLayout>
-    </PrivateRoute>
-  }
-/>
+            path="/admin/reports"
+            element={
+              <PrivateRoute>
+                <DashboardLayout>
+                  <ReportsAnalytics />
+                </DashboardLayout>
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/admin/stock-issue"
+            element={
+              <PrivateRoute>
+                <DashboardLayout>
+                  <StockIssue />
+                </DashboardLayout>
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/admin/overview"
+            element={
+              <PrivateRoute>
+                <DashboardLayout>
+                  <AdminOverview />
+                </DashboardLayout>
+              </PrivateRoute>
+            }
+          />
 
-
+          <Route
+            path="/admin/categories"
+            element={
+              <PrivateRoute>
+                <DashboardLayout>
+                  <Categories />
+                </DashboardLayout>
+              </PrivateRoute>
+            }
+          />
         </Routes>
       </Router>
     </ThemeProvider>
