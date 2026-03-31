@@ -31,7 +31,6 @@ const navItems = [
   { icon: <OutputOutlinedIcon fontSize="small" />, label: "Stock Issue", path: "/admin/stock-issue", badge: null },
   { icon: <CompareArrowsOutlinedIcon fontSize="small" />, label: "Transfers", path: "/admin/transfers", badge: null },
   { icon: <AccessTimeOutlinedIcon fontSize="small" />, label: "Expiry Tracking", path: "/admin/expiry-tracking", badge: null },
-  { icon: <FactoryOutlinedIcon fontSize="small" />, label: "Manufacturing", path: "/admin/manufacturing", badge: null },
   { icon: <TrendingUpOutlinedIcon fontSize="small" />, label: "Replacement", path: "/admin/replacement", badge: 1 },
   { icon: <BarChartOutlinedIcon fontSize="small" />, label: "Reports", path: "/admin/reports", badge: null },
 ];
