@@ -25,6 +25,7 @@ import GoodsReceipt from "./pages/GoodsReceipt/GoodsReceipt";
 import IndentProcurement from "./pages/IndentProcurement";
 import PurchaseOrders from "./pages/PurchaseOrders";
 import DocumentManagement from "./pages/DocumentManagement";
+import Manufacturers from "./pages/Manufacturers";
 
 // ── Theme: removes focus outlines globally ──
 const theme = createTheme({
@@ -209,6 +210,17 @@ function App() {
               <PrivateRoute>
                 <DashboardLayout>
                   <DocumentManagement />
+                </DashboardLayout>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/admin/manufacturers"
+            element={
+              <PrivateRoute>
+                <DashboardLayout>
+                  <Manufacturers />
                 </DashboardLayout>
               </PrivateRoute>
             }
