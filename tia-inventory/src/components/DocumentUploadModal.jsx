@@ -381,22 +381,25 @@ const DocumentUploadModal = ({ open, onClose, onSave, document }) => {
       <DialogContent 
         dividers 
         sx={{ 
-            p: { xs: 1.5, sm: 2 },
-            '& .MuiDialogContent-dividers': {
+          p: { xs: 1.5, sm: 2 },
+          '& .MuiDialogContent-dividers': {
             borderColor: '#e2e8f0',
+          },
+          // Scrollbar styling matching UserModal (Assign Hospitals/Locations)
+          '&::-webkit-scrollbar': {
+            width: '6px',
+          },
+          '&::-webkit-scrollbar-track': {
+            background: '#f1f5f9',
+            borderRadius: '3px',
+          },
+          '&::-webkit-scrollbar-thumb': {
+            background: '#cbd5e1',
+            borderRadius: '3px',
+            '&:hover': {
+              background: '#94a3b8',
             },
-
-            '&::-webkit-scrollbar': {
-            width: 'auto',
-            },
-            '&::-webkit-scrollbar-track': {
-            background: 'transparent',
-            },
-            '&::-webkit-scrollbar-thumb': {
-            background: 'auto',
-            },
-
-            scrollbarWidth: 'auto',
+          },
         }}
       >
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>

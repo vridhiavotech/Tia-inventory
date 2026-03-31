@@ -1,9 +1,19 @@
 import React, { useState } from 'react';
 import {
   Box,
-  Typography,
+  Card,
+  CardHeader,
+  CardContent,
   Button,
-  Grid,
+  Typography,
+  Tooltip,
+  IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Divider,
+  Chip,
   Paper,
   Table,
   TableBody,
@@ -11,19 +21,9 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Chip,
-  IconButton,
-  Tooltip,
+  Grid,
   useMediaQuery,
   useTheme,
-  GlobalStyles,
-  Card,
-  CardContent,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Divider,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import CheckIcon from '@mui/icons-material/Check';
@@ -31,6 +31,9 @@ import CloseIcon from '@mui/icons-material/Close';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import ReceiptIcon from '@mui/icons-material/Receipt';
 import InventoryIcon from '@mui/icons-material/Inventory';
+import DescriptionIcon from '@mui/icons-material/Description';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import WarningIcon from '@mui/icons-material/Warning';
 import NewPO from '../components/NewPO';
 import UploadInvoice from '../components/UploadInvoice';
 
@@ -153,6 +156,33 @@ const PurchaseOrders = () => {
     received: purchaseOrders.filter(po => po.status === 'Received').length,
     invoicesAttached: purchaseOrders.filter(po => po.invoice.status !== 'none').length,
   };
+
+  const statCards = [
+    { 
+      title: "Total Purchase Orders", 
+      value: stats.totalPOs, 
+      subtitle: `${stats.totalPOs} orders · $${stats.totalValue.toLocaleString()} total value`,
+      color: "#3b82f6",
+    },
+    { 
+      title: "Pending Approval", 
+      value: stats.pendingApproval, 
+      subtitle: "Awaiting approval",
+      color: "#f59e0b",
+    },
+    { 
+      title: "Approved / In Transit", 
+      value: stats.approved, 
+      subtitle: "Ready to receive GRN",
+      color: "#10b981",
+    },
+    { 
+      title: "Received", 
+      value: stats.received, 
+      subtitle: "Completed orders",
+      color: "#8b5cf6",
+    },
+  ];
 
   const getStatusColor = (status) => {
     switch(status) {
@@ -342,7 +372,7 @@ Total: $${po.total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFr
           }
         }}>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-            {/* Status Banner */}
+
             <Paper 
               elevation={0} 
               sx={{ 
@@ -370,7 +400,6 @@ Total: $${po.total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFr
               />
             </Paper>
 
-            {/* File Attachment */}
             <Paper 
               elevation={0} 
               sx={{ 
@@ -394,7 +423,6 @@ Total: $${po.total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFr
               </Box>
             </Paper>
 
-            {/* Invoice Details Panel */}
             <Paper 
               elevation={0} 
               sx={{ 
@@ -447,7 +475,6 @@ Total: $${po.total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFr
               </Box>
             </Paper>
 
-            {/* Grand Total Box */}
             <Paper 
               elevation={0} 
               sx={{ 
@@ -473,7 +500,6 @@ Total: $${po.total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFr
               </Typography>
             </Paper>
 
-            {/* Notes */}
             {invoice.notes && (
               <Paper 
                 elevation={0} 
@@ -493,7 +519,6 @@ Total: $${po.total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFr
               </Paper>
             )}
 
-            {/* Upload Info */}
             <Box sx={{ 
               display: 'flex', 
               justifyContent: 'space-between', 
@@ -572,424 +597,345 @@ Total: $${po.total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFr
   };
 
   return (
-    <>
-      <GlobalStyles
-        styles={{
-          '*::-webkit-scrollbar': {
-            width: '8px',
-            height: '8px',
-          },
-          '*::-webkit-scrollbar-track': {
-            background: '#f1f5f9',
-            borderRadius: '4px',
-          },
-          '*::-webkit-scrollbar-thumb': {
-            background: '#cbd5e1',
-            borderRadius: '4px',
-          },
-          '*': {
-            scrollbarWidth: 'thin',
-            scrollbarColor: '#cbd5e1 #f1f1f1',
-          },
-        }}
-      />
-
-      <Box sx={{ 
-        width: '100%',
-        overflowX: 'hidden',
-        px: 0,
-      }}>
-        {/* Page Header */}
-        <Box sx={{ 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: { xs: 'flex-start', sm: 'center' },
-          flexDirection: { xs: 'column', sm: 'row' },
-          gap: { xs: 1.5, sm: 0 },
-          mb: { xs: 2, sm: 3 },
-          px: { xs: 0.5, sm: 1, md: 1.5 }
-        }}>
-          <Box>
-            <Typography 
-              variant="h3" 
-              sx={{ 
-                fontWeight: 600, 
-                color: '#1a1a2e', 
-                mb: 0.5,
-                fontSize: { xs: '20px', sm: '22px', md: '24px' }
-              }}
-            >
-              Purchase Orders
-            </Typography>
-            <Typography 
-              variant="body2" 
-              sx={{ 
-                color: '#6c757d',
-                fontSize: { xs: '12px', sm: '13px', md: '14px' }
-              }}
-            >
-              {stats.totalPOs} POs · {stats.pendingApproval} pending approval · {stats.invoicesAttached} invoices attached
-            </Typography>
-          </Box>
-          <Button 
-            variant="contained" 
-            startIcon={<AddIcon />} 
-            onClick={handleNewPO}
+    <Box sx={{ width: '100%', px: 0, overflow: 'hidden' }}>
+      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: 'repeat(4, 1fr)' }, gap: 2, mb: 3 }}>
+        {statCards.map((card, index) => (
+          <Card
+            key={index}
             sx={{
-              borderRadius: '8px',
-              textTransform: 'none',
-              background: 'linear-gradient(135deg, #6366f1, #818cf8)',
-              fontSize: { xs: '12px', sm: '13px', md: '14px' },
-              fontWeight: 500,
-              padding: { xs: '6px 16px', sm: '7px 20px', md: '8px 24px' },
-              '&:hover': {
-                background: 'linear-gradient(135deg, #4f46e5, #6366f1)',
-              }
+              backgroundColor: '#ffffff',
+              borderLeft: `4px solid ${card.color}`,
+              borderRadius: 3,
+              boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
             }}
           >
-            New PO
-          </Button>
+            <CardContent sx={{ p: 1.5, '&:last-child': { pb: 1.5 } }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <Box>
+                  <Typography sx={{ fontSize: '0.7rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    {card.title}
+                  </Typography>
+                  <Typography sx={{ fontSize: '1.3rem', fontWeight: 700, color: card.color, mt: 0.5 }}>
+                    {card.value}
+                  </Typography>
+                  <Typography sx={{ fontSize: '0.65rem', color: '#64748b', mt: 0.5 }}>
+                    {card.subtitle}
+                  </Typography>
+                </Box>
+                <Box sx={{ opacity: 0.7 }}>
+                  {card.icon}
+                </Box>
+              </Box>
+            </CardContent>
+          </Card>
+        ))}
+      </Box>
+
+      <Box sx={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: { xs: 'flex-start', sm: 'center' },
+        flexDirection: { xs: 'column', sm: 'row' },
+        gap: { xs: 1.5, sm: 0 },
+        mb: { xs: 2, sm: 3 },
+        px: { xs: 0.5, sm: 1, md: 1.5 }
+      }}>
+        <Box>
+          <Typography 
+            variant="h3" 
+            sx={{ 
+              fontWeight: 600, 
+              color: '#1a1a2e', 
+              mb: 0.5,
+              fontSize: { xs: '20px', sm: '22px', md: '24px' }
+            }}
+          >
+            Purchase Orders
+          </Typography>
+          <Typography 
+            variant="body2" 
+            sx={{ 
+              color: '#6c757d',
+              fontSize: { xs: '12px', sm: '13px', md: '14px' }
+            }}
+          >
+            {stats.totalPOs} POs · {stats.pendingApproval} pending approval · {stats.invoicesAttached} invoices attached
+          </Typography>
         </Box>
+        <Button 
+          variant="contained" 
+          startIcon={<AddIcon />} 
+          onClick={handleNewPO}
+          sx={{
+            borderRadius: '8px',
+            textTransform: 'none',
+            background: 'linear-gradient(135deg, #6366f1, #818cf8)',
+            fontSize: { xs: '12px', sm: '13px', md: '14px' },
+            fontWeight: 500,
+            padding: { xs: '6px 16px', sm: '7px 20px', md: '8px 24px' },
+            '&:hover': {
+              background: 'linear-gradient(135deg, #4f46e5, #6366f1)',
+            }
+          }}
+        >
+          New PO
+        </Button>
+      </Box>
 
-        {/* Stats Cards */}
-        <Grid container spacing={{ xs: 1.5, sm: 2, md: 2 }} sx={{ mb: { xs: 2, sm: 3 }, px: { xs: 0.5, sm: 1, md: 1.5 } }}>
-          <Grid size={{ xs: 6, sm: 3, md: 3 }}>
-            <Card sx={{ 
-              borderRadius: '12px', 
-              border: '1px solid #e2e8f0', 
-              boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
-              backgroundColor: '#ffffff',
-              height: '100%'
-            }}>
-              <CardContent sx={{ p: { xs: 1.5, sm: 2 } }}>
-                <Typography variant="caption" sx={{ color: '#2563eb', fontSize: '11px', fontWeight: 500, display: 'block' }}>
-                  Total POs
-                </Typography>
-                <Typography variant="h5" sx={{ fontWeight: 700, color: '#1e293b', mt: 0.5, mb: 0.5 }}>
-                  {stats.totalPOs}
-                </Typography>
-                <Typography variant="caption" sx={{ color: '#64748b', fontSize: '11px', display: 'block' }}>
-                  ${stats.totalValue.toLocaleString()} total value
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid size={{ xs: 6, sm: 3, md: 3 }}>
-            <Card sx={{ 
-              borderRadius: '12px', 
-              border: '1px solid #e2e8f0', 
-              boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
-              backgroundColor: '#ffffff',
-              height: '100%'
-            }}>
-              <CardContent sx={{ p: { xs: 1.5, sm: 2 } }}>
-                <Typography variant="caption" sx={{ color: '#f59e0b', fontSize: '11px', fontWeight: 500, display: 'block' }}>
-                  Pending Approval
-                </Typography>
-                <Typography variant="h5" sx={{ fontWeight: 700, color: '#1e293b', mt: 0.5 }}>
-                  {stats.pendingApproval}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid size={{ xs: 6, sm: 3, md: 3 }}>
-            <Card sx={{ 
-              borderRadius: '12px', 
-              border: '1px solid #e2e8f0', 
-              boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
-              backgroundColor: '#ffffff',
-              height: '100%'
-            }}>
-              <CardContent sx={{ p: { xs: 1.5, sm: 2 } }}>
-                <Typography variant="caption" sx={{ color: '#10b981', fontSize: '11px', fontWeight: 500, display: 'block' }}>
-                  Approved / In Transit
-                </Typography>
-                <Typography variant="h5" sx={{ fontWeight: 700, color: '#1e293b', mt: 0.5, mb: 0.5 }}>
-                  {stats.approved}
-                </Typography>
-                <Typography variant="caption" sx={{ color: '#64748b', fontSize: '11px', display: 'block' }}>
-                  Ready to receive GRN
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid size={{ xs: 6, sm: 3, md: 3 }}>
-            <Card sx={{ 
-              borderRadius: '12px', 
-              border: '1px solid #e2e8f0', 
-              boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
-              backgroundColor: '#ffffff',
-              height: '100%'
-            }}>
-              <CardContent sx={{ p: { xs: 1.5, sm: 2 } }}>
-                <Typography variant="caption" sx={{ color: '#22c55e', fontSize: '11px', fontWeight: 500, display: 'block' }}>
-                  Received
-                </Typography>
-                <Typography variant="h5" sx={{ fontWeight: 700, color: '#1e293b', mt: 0.5 }}>
-                  {stats.received}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
-
-        {/* Invoice Summary */}
-        <Box sx={{ 
+      <Box sx={{ 
+        display: 'flex', 
+        gap: 1.5, 
+        mb: { xs: 2, sm: 3 },
+        flexWrap: 'wrap',
+        px: { xs: 0.5, sm: 1, md: 1.5 }
+      }}>
+        <Paper sx={{ 
           display: 'flex', 
-          gap: 1.5, 
-          mb: { xs: 2, sm: 3 },
-          flexWrap: 'wrap',
-          px: { xs: 0.5, sm: 1, md: 1.5 }
+          alignItems: 'center', 
+          gap: 1, 
+          border: '1px solid #e2e8f0', 
+          borderRadius: '8px', 
+          p: { xs: '6px 12px', sm: '8px 13px' },
+          boxShadow: 'none'
         }}>
-          <Paper sx={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: 1, 
-            border: '1px solid #e2e8f0', 
-            borderRadius: '8px', 
-            p: { xs: '6px 12px', sm: '8px 13px' },
-            boxShadow: 'none'
-          }}>
-            <Typography sx={{ fontSize: '16px' }}>🧾</Typography>
-            <Typography sx={{ color: '#64748b', fontSize: { xs: '11px', sm: '12px' } }}>
-              Invoices attached:
-            </Typography>
-            <Typography sx={{ color: '#14b8a6', fontWeight: 600, fontSize: { xs: '11px', sm: '12px' } }}>
-              {stats.invoicesAttached} / {stats.totalPOs}
-            </Typography>
-          </Paper>
-        </Box>
+          <Typography sx={{ fontSize: '16px' }}>🧾</Typography>
+          <Typography sx={{ color: '#64748b', fontSize: { xs: '11px', sm: '12px' } }}>
+            Invoices attached:
+          </Typography>
+          <Typography sx={{ color: '#14b8a6', fontWeight: 600, fontSize: { xs: '11px', sm: '12px' } }}>
+            {stats.invoicesAttached} / {stats.totalPOs}
+          </Typography>
+        </Paper>
+      </Box>
 
-        {/* Purchase Orders Table */}
-        <Card sx={{ 
-          width: '100%',
-          borderRadius: { xs: 1, sm: 2 },
-          overflow: 'hidden',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
-          mt: { xs: 2, sm: 3 },
-          border: '1px solid #e2e8f0'
+      <Card sx={{ 
+        width: '100%',
+        borderRadius: { xs: 1, sm: 2 },
+        overflow: 'hidden',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+        mt: { xs: 2, sm: 3 },
+        border: '1px solid #e2e8f0'
+      }}>
+        <CardContent sx={{ 
+          p: { xs: 1, sm: 2, md: 3 },
+          '&:last-child': { pb: { xs: 2, sm: 3 } },
         }}>
-          <CardContent sx={{ 
-            p: { xs: 1, sm: 2, md: 3 },
-            '&:last-child': { pb: { xs: 2, sm: 3 } },
-          }}>
-            <Box sx={{ overflowX: 'auto' }}>
-              <TableContainer>
-                <Table size="small" sx={{
-                  '& .MuiTableCell-root': {
-                    padding: { xs: '6px 8px', sm: '8px 10px', md: '8px 10px' },
-                  }
-                }}>
-                  <TableHead>
-                    <TableRow sx={{ backgroundColor: '#f8fafc' }}>
-                      <TableCell sx={{ fontSize: { xs: '10px', sm: '11px' }, fontWeight: 600, color: '#64748b', whiteSpace: 'nowrap', py: '10px' }}>PO Number</TableCell>
-                      <TableCell sx={{ fontSize: { xs: '10px', sm: '11px' }, fontWeight: 600, color: '#64748b', whiteSpace: 'nowrap', py: '10px' }}>Quot. Ref</TableCell>
-                      <TableCell sx={{ fontSize: { xs: '10px', sm: '11px' }, fontWeight: 600, color: '#64748b', whiteSpace: 'nowrap', py: '10px' }}>Supplier</TableCell>
-                      <TableCell sx={{ fontSize: { xs: '10px', sm: '11px' }, fontWeight: 600, color: '#64748b', whiteSpace: 'nowrap', py: '10px' }}>Location</TableCell>
-                      <TableCell sx={{ fontSize: { xs: '10px', sm: '11px' }, fontWeight: 600, color: '#64748b', whiteSpace: 'nowrap', py: '10px' }}>Lines</TableCell>
-                      <TableCell sx={{ fontSize: { xs: '10px', sm: '11px' }, fontWeight: 600, color: '#64748b', whiteSpace: 'nowrap', py: '10px' }}>Total</TableCell>
-                      <TableCell sx={{ fontSize: { xs: '10px', sm: '11px' }, fontWeight: 600, color: '#64748b', whiteSpace: 'nowrap', py: '10px' }}>Created By</TableCell>
-                      <TableCell sx={{ fontSize: { xs: '10px', sm: '11px' }, fontWeight: 600, color: '#64748b', whiteSpace: 'nowrap', py: '10px' }}>Date</TableCell>
-                      <TableCell sx={{ fontSize: { xs: '10px', sm: '11px' }, fontWeight: 600, color: '#64748b', whiteSpace: 'nowrap', py: '10px' }}>Delivery</TableCell>
-                      <TableCell sx={{ fontSize: { xs: '10px', sm: '11px' }, fontWeight: 600, color: '#64748b', whiteSpace: 'nowrap', py: '10px' }}>Priority</TableCell>
-                      <TableCell sx={{ fontSize: { xs: '10px', sm: '11px' }, fontWeight: 600, color: '#64748b', whiteSpace: 'nowrap', py: '10px' }}>Status</TableCell>
-                      <TableCell sx={{ fontSize: { xs: '10px', sm: '11px' }, fontWeight: 600, color: '#64748b', whiteSpace: 'nowrap', py: '10px' }}>Invoice</TableCell>
-                      <TableCell sx={{ fontSize: { xs: '10px', sm: '11px' }, fontWeight: 600, color: '#64748b', whiteSpace: 'nowrap', py: '10px' }}>Actions</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {purchaseOrders.map((po) => (
-                      <TableRow key={po.id} hover sx={{ '&:hover': { backgroundColor: '#fafbfc' } }}>
-                        <TableCell sx={{ py: '8px' }}>
-                          <Typography sx={{ color: '#14b8a6', fontWeight: 600, fontSize: '12px' }}>
-                            {po.id}
-                          </Typography>
-                        </TableCell>
-                        <TableCell sx={{ py: '8px' }}>
-                          <Typography sx={{ fontSize: '11.5px', fontWeight: 600, color: '#1e293b' }}>
-                            {po.quotRef}
-                          </Typography>
-                          <Typography sx={{ fontSize: '10px', color: '#64748b' }}>
-                            Quot. Ref
-                          </Typography>
-                        </TableCell>
-                        <TableCell sx={{ py: '8px' }}>
-                          <Typography sx={{ fontSize: '12px', fontWeight: 500 }}>
-                            {po.supplier}
-                          </Typography>
-                        </TableCell>
-                        <TableCell sx={{ py: '8px' }}>
+          <Box sx={{ overflowX: 'auto' }}>
+            <TableContainer>
+              <Table size="small" sx={{
+                '& .MuiTableCell-root': {
+                  padding: { xs: '6px 8px', sm: '8px 10px', md: '8px 10px' },
+                }
+              }}>
+                <TableHead>
+                  <TableRow sx={{ backgroundColor: '#f8fafc' }}>
+                    <TableCell sx={{ fontSize: { xs: '10px', sm: '11px' }, fontWeight: 600, color: '#64748b', whiteSpace: 'nowrap', py: '10px' }}>PO Number</TableCell>
+                    <TableCell sx={{ fontSize: { xs: '10px', sm: '11px' }, fontWeight: 600, color: '#64748b', whiteSpace: 'nowrap', py: '10px' }}>Quot. Ref</TableCell>
+                    <TableCell sx={{ fontSize: { xs: '10px', sm: '11px' }, fontWeight: 600, color: '#64748b', whiteSpace: 'nowrap', py: '10px' }}>Supplier</TableCell>
+                    <TableCell sx={{ fontSize: { xs: '10px', sm: '11px' }, fontWeight: 600, color: '#64748b', whiteSpace: 'nowrap', py: '10px' }}>Location</TableCell>
+                    <TableCell sx={{ fontSize: { xs: '10px', sm: '11px' }, fontWeight: 600, color: '#64748b', whiteSpace: 'nowrap', py: '10px' }}>Lines</TableCell>
+                    <TableCell sx={{ fontSize: { xs: '10px', sm: '11px' }, fontWeight: 600, color: '#64748b', whiteSpace: 'nowrap', py: '10px' }}>Total</TableCell>
+                    <TableCell sx={{ fontSize: { xs: '10px', sm: '11px' }, fontWeight: 600, color: '#64748b', whiteSpace: 'nowrap', py: '10px' }}>Created By</TableCell>
+                    <TableCell sx={{ fontSize: { xs: '10px', sm: '11px' }, fontWeight: 600, color: '#64748b', whiteSpace: 'nowrap', py: '10px' }}>Date</TableCell>
+                    <TableCell sx={{ fontSize: { xs: '10px', sm: '11px' }, fontWeight: 600, color: '#64748b', whiteSpace: 'nowrap', py: '10px' }}>Delivery</TableCell>
+                    <TableCell sx={{ fontSize: { xs: '10px', sm: '11px' }, fontWeight: 600, color: '#64748b', whiteSpace: 'nowrap', py: '10px' }}>Priority</TableCell>
+                    <TableCell sx={{ fontSize: { xs: '10px', sm: '11px' }, fontWeight: 600, color: '#64748b', whiteSpace: 'nowrap', py: '10px' }}>Status</TableCell>
+                    <TableCell sx={{ fontSize: { xs: '10px', sm: '11px' }, fontWeight: 600, color: '#64748b', whiteSpace: 'nowrap', py: '10px' }}>Invoice</TableCell>
+                    <TableCell sx={{ fontSize: { xs: '10px', sm: '11px' }, fontWeight: 600, color: '#64748b', whiteSpace: 'nowrap', py: '10px' }}>Actions</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {purchaseOrders.map((po) => (
+                    <TableRow key={po.id} hover sx={{ '&:hover': { backgroundColor: '#fafbfc' } }}>
+                      <TableCell sx={{ py: '8px' }}>
+                        <Typography sx={{ color: '#14b8a6', fontWeight: 600, fontSize: '12px' }}>
+                          {po.id}
+                        </Typography>
+                      </TableCell>
+                      <TableCell sx={{ py: '8px' }}>
+                        <Typography sx={{ fontSize: '11.5px', fontWeight: 600, color: '#1e293b' }}>
+                          {po.quotRef}
+                        </Typography>
+                        <Typography sx={{ fontSize: '10px', color: '#64748b' }}>
+                          Quot. Ref
+                        </Typography>
+                      </TableCell>
+                      <TableCell sx={{ py: '8px' }}>
+                        <Typography sx={{ fontSize: '12px', fontWeight: 500 }}>
+                          {po.supplier}
+                        </Typography>
+                      </TableCell>
+                      <TableCell sx={{ py: '8px' }}>
+                        <Chip 
+                          label={po.location} 
+                          size="small" 
+                          sx={{ 
+                            backgroundColor: '#ede9fe', 
+                            color: '#8b5cf6', 
+                            fontSize: '10px', 
+                            fontWeight: 500,
+                            height: '22px'
+                          }} 
+                        />
+                      </TableCell>
+                      <TableCell sx={{ py: '8px' }}>
+                        <Typography sx={{ fontSize: '12px' }}>
+                          {po.lines}
+                        </Typography>
+                      </TableCell>
+                      <TableCell sx={{ py: '8px' }}>
+                        <Typography sx={{ fontWeight: 600, fontSize: '12px' }}>
+                          ${po.total.toLocaleString()}
+                        </Typography>
+                      </TableCell>
+                      <TableCell sx={{ py: '8px' }}>
+                        <Typography sx={{ fontSize: '12px' }}>
+                          {po.createdBy}
+                        </Typography>
+                      </TableCell>
+                      <TableCell sx={{ py: '8px' }}>
+                        <Typography sx={{ fontSize: '12px', whiteSpace: 'nowrap' }}>
+                          {po.date}
+                        </Typography>
+                      </TableCell>
+                      <TableCell sx={{ py: '8px' }}>
+                        <Typography sx={{ fontSize: '12px', whiteSpace: 'nowrap' }}>
+                          {po.delivery}
+                        </Typography>
+                      </TableCell>
+                      <TableCell sx={{ py: '8px' }}>
+                        <Chip 
+                          label={po.priority} 
+                          size="small" 
+                          sx={{ 
+                            backgroundColor: po.priority === 'Urgent' ? '#fef3c7' : '#eff6ff',
+                            color: getPriorityColor(po.priority),
+                            fontSize: '10px', 
+                            fontWeight: 500,
+                            height: '22px'
+                          }} 
+                        />
+                      </TableCell>
+                      <TableCell sx={{ py: '8px' }}>
+                        <Chip 
+                          label={po.status} 
+                          size="small" 
+                          sx={{ 
+                            backgroundColor: po.status === 'Approved' ? '#e0f2fe' : 
+                                          po.status === 'Pending' ? '#fef3c7' :
+                                          po.status === 'Received' ? '#dcfce7' : '#f3f4f6',
+                            color: getStatusColor(po.status),
+                            fontSize: '10px', 
+                            fontWeight: 500,
+                            height: '22px'
+                          }} 
+                        />
+                      </TableCell>
+                      <TableCell sx={{ py: '8px' }}>
+                        {po.invoice.status === 'none' ? (
                           <Chip 
-                            label={po.location} 
+                            label="No Invoice" 
                             size="small" 
                             sx={{ 
-                              backgroundColor: '#ede9fe', 
-                              color: '#8b5cf6', 
-                              fontSize: '10px', 
-                              fontWeight: 500,
+                              backgroundColor: '#f3f4f6', 
+                              color: '#64748b', 
+                              fontSize: '10px',
                               height: '22px'
                             }} 
                           />
-                        </TableCell>
-                        <TableCell sx={{ py: '8px' }}>
-                          <Typography sx={{ fontSize: '12px' }}>
-                            {po.lines}
-                          </Typography>
-                        </TableCell>
-                        <TableCell sx={{ py: '8px' }}>
-                          <Typography sx={{ fontWeight: 600, fontSize: '12px' }}>
-                            ${po.total.toLocaleString()}
-                          </Typography>
-                        </TableCell>
-                        <TableCell sx={{ py: '8px' }}>
-                          <Typography sx={{ fontSize: '12px' }}>
-                            {po.createdBy}
-                          </Typography>
-                        </TableCell>
-                        <TableCell sx={{ py: '8px' }}>
-                          <Typography sx={{ fontSize: '12px', whiteSpace: 'nowrap' }}>
-                            {po.date}
-                          </Typography>
-                        </TableCell>
-                        <TableCell sx={{ py: '8px' }}>
-                          <Typography sx={{ fontSize: '12px', whiteSpace: 'nowrap' }}>
-                            {po.delivery}
-                          </Typography>
-                        </TableCell>
-                        <TableCell sx={{ py: '8px' }}>
-                          <Chip 
-                            label={po.priority} 
-                            size="small" 
-                            sx={{ 
-                              backgroundColor: po.priority === 'Urgent' ? '#fef3c7' : '#eff6ff',
-                              color: getPriorityColor(po.priority),
-                              fontSize: '10px', 
-                              fontWeight: 500,
-                              height: '22px'
-                            }} 
-                          />
-                        </TableCell>
-                        <TableCell sx={{ py: '8px' }}>
-                          <Chip 
-                            label={po.status} 
-                            size="small" 
-                            sx={{ 
-                              backgroundColor: po.status === 'Approved' ? '#e0f2fe' : 
-                                            po.status === 'Pending' ? '#fef3c7' :
-                                            po.status === 'Received' ? '#dcfce7' : '#f3f4f6',
-                              color: getStatusColor(po.status),
-                              fontSize: '10px', 
-                              fontWeight: 500,
-                              height: '22px'
-                            }} 
-                          />
-                        </TableCell>
-                        <TableCell sx={{ py: '8px' }}>
-                          {po.invoice.status === 'none' ? (
+                        ) : (
+                          <Box>
                             <Chip 
-                              label="No Invoice" 
+                              label="✓ Verified" 
                               size="small" 
                               sx={{ 
-                                backgroundColor: '#f3f4f6', 
-                                color: '#64748b', 
+                                backgroundColor: '#dcfce7', 
+                                color: '#10b981', 
                                 fontSize: '10px',
                                 height: '22px'
                               }} 
                             />
-                          ) : (
-                            <Box>
-                              <Chip 
-                                label="✓ Verified" 
-                                size="small" 
-                                sx={{ 
-                                  backgroundColor: '#dcfce7', 
-                                  color: '#10b981', 
-                                  fontSize: '10px',
-                                  height: '22px'
-                                }} 
-                              />
-                              <Typography sx={{ fontSize: '10px', color: '#64748b', mt: 0.5 }}>
-                                {po.invoice.number}
-                              </Typography>
-                            </Box>
+                            <Typography sx={{ fontSize: '10px', color: '#64748b', mt: 0.5 }}>
+                              {po.invoice.number}
+                            </Typography>
+                          </Box>
+                        )}
+                      </TableCell>
+                      <TableCell sx={{ py: '8px' }}>
+                        <Box sx={{ display: 'flex', gap: 0.5, alignItems: 'center' }}>
+                          {po.status === 'Pending' && (
+                            <>
+                              <Tooltip title="Approve">
+                                <IconButton 
+                                  size="small" 
+                                  onClick={() => handleApprove(po.id)}
+                                  sx={{ color: '#10b981', padding: '2px' }}
+                                >
+                                  <CheckIcon sx={{ fontSize: '16px' }} />
+                                </IconButton>
+                              </Tooltip>
+                              <Tooltip title="Reject">
+                                <IconButton 
+                                  size="small" 
+                                  onClick={() => handleReject(po.id)}
+                                  sx={{ color: '#ef4444', padding: '2px' }}
+                                >
+                                  <CloseIcon sx={{ fontSize: '16px' }} />
+                                </IconButton>
+                              </Tooltip>
+                            </>
                           )}
-                        </TableCell>
-                        <TableCell sx={{ py: '8px' }}>
-                          <Box sx={{ display: 'flex', gap: 0.5, alignItems: 'center' }}>
-                            {po.status === 'Pending' && (
-                              <>
-                                <Tooltip title="Approve">
-                                  <IconButton 
-                                    size="small" 
-                                    onClick={() => handleApprove(po.id)}
-                                    sx={{ color: '#10b981', padding: '2px' }}
-                                  >
-                                    <CheckIcon sx={{ fontSize: '16px' }} />
-                                  </IconButton>
-                                </Tooltip>
-                                <Tooltip title="Reject">
-                                  <IconButton 
-                                    size="small" 
-                                    onClick={() => handleReject(po.id)}
-                                    sx={{ color: '#ef4444', padding: '2px' }}
-                                  >
-                                    <CloseIcon sx={{ fontSize: '16px' }} />
-                                  </IconButton>
-                                </Tooltip>
-                              </>
-                            )}
-                            {po.status === 'Approved' && (
-                              <Tooltip title="Create GRN">
-                                <IconButton 
-                                  size="small" 
-                                  onClick={() => handleCreateGRN(po.id)}
-                                  sx={{ color: '#14b8a6', padding: '2px' }}
-                                >
-                                  <InventoryIcon sx={{ fontSize: '16px' }} />
-                                </IconButton>
-                              </Tooltip>
-                            )}
-                            {po.invoice.status === 'none' ? (
-                              <Tooltip title="Upload Invoice">
-                                <IconButton 
-                                  size="small" 
-                                  onClick={() => handleUploadInvoice(po)}
-                                  sx={{ color: '#14b8a6', padding: '2px' }}
-                                >
-                                  <ReceiptIcon sx={{ fontSize: '16px' }} />
-                                </IconButton>
-                              </Tooltip>
-                            ) : (
-                              <Tooltip title="View Invoice">
-                                <IconButton 
-                                  size="small" 
-                                  onClick={() => handleViewInvoice(po)}
-                                  sx={{ color: '#14b8a6', padding: '2px' }}
-                                >
-                                  <ReceiptIcon sx={{ fontSize: '16px' }} />
-                                </IconButton>
-                              </Tooltip>
-                            )}
-                            <Tooltip title="View PO">
+                          {po.status === 'Approved' && (
+                            <Tooltip title="Create GRN">
                               <IconButton 
                                 size="small" 
-                                onClick={() => handleViewPO(po)}
-                                sx={{ color: '#64748b', padding: '2px' }}
+                                onClick={() => handleCreateGRN(po.id)}
+                                sx={{ color: '#14b8a6', padding: '2px' }}
                               >
-                                <VisibilityIcon sx={{ fontSize: '16px' }} />
+                                <InventoryIcon sx={{ fontSize: '16px' }} />
                               </IconButton>
                             </Tooltip>
-                          </Box>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </Box>
-          </CardContent>
-        </Card>
-      </Box>
+                          )}
+                          {po.invoice.status === 'none' ? (
+                            <Tooltip title="Upload Invoice">
+                              <IconButton 
+                                size="small" 
+                                onClick={() => handleUploadInvoice(po)}
+                                sx={{ color: '#14b8a6', padding: '2px' }}
+                              >
+                                <ReceiptIcon sx={{ fontSize: '16px' }} />
+                              </IconButton>
+                            </Tooltip>
+                          ) : (
+                            <Tooltip title="View Invoice">
+                              <IconButton 
+                                size="small" 
+                                onClick={() => handleViewInvoice(po)}
+                                sx={{ color: '#14b8a6', padding: '2px' }}
+                              >
+                                <ReceiptIcon sx={{ fontSize: '16px' }} />
+                              </IconButton>
+                            </Tooltip>
+                          )}
+                          <Tooltip title="View PO">
+                            <IconButton 
+                              size="small" 
+                              onClick={() => handleViewPO(po)}
+                              sx={{ color: '#64748b', padding: '2px' }}
+                            >
+                              <VisibilityIcon sx={{ fontSize: '16px' }} />
+                            </IconButton>
+                          </Tooltip>
+                        </Box>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Box>
+        </CardContent>
+      </Card>
 
       {/* New PO Modal */}
       <NewPO
@@ -1014,7 +960,7 @@ Total: $${po.total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFr
         po={selectedPO}
         invoice={selectedInvoice}
       />
-    </>
+    </Box>
   );
 };
 

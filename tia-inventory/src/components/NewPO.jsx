@@ -324,12 +324,30 @@ const NewPO = ({ open, onClose, onSave, onSaveAsDraft }) => {
         </IconButton>
       </DialogTitle>
       
-      <DialogContent dividers sx={{ 
-        p: { xs: 1.5, sm: 2 },
-        '& .MuiDialogContent-dividers': {
-          borderColor: '#e2e8f0',
-        }
-      }}>
+      <DialogContent 
+        dividers 
+        sx={{ 
+          p: { xs: 1.5, sm: 2 },
+          '& .MuiDialogContent-dividers': {
+            borderColor: '#e2e8f0',
+          },
+          // Scrollbar styling matching UserModal (Assign Hospitals/Locations)
+          '&::-webkit-scrollbar': {
+            width: '6px',
+          },
+          '&::-webkit-scrollbar-track': {
+            background: '#f1f5f9',
+            borderRadius: '3px',
+          },
+          '&::-webkit-scrollbar-thumb': {
+            background: '#cbd5e1',
+            borderRadius: '3px',
+            '&:hover': {
+              background: '#94a3b8',
+            },
+          },
+        }}
+      >
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           <Paper 
             elevation={0} 
