@@ -22,6 +22,8 @@ import Transfers from "./pages/Transfers";
 
 import GoodsReceipt from "./pages/GoodsReceipt/GoodsReceipt";
 
+import IndentProcurement from "./pages/IndentProcurement";
+import PurchaseOrders from "./pages/PurchaseOrders";
 
 // ── Theme: removes focus outlines globally ──
 const theme = createTheme({
@@ -54,6 +56,8 @@ const TitleUpdater = () => {
     const pathToTitle = {
       "/": "Login",
       "/admin/dashboard": "Admin Dashboard",
+      "/admin/indent-procurement": "Indent & Procurement",
+      "/admin/purchase-orders": "Purchase Orders",
     };
     document.title = pathToTitle[location.pathname] || "App";
   }, [location.pathname]);
@@ -110,38 +114,16 @@ function App() {
             }
           />
 
-         
-         <Route
-  path="/admin/inventory/add"
-  element={
-    <PrivateRoute>
-      <DashboardLayout>
-        <AddItem />
-      </DashboardLayout>
-    </PrivateRoute>
-  }
-/> 
-<Route
-  path="/admin/inventory/items"
-  element={
-    <PrivateRoute>
-      <DashboardLayout>
-        <InventoryItems />
-      </DashboardLayout>
-    </PrivateRoute>
-  }
-/>
-<Route
-  path="/admin/goods-receipt"
-  element={
-    <PrivateRoute>
-      <DashboardLayout>
-        <GoodsReceipt />
-      </DashboardLayout>
-    </PrivateRoute>
-  }
-/>
-
+          <Route 
+            path="/admin/goods-receipt"
+            element={
+              <PrivateRoute>
+                <DashboardLayout>
+                  <GoodsReceipt />
+                </DashboardLayout>
+              </PrivateRoute>
+            }
+          />
 
           <Route
             path="/admin/inventory/add"
@@ -153,6 +135,7 @@ function App() {
               </PrivateRoute>
             }
           />
+          
           <Route
             path="/admin/inventory/items"
             element={
@@ -174,6 +157,28 @@ function App() {
               </PrivateRoute>
             }
           />
+
+          <Route
+            path="/admin/inventory/indent"
+            element={
+              <PrivateRoute>
+                <DashboardLayout>
+                  <IndentProcurement />
+                </DashboardLayout>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/admin/purchase-orders"
+            element={
+              <PrivateRoute>
+                <DashboardLayout>
+                  <PurchaseOrders />
+                </DashboardLayout>
+              </PrivateRoute>
+            }
+          />
           
           <Route
             path="/admin/expiry-tracking"
@@ -187,17 +192,15 @@ function App() {
           />
 
           <Route 
-          path="/admin/transfers"
-          element={
-            <PrivateRoute>
-              <DashboardLayout>
-                <Transfers />
-              </DashboardLayout>
-            </PrivateRoute>
-          }
+            path="/admin/transfers"
+            element={
+              <PrivateRoute>
+                <DashboardLayout>
+                  <Transfers />
+                </DashboardLayout>
+              </PrivateRoute>
+            }
           />
-
-        
         </Routes>
       </Router>
     </ThemeProvider>

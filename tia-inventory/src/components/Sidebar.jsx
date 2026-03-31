@@ -1,5 +1,5 @@
-import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { Box, Typography, ButtonBase, Badge, Divider } from "@mui/material";
 
 import GridViewOutlinedIcon from "@mui/icons-material/GridViewOutlined";
@@ -20,30 +20,32 @@ import LocalShippingOutlinedIcon from "@mui/icons-material/LocalShippingOutlined
 import ArticleOutlinedIcon from "@mui/icons-material/ArticleOutlined";
 import KeyOutlinedIcon from "@mui/icons-material/KeyOutlined";
 import HistoryOutlinedIcon from "@mui/icons-material/HistoryOutlined";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 
 const navItems = [
-  { icon: <GridViewOutlinedIcon fontSize="small" />,      label: "Dashboard",         path: "/admin/dashboard",       badge: null },
-  { icon: <PeopleOutlinedIcon fontSize="small" />,        label: "Inventory Items",   path: "/admin/inventory/items", badge: null },
-    { icon: <PeopleOutlinedIcon fontSize="small" />,        label: "Indent/Procurement",   path: "/admin/inventory/indent", badge: null },
-  { icon: <EditNoteOutlinedIcon fontSize="small" />,      label: "Purchase Orders",   path: "/admin/purchase-orders", badge: null },
-  { icon: <InboxOutlinedIcon fontSize="small" />,         label: "Goods Receipt",path: "/admin/goods-receipt",   badge: null },
-  { icon: <OutputOutlinedIcon fontSize="small" />,        label: "Stock Issue",       path: "/admin/stock-issue",     badge: null }, // ✅ fixed icon
-  { icon: <CompareArrowsOutlinedIcon fontSize="small" />, label: "Transfers",         path: "/admin/transfers",       badge: null },
-  { icon: <AccessTimeOutlinedIcon fontSize="small" />,    label: "Expiry Tracking",   path: "/admin/expiry-tracking", badge: null },
-  { icon: <TrendingUpOutlinedIcon fontSize="small" />,    label: "Replacement",       path: "/admin/replacement",     badge: 1    },
-  { icon: <BarChartOutlinedIcon fontSize="small" />,      label: "Reports",           path: "/admin/reports",         badge: null },
+  { icon: <GridViewOutlinedIcon fontSize="small" />, label: "Dashboard", path: "/admin/dashboard", badge: null },
+  { icon: <PeopleOutlinedIcon fontSize="small" />, label: "Inventory Items", path: "/admin/inventory/items", badge: null },
+  { icon: <ShoppingCartIcon fontSize="small" />, label: "Indent/Procurement", path: "/admin/inventory/indent", badge: null },
+  { icon: <EditNoteOutlinedIcon fontSize="small" />, label: "Purchase Orders", path: "/admin/purchase-orders", badge: null },
+  { icon: <InboxOutlinedIcon fontSize="small" />, label: "Goods Receipt", path: "/admin/goods-receipt", badge: null },
+  { icon: <OutputOutlinedIcon fontSize="small" />, label: "Stock Issue", path: "/admin/stock-issue", badge: null },
+  { icon: <CompareArrowsOutlinedIcon fontSize="small" />, label: "Transfers", path: "/admin/transfers", badge: null },
+  { icon: <AccessTimeOutlinedIcon fontSize="small" />, label: "Expiry Tracking", path: "/admin/expiry-tracking", badge: null },
+  { icon: <FactoryOutlinedIcon fontSize="small" />, label: "Manufacturing", path: "/admin/manufacturing", badge: null },
+  { icon: <TrendingUpOutlinedIcon fontSize="small" />, label: "Replacement", path: "/admin/replacement", badge: 1 },
+  { icon: <BarChartOutlinedIcon fontSize="small" />, label: "Reports", path: "/admin/reports", badge: null },
 ];
 
 const adminItems = [
-  { icon: <EmailOutlinedIcon fontSize="small" />,         label: "Admin Overview",  path: "/admin/overview"       },
-  { icon: <GroupOutlinedIcon fontSize="small" />,         label: "Users & Roles",   path: "/admin/users"          },
-  { icon: <LocationOnOutlinedIcon fontSize="small" />,    label: "Locations",       path: "/admin/locations"      },
-  { icon: <ViewListOutlinedIcon fontSize="small" />,      label: "Categories",      path: "/admin/categories"     },
-  { icon: <ArticleOutlinedIcon fontSize="small" />,       label: "Documents",       path: "/admin/documents"      },
-  { icon: <LocalShippingOutlinedIcon fontSize="small" />, label: "Suppliers",       path: "/admin/suppliers"      },
-  { icon: <FactoryOutlinedIcon fontSize="small" />,       label: "Manufacturers",   path: "/admin/manufacturers"  }, // ✅ fixed icon
-  { icon: <HistoryOutlinedIcon fontSize="small" />,       label: "Audit Log",       path: "/admin/audit-log"      },
-  { icon: <KeyOutlinedIcon fontSize="small" />,           label: "Settings",        path: "/admin/settings"       },
+  { icon: <EmailOutlinedIcon fontSize="small" />, label: "Admin Overview", path: "/admin/overview" },
+  { icon: <GroupOutlinedIcon fontSize="small" />, label: "Users & Roles", path: "/admin/users" },
+  { icon: <LocationOnOutlinedIcon fontSize="small" />, label: "Locations", path: "/admin/locations" },
+  { icon: <ViewListOutlinedIcon fontSize="small" />, label: "Categories", path: "/admin/categories" },
+  { icon: <ArticleOutlinedIcon fontSize="small" />, label: "Documents", path: "/admin/documents" },
+  { icon: <LocalShippingOutlinedIcon fontSize="small" />, label: "Suppliers", path: "/admin/suppliers" },
+  { icon: <FactoryOutlinedIcon fontSize="small" />, label: "Manufacturers", path: "/admin/manufacturers" },
+  { icon: <HistoryOutlinedIcon fontSize="small" />, label: "Audit Log", path: "/admin/audit-log" },
+  { icon: <KeyOutlinedIcon fontSize="small" />, label: "Settings", path: "/admin/settings" },
 ];
 
 export default function Sidebar() {
@@ -51,18 +53,32 @@ export default function Sidebar() {
   const location = useLocation();
 
   const isActive = (path) => location.pathname === path;
+  const [activeNav, setActiveNav] = useState("Dashboard");
+
+  useEffect(() => {
+    // Set active based on current path
+    const currentItem = navItems.find(item => item.path === location.pathname);
+    if (currentItem) {
+      setActiveNav(currentItem.label);
+    }
+  }, [location.pathname]);
+
+  const handleNavigation = (label, path) => {
+    setActiveNav(label);
+    navigate(path);
+  };
 
   return (
     <Box
       sx={{
-        width: 200,
-        minWidth: 200,
+        width: 220,
+        minWidth: 220,
         height: "100vh",
         bgcolor: "#fff",
         borderRight: "1px solid #ececec",
         display: "flex",
         flexDirection: "column",
-        overflow: "hidden",          // outer container clips
+        overflow: "hidden",
         flexShrink: 0,
         py: 2.5,
       }}
@@ -97,7 +113,6 @@ export default function Sidebar() {
           flex: 1,
           overflowY: "auto",
           overflowX: "hidden",
-          // thin custom scrollbar
           "&::-webkit-scrollbar": { width: 4 },
           "&::-webkit-scrollbar-track": { background: "transparent" },
           "&::-webkit-scrollbar-thumb": {
@@ -107,13 +122,13 @@ export default function Sidebar() {
           "&::-webkit-scrollbar-thumb:hover": { background: "#a1a1aa" },
         }}
       >
-        {/* ── Main Nav ── */}
+        {/* Main Nav */}
         {navItems.map((item) => {
-          const active = isActive(item.path);
+          const active = activeNav === item.label;
           return (
             <ButtonBase
               key={item.label}
-              onClick={() => navigate(item.path)}
+              onClick={() => handleNavigation(item.label, item.path)}
               sx={{
                 display: "flex",
                 alignItems: "center",
@@ -127,10 +142,18 @@ export default function Sidebar() {
                 "&:focus": { outline: "none" },
                 "&:focus-visible": { outline: "none" },
                 transition: "background 0.15s",
-                "&:hover": { bgcolor: active ? "#ede9fe" : "#f5f5f5" },
+                "&:hover": {
+                  bgcolor: active ? "#ede9fe" : "#f5f5f5",
+                },
               }}
             >
-              <Box sx={{ display: "flex", color: active ? "#6366f1" : "#999", flexShrink: 0 }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  color: active ? "#6366f1" : "#999",
+                  flexShrink: 0,
+                }}
+              >
                 {item.badge ? (
                   <Badge
                     badgeContent={item.badge}
@@ -173,7 +196,7 @@ export default function Sidebar() {
           return (
             <ButtonBase
               key={item.label}
-              onClick={() => navigate(item.path)}
+              onClick={() => handleNavigation(item.label, item.path)}
               sx={{
                 display: "flex",
                 alignItems: "center",
