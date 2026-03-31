@@ -1,8 +1,5 @@
-import { useState } from "react";
 import {
   Box, Typography, Button, Chip, Stack, Paper,
-  Table, TableBody, TableCell, TableContainer,
-  TableHead, TableRow, Grid,
 } from "@mui/material";
 import {
   FileDownload, TrendingUp, TrendingDown,
@@ -51,15 +48,7 @@ const PO_STATUS = [
   { name:"Received", value:18, color:"#16A34A" },
 ];
 
-const TOP_ITEMS = [
-  { name:"Paracetamol 500mg", category:"Medicine",   issued:142, value:284.00,  turnover:"9.2x" },
-  { name:"Surgical Gloves L", category:"Consumable", issued:98,  value:196.00,  turnover:"7.8x" },
-  { name:"IV Cannula 20G",    category:"Consumable", issued:87,  value:348.00,  turnover:"6.5x" },
-  { name:"Amoxicillin 250mg", category:"Medicine",   issued:74,  value:222.00,  turnover:"8.1x" },
-  { name:"Surgical Mask",     category:"PPE",        issued:210, value:105.00,  turnover:"11.4x"},
-];
-
-// ── Stat Card (identical structure to StockIssue StatCard) ────────────────────
+// ── Section Card wrapper
 function StatCard({ label, value, sub, color, trend }) {
   return (
     <Box sx={{
@@ -87,22 +76,6 @@ function StatCard({ label, value, sub, color, trend }) {
         </Typography>
       )}
     </Box>
-  );
-}
-
-// ── Category Chip ─────────────────────────────────────────────────────────────
-function CatChip({ cat }) {
-  const map = {
-    Medicine:   { bg:"#EFF6FF", color:"#1D4ED8", border:"#BFDBFE" },
-    Consumable: { bg:"#F0FDF4", color:"#15803D", border:"#BBF7D0" },
-    PPE:        { bg:"#FFF7ED", color:"#C2410C", border:"#FED7AA" },
-  };
-  const c = map[cat] || { bg:"#F9FAFB", color:"#374151", border:"#E5E7EB" };
-  return (
-    <Chip label={cat} size="small" sx={{
-      bgcolor:c.bg, color:c.color, border:`1px solid ${c.border}`,
-      fontWeight:600, fontSize:11, height:22,
-    }} />
   );
 }
 
@@ -146,11 +119,57 @@ function CustomTooltip({ active, payload, label, prefix="$", suffix="" }) {
   );
 }
 
+// ── CSV helpers ───────────────────────────────────────────────────────────────
+function downloadCSV(filename, headers, rows) {
+  const content = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([content], { type:"text/csv" }));
+  a.download = filename;
+  a.click();
+}
+
+function exportInventoryCSV() {
+  downloadCSV(
+    "inventory-report.csv",
+    ["Location","Stock Value ($)"],
+    STOCK_BY_LOCATION.map(r => [r.loc, r.value])
+  );
+}
+
+function exportPOCSV() {
+  downloadCSV(
+    "po-status-report.csv",
+    ["Status","Count"],
+    PO_STATUS.map(r => [r.name, r.value])
+  );
+}
+
+function exportFullReport() {
+  const sections = [
+    "=== MONTHLY SPEND TREND ===",
+    ["Month","Spend ($)"].join(","),
+    ...MONTHLY_SPEND.map(r => [r.month, r.value].join(",")),
+    "",
+    "=== STOCK VALUE BY LOCATION ===",
+    ["Location","Value ($)"].join(","),
+    ...STOCK_BY_LOCATION.map(r => [r.loc, r.value].join(",")),
+    "",
+    "=== ISSUE VOLUME BY DEPARTMENT ===",
+    ["Department","Issues"].join(","),
+    ...ISSUE_BY_DEPT.map(r => [r.dept, r.value].join(",")),
+    "",
+    "=== PO STATUS BREAKDOWN ===",
+    ["Status","Count"].join(","),
+    ...PO_STATUS.map(r => [r.name, r.value].join(",")),
+  ].join("\n");
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([sections], { type:"text/csv" }));
+  a.download = "full-report-fy2026.csv";
+  a.click();
+}
+
 // ── Main ──────────────────────────────────────────────────────────────────────
 export default function Reports() {
-  const [activeTab, setActiveTab] = useState("Overview");
-  const tabs = ["Overview", "Inventory", "Procurement", "Issues"];
-
   return (
     <Box sx={{ bgcolor:C.bg, minHeight:"100vh" }}>
       <Box sx={{ p:"24px 28px" }}>
@@ -166,42 +185,30 @@ export default function Reports() {
             </Typography>
           </Box>
           <Stack direction="row" spacing={1.5}>
-            {["Inventory CSV","PO CSV","Full Report"].map((label, i) => (
-              <Button key={label}
-                startIcon={<FileDownload sx={{ fontSize:15 }} />}
-                variant={i === 2 ? "contained" : "outlined"}
-                sx={i === 2 ? {
-                  bgcolor:C.primary, textTransform:"none", fontWeight:700, fontSize:13,
-                  borderRadius:"8px", height:36, px:2.5,
-                  boxShadow:"0 1px 4px rgba(25,118,210,0.35)",
-                  "&:hover":{ bgcolor:C.primaryDark },
-                } : {
-                  border:`1px solid ${C.border}`, color:C.textSecondary, textTransform:"none",
-                  fontWeight:600, fontSize:13, borderRadius:"8px", height:36, px:2, bgcolor:"#fff",
-                  "&:hover":{ borderColor:"#9CA3AF", bgcolor:"#F9FAFB" },
-                }}>
-                {label}
-              </Button>
-            ))}
+            <Button startIcon={<FileDownload sx={{ fontSize:15 }} />} variant="outlined"
+              onClick={exportInventoryCSV}
+              sx={{ border:`1px solid ${C.border}`, color:C.textSecondary, textTransform:"none",
+                fontWeight:600, fontSize:13, borderRadius:"8px", height:36, px:2, bgcolor:"#fff",
+                "&:hover":{ borderColor:"#9CA3AF", bgcolor:"#F9FAFB" } }}>
+              Inventory CSV
+            </Button>
+            <Button startIcon={<FileDownload sx={{ fontSize:15 }} />} variant="outlined"
+              onClick={exportPOCSV}
+              sx={{ border:`1px solid ${C.border}`, color:C.textSecondary, textTransform:"none",
+                fontWeight:600, fontSize:13, borderRadius:"8px", height:36, px:2, bgcolor:"#fff",
+                "&:hover":{ borderColor:"#9CA3AF", bgcolor:"#F9FAFB" } }}>
+              PO CSV
+            </Button>
+            <Button startIcon={<FileDownload sx={{ fontSize:15 }} />} variant="contained"
+              onClick={exportFullReport}
+              sx={{ bgcolor:C.primary, textTransform:"none", fontWeight:700, fontSize:13,
+                borderRadius:"8px", height:36, px:2.5,
+                boxShadow:"0 1px 4px rgba(25,118,210,0.35)",
+                "&:hover":{ bgcolor:C.primaryDark } }}>
+              Full Report
+            </Button>
           </Stack>
         </Box>
-
-        {/* ── Tabs ── */}
-        <Stack direction="row" spacing={0.5} sx={{ mb:2.5 }}>
-          {tabs.map(t => (
-            <Button key={t} onClick={() => setActiveTab(t)}
-              sx={{
-                textTransform:"none", fontWeight:600, fontSize:13,
-                borderRadius:"8px", height:34, px:2,
-                bgcolor: activeTab===t ? "#EFF6FF" : "transparent",
-                color:   activeTab===t ? C.primary  : C.textSecondary,
-                border:  activeTab===t ? `1px solid #BFDBFE` : "1px solid transparent",
-                "&:hover":{ bgcolor:"#F3F4F6" },
-              }}>
-              {t}
-            </Button>
-          ))}
-        </Stack>
 
         {/* ── KPI Stat Cards ── */}
         <Stack direction="row" spacing={1.5} sx={{ mb:2.5 }}>
@@ -212,147 +219,98 @@ export default function Reports() {
         </Stack>
 
         {/* ── Charts Row 1 ── */}
-        <Grid container spacing={2} sx={{ mb:2 }}>
-          {/* Monthly Spend Trend */}
-          <Grid item xs={12} md={7}>
+        <Box sx={{ display:"flex", gap:2, mb:2, minWidth:0 }}>
+          {/* Monthly Spend Trend — 58% */}
+          <Box sx={{ flex:"0 0 58%", minWidth:0 }}>
             <SectionCard title="Monthly Spend Trend ($K)" subtitle="Sep 2025 – Mar 2026">
-              <ResponsiveContainer width="100%" height={200}>
-                <AreaChart data={MONTHLY_SPEND} margin={{ top:4, right:4, left:-10, bottom:0 }}>
-                  <defs>
-                    <linearGradient id="spendGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%"  stopColor="#0EA5E9" stopOpacity={0.18} />
-                      <stop offset="95%" stopColor="#0EA5E9" stopOpacity={0.01} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke={C.border} />
-                  <XAxis dataKey="month" tick={{ fontSize:11, fill:C.textSecondary }} axisLine={false} tickLine={false} />
-                  <YAxis tickFormatter={v=>`$${(v/1000).toFixed(0)}K`} tick={{ fontSize:10, fill:C.textSecondary }} axisLine={false} tickLine={false} />
-                  <RTooltip content={<CustomTooltip prefix="$" />} />
-                  <Area type="monotone" dataKey="value" stroke="#0EA5E9" strokeWidth={2.5} fill="url(#spendGrad)" dot={{ r:4, fill:"#0EA5E9", strokeWidth:0 }} activeDot={{ r:5 }} />
-                </AreaChart>
-              </ResponsiveContainer>
+              <Box sx={{ width:"100%", height:200 }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={MONTHLY_SPEND} margin={{ top:4, right:4, left:-10, bottom:0 }}>
+                    <defs>
+                      <linearGradient id="spendGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%"  stopColor="#0EA5E9" stopOpacity={0.18} />
+                        <stop offset="95%" stopColor="#0EA5E9" stopOpacity={0.01} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke={C.border} />
+                    <XAxis dataKey="month" tick={{ fontSize:11, fill:C.textSecondary }} axisLine={false} tickLine={false} />
+                    <YAxis tickFormatter={v=>`$${(v/1000).toFixed(0)}K`} tick={{ fontSize:10, fill:C.textSecondary }} axisLine={false} tickLine={false} />
+                    <RTooltip content={<CustomTooltip prefix="$" />} />
+                    <Area type="monotone" dataKey="value" stroke="#0EA5E9" strokeWidth={2.5} fill="url(#spendGrad)" dot={{ r:4, fill:"#0EA5E9", strokeWidth:0 }} activeDot={{ r:5 }} />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </Box>
             </SectionCard>
-          </Grid>
+          </Box>
 
-          {/* Stock Value by Location */}
-          <Grid item xs={12} md={5}>
+          {/* Stock Value by Location — 42% */}
+          <Box sx={{ flex:"1 1 0", minWidth:0 }}>
             <SectionCard title="Stock Value by Location" subtitle="Current on-hand value ($)">
-              <ResponsiveContainer width="100%" height={200}>
-                <BarChart data={STOCK_BY_LOCATION} margin={{ top:4, right:4, left:-10, bottom:0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke={C.border} />
-                  <XAxis dataKey="loc" tick={{ fontSize:11, fill:C.textSecondary }} axisLine={false} tickLine={false} />
-                  <YAxis tickFormatter={v=>`$${(v/1000).toFixed(1)}K`} tick={{ fontSize:10, fill:C.textSecondary }} axisLine={false} tickLine={false} />
-                  <RTooltip content={<CustomTooltip prefix="$" />} />
-                  <Bar dataKey="value" radius={[4,4,0,0]}>
-                    {STOCK_BY_LOCATION.map((_, i) => (
-                      <Cell key={i} fill={["#7C3AED","#0EA5E9","#6B7280","#16A34A","#F87171","#F59E0B"][i]} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
+              <Box sx={{ width:"100%", height:200 }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={STOCK_BY_LOCATION} margin={{ top:4, right:4, left:-10, bottom:0 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke={C.border} />
+                    <XAxis dataKey="loc" tick={{ fontSize:11, fill:C.textSecondary }} axisLine={false} tickLine={false} />
+                    <YAxis tickFormatter={v=>`$${(v/1000).toFixed(1)}K`} tick={{ fontSize:10, fill:C.textSecondary }} axisLine={false} tickLine={false} />
+                    <RTooltip content={<CustomTooltip prefix="$" />} />
+                    <Bar dataKey="value" radius={[4,4,0,0]}>
+                      {STOCK_BY_LOCATION.map((_, i) => (
+                        <Cell key={i} fill={["#7C3AED","#0EA5E9","#6B7280","#16A34A","#F87171","#F59E0B"][i]} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </Box>
             </SectionCard>
-          </Grid>
-        </Grid>
+          </Box>
+        </Box>
 
         {/* ── Charts Row 2 ── */}
-        <Grid container spacing={2} sx={{ mb:2 }}>
-          {/* Issue Volume by Dept */}
-          <Grid item xs={12} md={7}>
+        <Box sx={{ display:"flex", gap:2, mb:2, minWidth:0 }}>
+          {/* Issue Volume by Dept — 58% */}
+          <Box sx={{ flex:"0 0 58%", minWidth:0 }}>
             <SectionCard title="Issue Volume by Department" subtitle="Total stock issues per department">
-              <ResponsiveContainer width="100%" height={200}>
-                <BarChart data={ISSUE_BY_DEPT} margin={{ top:4, right:4, left:-10, bottom:0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke={C.border} />
-                  <XAxis dataKey="dept" tick={{ fontSize:11, fill:C.textSecondary }} axisLine={false} tickLine={false} />
-                  <YAxis allowDecimals={false} tick={{ fontSize:10, fill:C.textSecondary }} axisLine={false} tickLine={false} />
-                  <RTooltip content={<CustomTooltip prefix="" suffix=" issues" />} />
-                  <Bar dataKey="value" fill="#F59E0B" radius={[4,4,0,0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </SectionCard>
-          </Grid>
-
-          {/* PO Status Breakdown */}
-          <Grid item xs={12} md={5}>
-            <SectionCard title="PO Status Breakdown" subtitle="Purchase order distribution">
-              <Box sx={{ display:"flex", alignItems:"center", gap:2 }}>
-                <ResponsiveContainer width={160} height={160}>
-                  <PieChart>
-                    <Pie data={PO_STATUS} cx="50%" cy="50%" innerRadius={44} outerRadius={68}
-                      dataKey="value" paddingAngle={3}>
-                      {PO_STATUS.map((e, i) => <Cell key={i} fill={e.color} />)}
-                    </Pie>
-                  </PieChart>
+              <Box sx={{ width:"100%", height:200 }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={ISSUE_BY_DEPT} margin={{ top:4, right:4, left:-10, bottom:0 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke={C.border} />
+                    <XAxis dataKey="dept" tick={{ fontSize:11, fill:C.textSecondary }} axisLine={false} tickLine={false} />
+                    <YAxis allowDecimals={false} tick={{ fontSize:10, fill:C.textSecondary }} axisLine={false} tickLine={false} />
+                    <RTooltip content={<CustomTooltip prefix="" suffix=" issues" />} />
+                    <Bar dataKey="value" fill="#F59E0B" radius={[4,4,0,0]} />
+                  </BarChart>
                 </ResponsiveContainer>
-                <Stack spacing={1}>
+              </Box>
+            </SectionCard>
+          </Box>
+
+          {/* PO Status Breakdown — 42% */}
+          <Box sx={{ flex:"1 1 0", minWidth:0 }}>
+            <SectionCard title="PO Status Breakdown" subtitle="Purchase order distribution">
+              <Box sx={{ display:"flex", alignItems:"center", justifyContent:"center", gap:3, height:200 }}>
+                <Box sx={{ width:160, height:160, flexShrink:0 }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie data={PO_STATUS} cx="50%" cy="50%" innerRadius={44} outerRadius={68}
+                        dataKey="value" paddingAngle={3}>
+                        {PO_STATUS.map((e, i) => <Cell key={i} fill={e.color} />)}
+                      </Pie>
+                    </PieChart>
+                  </ResponsiveContainer>
+                </Box>
+                <Stack spacing={1.2}>
                   {PO_STATUS.map(s => (
-                    <Box key={s.name} sx={{ display:"flex", alignItems:"center", gap:1 }}>
+                    <Box key={s.name} sx={{ display:"flex", alignItems:"center", gap:1, minWidth:110 }}>
                       <Box sx={{ width:10, height:10, borderRadius:"2px", bgcolor:s.color, flexShrink:0 }} />
                       <Typography sx={{ fontSize:12, color:C.textSecondary, fontWeight:500 }}>{s.name}</Typography>
-                      <Typography sx={{ fontSize:12, fontWeight:700, color:C.textPrimary, ml:"auto", pl:2 }}>{s.value}</Typography>
+                      <Typography sx={{ fontSize:12, fontWeight:700, color:C.textPrimary, ml:"auto", pl:1 }}>{s.value}</Typography>
                     </Box>
                   ))}
                 </Stack>
               </Box>
             </SectionCard>
-          </Grid>
-        </Grid>
-
-        {/* ── Top Moving Items Table ── */}
-        <SectionCard
-          title="Top Moving Items"
-          subtitle="Highest issue volume this period"
-          action={
-            <Chip label="FY 2026" size="small" sx={{
-              bgcolor:"#EFF6FF", color:"#1D4ED8", border:"1px solid #BFDBFE",
-              fontWeight:700, fontSize:11, height:22,
-            }} />
-          }
-        >
-          <TableContainer sx={{ mx:-1 }}>
-            <Table size="small" sx={{ tableLayout:"fixed", minWidth:600 }}>
-              <TableHead>
-                <TableRow sx={{ bgcolor:"#F9FAFB" }}>
-                  {["ITEM NAME","CATEGORY","ISSUES QTY","TOTAL VALUE","TURNOVER RATE"].map(h => (
-                    <TableCell key={h} sx={{
-                      fontWeight:700, fontSize:11, color:C.textSecondary,
-                      letterSpacing:0.5, py:1.2, px:1.5,
-                      borderBottom:`1px solid ${C.border}`,
-                      textTransform:"uppercase",
-                    }}>{h}</TableCell>
-                  ))}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {TOP_ITEMS.map((row, idx) => (
-                  <TableRow key={row.name} sx={{
-                    bgcolor: idx%2===0 ? "#fff" : "#FAFAFA",
-                    "&:hover":{ bgcolor:"#EFF6FF" },
-                    transition:"background 0.15s",
-                  }}>
-                    <TableCell sx={{ px:1.5, py:1.1 }}>
-                      <Typography sx={{ fontWeight:700, color:"#1D4ED8", fontSize:12 }}>{row.name}</Typography>
-                    </TableCell>
-                    <TableCell sx={{ px:1.5, py:1.1 }}><CatChip cat={row.category} /></TableCell>
-                    <TableCell sx={{ px:1.5, py:1.1 }}>
-                      <Typography sx={{ fontSize:12, color:C.textSecondary }}>{row.issued}</Typography>
-                    </TableCell>
-                    <TableCell sx={{ px:1.5, py:1.1 }}>
-                      <Typography sx={{ fontWeight:700, color:C.textPrimary, fontSize:12 }}>
-                        ${row.value.toFixed(2)}
-                      </Typography>
-                    </TableCell>
-                    <TableCell sx={{ px:1.5, py:1.1 }}>
-                      <Chip label={row.turnover} size="small" sx={{
-                        bgcolor:"#F0FDF4", color:"#16A34A", border:"1px solid #BBF7D0",
-                        fontWeight:700, fontSize:11, height:22,
-                      }} />
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </SectionCard>
+          </Box>
+        </Box>
 
       </Box>
     </Box>
