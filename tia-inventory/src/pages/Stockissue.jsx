@@ -1,21 +1,17 @@
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import {
   Box, Typography, Button, Chip, IconButton, MenuItem, Select,
   FormControl, Table, TableBody, TableCell, TableContainer,
   TableHead, TableRow, Paper, Dialog, DialogTitle, DialogContent,
-  DialogActions, TextField, Snackbar, Alert, Tooltip,
-  Grid, InputLabel, Stack,
+  DialogActions, Snackbar, Alert, Tooltip, Stack,
 } from "@mui/material";
-import {
-  Add, FileDownload, Check, Close, Info, Visibility,
-} from "@mui/icons-material";
+import { Add, FileDownload, Check, Close, Visibility } from "@mui/icons-material";
 import IssueStockModal from "./InventoryItems/Issuestockmodal";
 
 const C = {
   bg:            "#F5F6FA",
   surface:       "#FFFFFF",
   primary:       "#1976D2",
-  primaryDark:   "#1256A0",
   border:        "#E5E7EB",
   textPrimary:   "#111827",
   textSecondary: "#6B7280",
@@ -32,15 +28,15 @@ const INITIAL_ISSUES = [
 ];
 
 const ISSUE_TYPES = ["Ward Requisition","Emergency Issue","OT Request","Patient Dispensing"];
-const DEPARTMENTS = ["ICU","Emergency Dept","OR / Surgery","General Ward","Pharmacy"];
-const STORES      = ["CS-01","CS-02","PH-01","PH-02"];
 
-const nextId = (list) => {
+// ── Use a ref-based counter so nextId never reads stale closure state ────────
+const getNextId = (list) => {
   const nums = list.map(r => parseInt(r.id.split("-")[2]));
-  return `ISS-2026-${String(Math.max(...nums)+1).padStart(4,"0")}`;
+  return `ISS-2026-${String(Math.max(...nums) + 1).padStart(4, "0")}`;
 };
+
 const nowStr = () =>
-  new Date().toLocaleString("en-US",{month:"short",day:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit",hour12:false});
+  new Date().toLocaleString("en-US", { month:"short", day:"2-digit", year:"numeric", hour:"2-digit", minute:"2-digit", hour12:false });
 
 // ── Stat Card ─────────────────────────────────────────────────────────────────
 function StatCard({ label, value, sub, color }) {
@@ -117,7 +113,7 @@ function DeptChip({ dept }) {
   );
 }
 
-// ── View Detail Dialog (eye icon) ─────────────────────────────────────────────
+// ── View Detail Dialog ────────────────────────────────────────────────────────
 function ViewDialog({ open, onClose, row }) {
   if (!row) return null;
   const fields = [
@@ -148,9 +144,7 @@ function ViewDialog({ open, onClose, row }) {
         </Stack>
       </DialogContent>
       <DialogActions sx={{ px:3, py:2, borderTop:`1px solid ${C.border}` }}>
-        <Button onClick={onClose} sx={{ color:C.textSecondary, textTransform:"none", fontWeight:600 }}>
-          Close
-        </Button>
+        <Button onClick={onClose} sx={{ color:C.textSecondary, textTransform:"none", fontWeight:600 }}>Close</Button>
       </DialogActions>
     </Dialog>
   );
@@ -158,55 +152,111 @@ function ViewDialog({ open, onClose, row }) {
 
 // ── Main ──────────────────────────────────────────────────────────────────────
 export default function StockIssue() {
-  const [issues, setIssues]             = useState(INITIAL_ISSUES);
-  const [typeFilter, setTypeFilter]     = useState("All Types");
+  const [issues,       setIssues]       = useState(INITIAL_ISSUES);
+  const [typeFilter,   setTypeFilter]   = useState("All Types");
   const [statusFilter, setStatusFilter] = useState("All Statuses");
-
-  // "Issue Stock" button → opens Issuestockmodal
   const [issueModalOpen, setIssueModalOpen] = useState(false);
-
-  // Eye icon → opens view dialog
-  const [viewRow, setViewRow]   = useState(null);
+  const [viewRow,  setViewRow]  = useState(null);
   const [viewOpen, setViewOpen] = useState(false);
+  const [toast,    setToast]    = useState({ open:false, msg:"", severity:"success" });
 
-  const [toast, setToast] = useState({ open:false, msg:"", severity:"success" });
-  const showToast = (msg, severity="success") => setToast({ open:true, msg, severity });
+  // ── Highlight state ──────────────────────────────────────────────────────
+  const [highlightId, setHighlightId] = useState(null);
+  const highlightTimer = useRef(null);
+  const rowRefs = useRef({});
 
-  const issued     = issues.filter(i => i.status==="Issued");
-  const pending    = issues.filter(i => i.status==="Pending");
-  const issuedVal  = issued.reduce((s,i)=>s+i.value,0);
-  const deptCount  = issued.reduce((acc,i)=>{ acc[i.dept]=(acc[i.dept]||0)+1; return acc; },{});
-  const mostActive = Object.entries(deptCount).sort((a,b)=>b[1]-a[1])[0]?.[0]||"—";
+  // ── Keep a ref to latest issues so callbacks never read stale state ──────
+  const issuesRef = useRef(issues);
+  issuesRef.current = issues;
+
+  const showToast = (msg, severity = "success") => setToast({ open:true, msg, severity });
+
+  const issued     = issues.filter(i => i.status === "Issued");
+  const pending    = issues.filter(i => i.status === "Pending");
+  const issuedVal  = issued.reduce((s, i) => s + i.value, 0);
+  const deptCount  = issued.reduce((acc, i) => { acc[i.dept] = (acc[i.dept]||0)+1; return acc; }, {});
+  const mostActive = Object.entries(deptCount).sort((a,b) => b[1]-a[1])[0]?.[0] || "—";
 
   const filtered = issues.filter(i =>
-    (typeFilter==="All Types"      || i.type===typeFilter) &&
-    (statusFilter==="All Statuses" || i.status===statusFilter)
+    (typeFilter   === "All Types"    || i.type   === typeFilter) &&
+    (statusFilter === "All Statuses" || i.status === statusFilter)
   );
 
-  const approve = (id) => { setIssues(p=>p.map(i=>i.id===id?{...i,status:"Issued"}:i));   showToast(`${id} approved & issued.`); };
-  const reject  = (id) => { setIssues(p=>p.map(i=>i.id===id?{...i,status:"Rejected"}:i)); showToast(`${id} rejected.`,"warning"); };
+  const approve = (id) => { setIssues(p => p.map(i => i.id===id ? {...i, status:"Issued"}   : i)); showToast(`${id} approved & issued.`); };
+  const reject  = (id) => { setIssues(p => p.map(i => i.id===id ? {...i, status:"Rejected"} : i)); showToast(`${id} rejected.`, "warning"); };
 
-  // Called when Issuestockmodal saves a new issue
-  const handleModalSave = (form) => {
-    const n = {
-      id: nextId(issues),
-      type: form.type || "Ward Requisition",
-      from: form.from || form.store || "CS-01",
-      dept: form.dept || form.department || "—",
-      items: parseInt(form.items) || 1,
-      value: parseFloat(form.value) || 0,
-      requestedBy: form.requestedBy || form.requested_by || "—",
-      date: nowStr(),
-      status: "Pending",
-    };
-    setIssues(p=>[n,...p]);
-    setIssueModalOpen(false);
-    showToast(`${n.id} created successfully.`);
+  // ── Shared helper: add row + trigger highlight + scroll ──────────────────
+  const addAndHighlight = (newRow) => {
+    setIssues(p => [newRow, ...p]);
+    setTypeFilter("All Types");
+    setStatusFilter("All Statuses");
+
+    clearTimeout(highlightTimer.current);
+    setHighlightId(newRow.id);
+    setTimeout(() => {
+      rowRefs.current[newRow.id]?.scrollIntoView({ behavior:"smooth", block:"center" });
+    }, 80);
+    highlightTimer.current = setTimeout(() => setHighlightId(null), 3000);
   };
+
+  // ── FIX: wrap handlers in useCallback so identity is stable across renders.
+  //    Read issuesRef.current (not the closed-over `issues`) to always get the
+  //    latest list when computing the next ID.
+  //    Most importantly: close the modal FIRST, THEN update state — this
+  //    prevents the modal from seeing a mid-flight state change that could
+  //    re-trigger an open cycle. ────────────────────────────────────────────
+  const handleIssued = useCallback((payload) => {
+    // 1. Close modal immediately
+    setIssueModalOpen(false);
+
+    // 2. Build and add the new row after modal is closed
+    setTimeout(() => {
+      const n = {
+        id:          getNextId(issuesRef.current),
+        type:        payload.issueType   || "Ward Requisition",
+        from:        payload.issueFrom   || "CS-01",
+        dept:        payload.issueTo     || "—",
+        items:       payload.items?.length || 1,
+        value:       payload.totalValue  || 0,
+        requestedBy: payload.requestedBy || "—",
+        date:        nowStr(),
+        status:      "Issued",
+      };
+      addAndHighlight(n);
+      showToast(`${n.id} issued successfully.`);
+    }, 0);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handlePending = useCallback((payload) => {
+    // 1. Close modal immediately
+    setIssueModalOpen(false);
+
+    // 2. Build and add the new row after modal is closed
+    setTimeout(() => {
+      const n = {
+        id:          getNextId(issuesRef.current),
+        type:        payload.issueType   || "Ward Requisition",
+        from:        payload.issueFrom   || "CS-01",
+        dept:        payload.issueTo     || "—",
+        items:       payload.items?.length || 1,
+        value:       payload.totalValue  || 0,
+        requestedBy: payload.requestedBy || "—",
+        date:        nowStr(),
+        status:      "Pending",
+      };
+      addAndHighlight(n);
+      showToast(`${n.id} submitted for approval.`, "warning");
+    }, 0);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ── handleClose only closes — no state mutation that could re-trigger open
+  const handleModalClose = useCallback(() => {
+    setIssueModalOpen(false);
+  }, []);
 
   const exportCSV = () => {
     const header = "Issue #,Type,From,To (Dept),Items,Total Value,Requested By,Date & Time,Status";
-    const rows   = issues.map(i=>`${i.id},${i.type},${i.from},${i.dept},${i.items},$${i.value.toFixed(2)},${i.requestedBy},${i.date},${i.status}`);
+    const rows   = issues.map(i => `${i.id},${i.type},${i.from},${i.dept},${i.items},$${i.value.toFixed(2)},${i.requestedBy},${i.date},${i.status}`);
     const a = document.createElement("a");
     a.href = URL.createObjectURL(new Blob([[header,...rows].join("\n")],{type:"text/csv"}));
     a.download = "stock-issues.csv"; a.click();
@@ -227,223 +277,222 @@ export default function StockIssue() {
   ];
 
   return (
-    <Box sx={{ bgcolor:C.bg, minHeight:"100vh" }}>
-      <Box sx={{ p:"24px 28px" }}>
+    <>
+      {/* ── Highlight keyframe injected once ── */}
+      <style>{`
+        @keyframes rowFlash {
+          0%   { background-color: #dbeafe; }
+          40%  { background-color: #bfdbfe; }
+          100% { background-color: transparent; }
+        }
+        .row-highlight {
+          animation: rowFlash 3s ease-out forwards;
+        }
+      `}</style>
 
-        {/* ── Title row ── */}
-        <Box sx={{ display:"flex", alignItems:"center", justifyContent:"space-between", mb:2.5 }}>
-          <Box>
-            <Typography sx={{ fontWeight:800, fontSize:22, color:C.textPrimary, letterSpacing:-0.3 }}>
-              Stock Issue
-            </Typography>
-            <Typography sx={{ fontSize:13, color:C.textSecondary, mt:0.3 }}>
-              Outward movements — ward requisitions, OT requests, dispensing
+      <Box sx={{ bgcolor:C.bg, minHeight:"100vh" }}>
+        <Box sx={{ p:"24px 28px" }}>
+
+          {/* ── Title row ── */}
+          <Box sx={{ display:"flex", alignItems:"center", justifyContent:"space-between", mb:2.5 }}>
+            <Box>
+              <Typography sx={{ fontWeight:800, fontSize:22, color:C.textPrimary, letterSpacing:-0.3 }}>
+                Stock Issue
+              </Typography>
+              <Typography sx={{ fontSize:13, color:C.textSecondary, mt:0.3 }}>
+                Outward movements — ward requisitions, OT requests, dispensing
+              </Typography>
+            </Box>
+            <Stack direction="row" spacing={1.5}>
+              <Button startIcon={<FileDownload sx={{ fontSize:16 }} />} variant="outlined" onClick={exportCSV}
+                sx={{ border:`1px solid ${C.border}`, color:C.textSecondary, textTransform:"none",
+                  fontWeight:600, fontSize:13, borderRadius:"8px", height:36, px:2, bgcolor:"#fff",
+                  "&:hover":{ borderColor:"#9CA3AF", bgcolor:"#F9FAFB" } }}>
+                Export
+              </Button>
+              <Button startIcon={<Add sx={{ fontSize:16 }} />} variant="contained"
+                onClick={() => setIssueModalOpen(true)}
+                sx={{ bgcolor:"#2563eb", textTransform:"none", fontWeight:700, fontSize:13, borderRadius:"8px", height:36, px:2.5 }}>
+                Issue Stock
+              </Button>
+            </Stack>
+          </Box>
+
+          {/* ── Stat Cards ── */}
+          <Stack direction="row" spacing={1.5} sx={{ mb:2.5 }}>
+            <StatCard label="Total Issues"     value={issues.length}  sub="+12 this month"                         color="#7C3AED" />
+            <StatCard label="Issued"           value={issued.length}  sub={`$${issuedVal.toFixed(0)} total value`} color="#2563EB" />
+            <StatCard label="Pending Approval" value={pending.length} sub="+3 this month"                          color="#16A34A" />
+            <StatCard label="Most Active Dept" value={mostActive}     sub="Highest issue volume"                   color="#D97706" />
+          </Stack>
+
+          {/* ── Filters ── */}
+          <Box sx={{ display:"flex", alignItems:"center", gap:1.5, mb:2 }}>
+            <FormControl size="small" sx={{ minWidth:148 }}>
+              <Select value={typeFilter} onChange={e => setTypeFilter(e.target.value)}
+                sx={{ fontSize:13, borderRadius:"8px", bgcolor:"#F9FAFB", "& .MuiOutlinedInput-notchedOutline":{ borderColor:C.border } }}>
+                <MenuItem value="All Types">All Types</MenuItem>
+                {ISSUE_TYPES.map(t => <MenuItem key={t} value={t}>{t}</MenuItem>)}
+              </Select>
+            </FormControl>
+            <FormControl size="small" sx={{ minWidth:148 }}>
+              <Select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}
+                sx={{ fontSize:13, borderRadius:"8px", bgcolor:"#F9FAFB", "& .MuiOutlinedInput-notchedOutline":{ borderColor:C.border } }}>
+                <MenuItem value="All Statuses">All Statuses</MenuItem>
+                <MenuItem value="Issued">Issued</MenuItem>
+                <MenuItem value="Pending">Pending</MenuItem>
+                <MenuItem value="Rejected">Rejected</MenuItem>
+              </Select>
+            </FormControl>
+            <Box sx={{ flex:1 }} />
+            <Typography sx={{ fontSize:13, color:C.textSecondary, fontWeight:500 }}>
+              {filtered.length} of {issues.length} records
             </Typography>
           </Box>
-          <Stack direction="row" spacing={1.5}>
-            <Button startIcon={<FileDownload sx={{ fontSize:16 }} />} variant="outlined" onClick={exportCSV}
-              sx={{ border:`1px solid ${C.border}`, color:C.textSecondary, textTransform:"none",
-                fontWeight:600, fontSize:13, borderRadius:"8px", height:36, px:2, bgcolor:"#fff",
-                "&:hover":{ borderColor:"#9CA3AF", bgcolor:"#F9FAFB" } }}>
-              Export
-            </Button>
-            {/* Opens Issuestockmodal */}
-            <Button startIcon={<Add sx={{ fontSize:16 }} />} variant="contained"
-              onClick={() => setIssueModalOpen(true)}
-              sx={{ bgcolor:"#2563eb", textTransform:"none", fontWeight:700, fontSize:13,
-                borderRadius:"8px", height:36, px:2.5,
-              
-                }}>
-              Issue Stock
-            </Button>
-          </Stack>
-        </Box>
 
-        {/* ── Stat Cards ── */}
-        <Stack direction="row" spacing={1.5} sx={{ mb:2.5 }}>
-          <StatCard label="Total Issues"     value={issues.length}  sub="+12 this month"                      color="#7C3AED" />
-          <StatCard label="Issued"           value={issued.length}  sub={`$${issuedVal.toFixed(0)} total value`} color="#2563EB" />
-          <StatCard label="Pending Approval" value={pending.length} sub="+3 this month"                       color="#16A34A" />
-          <StatCard label="Most Active Dept" value={mostActive}     sub="Highest issue volume"                color="#D97706" />
-        </Stack>
-
-        {/* ── Filters ── */}
-        <Box sx={{ display:"flex", alignItems:"center", gap:1.5, mb:2 }}>
-          <FormControl size="small" sx={{ minWidth:148 }}>
-            <Select value={typeFilter} onChange={e=>setTypeFilter(e.target.value)}
-              sx={{ fontSize:13, borderRadius:"8px", bgcolor:"#F9FAFB",
-                "& .MuiOutlinedInput-notchedOutline":{ borderColor:C.border } }}>
-              <MenuItem value="All Types">All Types</MenuItem>
-              {ISSUE_TYPES.map(t=><MenuItem key={t} value={t}>{t}</MenuItem>)}
-            </Select>
-          </FormControl>
-          <FormControl size="small" sx={{ minWidth:148 }}>
-            <Select value={statusFilter} onChange={e=>setStatusFilter(e.target.value)}
-              sx={{ fontSize:13, borderRadius:"8px", bgcolor:"#F9FAFB",
-                "& .MuiOutlinedInput-notchedOutline":{ borderColor:C.border } }}>
-              <MenuItem value="All Statuses">All Statuses</MenuItem>
-              <MenuItem value="Issued">Issued</MenuItem>
-              <MenuItem value="Pending">Pending</MenuItem>
-              <MenuItem value="Rejected">Rejected</MenuItem>
-            </Select>
-          </FormControl>
-          <Box sx={{ flex:1 }} />
-          <Typography sx={{ fontSize:13, color:C.textSecondary, fontWeight:500 }}>
-            {filtered.length} of {issues.length} records
-          </Typography>
-        </Box>
-
-        {/* ── Table ── */}
-        <TableContainer component={Paper} elevation={0}
-          sx={{
-            border:`1px solid ${C.border}`, borderRadius:"10px", overflow:"auto",
-            "&::-webkit-scrollbar":{ height:4 },
-            "&::-webkit-scrollbar-track":{ background:"transparent" },
-            "&::-webkit-scrollbar-thumb":{ background:"#d1d5db", borderRadius:4 },
-          }}>
-          <Table size="small" sx={{ minWidth:1020, tableLayout:"fixed" }}>
-            <TableHead>
-              <TableRow sx={{ bgcolor:"#F9FAFB" }}>
-                {HEADS.map(h=>(
-                  <TableCell key={h.label} sx={{
-                    width:h.width, fontWeight:700, fontSize:11, color:C.textSecondary,
-                    letterSpacing:0.5, py:1.4, px:1.5,
-                    borderBottom:`1px solid ${C.border}`,
-                    textTransform:"uppercase", whiteSpace:"nowrap",
-                  }}>
-                    {h.label}
-                  </TableCell>
-                ))}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filtered.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={10} align="center" sx={{ py:5, color:C.textSecondary, fontSize:13 }}>
-                    No records match the current filters.
-                  </TableCell>
+          {/* ── Table ── */}
+          <TableContainer component={Paper} elevation={0}
+            sx={{
+              border:`1px solid ${C.border}`, borderRadius:"10px", overflow:"auto",
+              "&::-webkit-scrollbar":{ height:4 },
+              "&::-webkit-scrollbar-thumb":{ background:"#d1d5db", borderRadius:4 },
+            }}>
+            <Table size="small" sx={{ minWidth:1020, tableLayout:"fixed" }}>
+              <TableHead>
+                <TableRow sx={{ bgcolor:"#F9FAFB" }}>
+                  {HEADS.map(h => (
+                    <TableCell key={h.label} sx={{
+                      width:h.width, fontWeight:700, fontSize:11, color:C.textSecondary,
+                      letterSpacing:0.5, py:1.4, px:1.5,
+                      borderBottom:`1px solid ${C.border}`,
+                      textTransform:"uppercase", whiteSpace:"nowrap",
+                    }}>
+                      {h.label}
+                    </TableCell>
+                  ))}
                 </TableRow>
-              )}
-              {filtered.map((row, idx) => (
-                <TableRow key={row.id} sx={{
-                  bgcolor: idx%2===0 ? "#fff" : "#FAFAFA",
-                  "&:hover":{ bgcolor:"#EFF6FF" },
-                  transition:"background 0.15s",
-                }}>
-                  <TableCell sx={{ px:1.5, py:1.1 }}>
-                    <Typography sx={{ fontWeight:700, color:"#1D4ED8", fontSize:12 }}>{row.id}</Typography>
-                  </TableCell>
-                  <TableCell sx={{ px:1.5, py:1.1 }}><TypeChip type={row.type} /></TableCell>
-                  <TableCell sx={{ px:1.5, py:1.1 }}>
-                    <Chip label={row.from} size="small" sx={{
-                      bgcolor:"#F5F3FF", color:"#6D28D9", border:"1px solid #DDD6FE",
-                      fontWeight:600, fontSize:11, height:22,
-                    }} />
-                  </TableCell>
-                  <TableCell sx={{ px:1.5, py:1.1 }}><DeptChip dept={row.dept} /></TableCell>
-                  <TableCell sx={{ px:1.5, py:1.1 }}>
-                    <Typography sx={{ color:C.textSecondary, fontSize:12 }}>{row.items}</Typography>
-                  </TableCell>
-                  <TableCell sx={{ px:1.5, py:1.1 }}>
-                    <Typography sx={{ fontWeight:700, color:C.textPrimary, fontSize:12 }}>
-                      ${row.value.toFixed(2)}
-                    </Typography>
-                  </TableCell>
-                  <TableCell sx={{ px:1.5, py:1.1 }}>
-                    <Typography sx={{ color:C.textSecondary, fontSize:12, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
-                      {row.requestedBy}
-                    </Typography>
-                  </TableCell>
-                  <TableCell sx={{ px:1.5, py:1.1 }}>
-                    <Typography sx={{ color:C.textSecondary, fontSize:11, whiteSpace:"nowrap" }}>{row.date}</Typography>
-                  </TableCell>
-                  <TableCell sx={{ px:1.5, py:1.1 }}><StatusChip status={row.status} /></TableCell>
+              </TableHead>
+              <TableBody>
+                {filtered.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={10} align="center" sx={{ py:5, color:C.textSecondary, fontSize:13 }}>
+                      No records match the current filters.
+                    </TableCell>
+                  </TableRow>
+                )}
+                {filtered.map((row, idx) => {
+                  const isHighlighted = row.id === highlightId;
+                  return (
+                    <TableRow
+                      key={row.id}
+                      ref={el => { if (el) rowRefs.current[row.id] = el; }}
+                      className={isHighlighted ? "row-highlight" : ""}
+                      sx={{
+                        bgcolor: isHighlighted ? "transparent" : (idx % 2 === 0 ? "#fff" : "#FAFAFA"),
+                        "&:hover": { bgcolor: isHighlighted ? "transparent" : "#EFF6FF" },
+                        transition: isHighlighted ? "none" : "background 0.15s",
+                        ...(isHighlighted && {
+                          "& td:first-of-type": {
+                            borderLeft: "3px solid #2563eb",
+                          },
+                        }),
+                      }}
+                    >
+                      <TableCell sx={{ px:1.5, py:1.1 }}>
+                        <Typography sx={{ fontWeight:700, color:"#1D4ED8", fontSize:12 }}>{row.id}</Typography>
+                      </TableCell>
+                      <TableCell sx={{ px:1.5, py:1.1 }}><TypeChip type={row.type} /></TableCell>
+                      <TableCell sx={{ px:1.5, py:1.1 }}>
+                        <Chip label={row.from} size="small" sx={{ bgcolor:"#F5F3FF", color:"#6D28D9", border:"1px solid #DDD6FE", fontWeight:600, fontSize:11, height:22 }} />
+                      </TableCell>
+                      <TableCell sx={{ px:1.5, py:1.1 }}><DeptChip dept={row.dept} /></TableCell>
+                      <TableCell sx={{ px:1.5, py:1.1 }}>
+                        <Typography sx={{ color:C.textSecondary, fontSize:12 }}>{row.items}</Typography>
+                      </TableCell>
+                      <TableCell sx={{ px:1.5, py:1.1 }}>
+                        <Typography sx={{ fontWeight:700, color:C.textPrimary, fontSize:12 }}>${row.value.toFixed(2)}</Typography>
+                      </TableCell>
+                      <TableCell sx={{ px:1.5, py:1.1 }}>
+                        <Typography sx={{ color:C.textSecondary, fontSize:12, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
+                          {row.requestedBy}
+                        </Typography>
+                      </TableCell>
+                      <TableCell sx={{ px:1.5, py:1.1 }}>
+                        <Typography sx={{ color:C.textSecondary, fontSize:11, whiteSpace:"nowrap" }}>{row.date}</Typography>
+                      </TableCell>
+                      <TableCell sx={{ px:1.5, py:1.1 }}><StatusChip status={row.status} /></TableCell>
 
-                  {/* ── ACTIONS ── */}
-                  <TableCell sx={{ px:1.5, py:1.1 }}>
-                    <Stack direction="row" spacing={0.5} alignItems="center">
+                      {/* ── ACTIONS ── */}
+                      <TableCell sx={{ px:1.5, py:1.1 }}>
+                        <Stack direction="row" spacing={0.5} alignItems="center">
+                          {row.status === "Pending" && (<>
+                            <Tooltip title="Approve & Issue">
+                              <IconButton size="small" onClick={() => approve(row.id)}
+                                sx={{ bgcolor:"#F0FDF4", color:"#16A34A", "&:hover":{ bgcolor:"#DCFCE7" }, width:26, height:26, borderRadius:"6px", border:"1px solid #BBF7D0" }}>
+                                <Check sx={{ fontSize:13 }} />
+                              </IconButton>
+                            </Tooltip>
+                            <Tooltip title="Reject">
+                              <IconButton size="small" onClick={() => reject(row.id)}
+                                sx={{ bgcolor:"#FEF2F2", color:"#DC2626", "&:hover":{ bgcolor:"#FEE2E2" }, width:26, height:26, borderRadius:"6px", border:"1px solid #FECACA" }}>
+                                <Close sx={{ fontSize:13 }} />
+                              </IconButton>
+                            </Tooltip>
+                            <Tooltip title="View Details">
+                              <IconButton size="small" onClick={() => { setViewRow(row); setViewOpen(true); }}
+                                sx={{ bgcolor:"#FEF2F2", color:"#DC2626", "&:hover":{ bgcolor:"#FEE2E2" }, width:26, height:26, borderRadius:"50%", border:"1px solid #FECACA" }}>
+                                <Box sx={{ width:8, height:8, borderRadius:"50%", bgcolor:"#DC2626" }} />
+                              </IconButton>
+                            </Tooltip>
+                          </>)}
 
-                      {/* Pending: ✓ approve + ✗ reject + 🔴 info dot */}
-                      {row.status==="Pending" && (<>
-                        <Tooltip title="Approve & Issue">
-                          <IconButton size="small" onClick={()=>approve(row.id)}
-                            sx={{ bgcolor:"#F0FDF4", color:"#16A34A", "&:hover":{bgcolor:"#DCFCE7"},
-                              width:26, height:26, borderRadius:"6px", border:"1px solid #BBF7D0" }}>
-                            <Check sx={{ fontSize:13 }} />
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Reject">
-                          <IconButton size="small" onClick={()=>reject(row.id)}
-                            sx={{ bgcolor:"#FEF2F2", color:"#DC2626", "&:hover":{bgcolor:"#FEE2E2"},
-                              width:26, height:26, borderRadius:"6px", border:"1px solid #FECACA" }}>
-                            <Close sx={{ fontSize:13 }} />
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip title="View Details">
-                          <IconButton size="small"
-                            onClick={()=>{ setViewRow(row); setViewOpen(true); }}
-                            sx={{ bgcolor:"#FEF2F2", color:"#DC2626", "&:hover":{bgcolor:"#FEE2E2"},
-                              width:26, height:26, borderRadius:"50%", border:"1px solid #FECACA" }}>
-                            <Box sx={{ width:8, height:8, borderRadius:"50%", bgcolor:"#DC2626" }} />
-                          </IconButton>
-                        </Tooltip>
-                      </>)}
+                          {row.status === "Issued" && (
+                            <Tooltip title="View Details">
+                              <IconButton size="small" onClick={() => { setViewRow(row); setViewOpen(true); }}
+                                sx={{ bgcolor:"#EFF6FF", color:"#1D4ED8", "&:hover":{ bgcolor:"#DBEAFE" }, width:26, height:26, borderRadius:"6px" }}>
+                                <Visibility sx={{ fontSize:13 }} />
+                              </IconButton>
+                            </Tooltip>
+                          )}
 
-                      {/* Issued: eye only */}
-                      {row.status==="Issued" && (
-                        <Tooltip title="View Details">
-                          <IconButton size="small"
-                            onClick={()=>{ setViewRow(row); setViewOpen(true); }}
-                            sx={{ bgcolor:"#EFF6FF", color:"#1D4ED8", "&:hover":{bgcolor:"#DBEAFE"},
-                              width:26, height:26, borderRadius:"6px" }}>
-                            <Visibility sx={{ fontSize:13 }} />
-                          </IconButton>
-                        </Tooltip>
-                      )}
-
-                      {/* Rejected: eye only */}
-                      {row.status==="Rejected" && (
-                        <Tooltip title="View Details">
-                          <IconButton size="small"
-                            onClick={()=>{ setViewRow(row); setViewOpen(true); }}
-                            sx={{ bgcolor:"#F9FAFB", color:"#6B7280", "&:hover":{bgcolor:"#F3F4F6"},
-                              width:26, height:26, borderRadius:"6px" }}>
-                            <Visibility sx={{ fontSize:13 }} />
-                          </IconButton>
-                        </Tooltip>
-                      )}
-
-                    </Stack>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+                          {row.status === "Rejected" && (
+                            <Tooltip title="View Details">
+                              <IconButton size="small" onClick={() => { setViewRow(row); setViewOpen(true); }}
+                                sx={{ bgcolor:"#F9FAFB", color:"#6B7280", "&:hover":{ bgcolor:"#F3F4F6" }, width:26, height:26, borderRadius:"6px" }}>
+                                <Visibility sx={{ fontSize:13 }} />
+                              </IconButton>
+                            </Tooltip>
+                          )}
+                        </Stack>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Box>
       </Box>
 
-      {/* ── Issue Stock Modal (your existing Issuestockmodal.jsx) ── */}
+      {/* ── Issue Stock Modal ── */}
       <IssueStockModal
         open={issueModalOpen}
-        onClose={() => setIssueModalOpen(false)}
-        onSave={handleModalSave}
+        onClose={handleModalClose}
+        onIssued={handleIssued}
+        onPending={handlePending}
       />
 
       {/* ── View Detail Dialog ── */}
-      <ViewDialog
-        open={viewOpen}
-        onClose={() => setViewOpen(false)}
-        row={viewRow}
-      />
+      <ViewDialog open={viewOpen} onClose={() => setViewOpen(false)} row={viewRow} />
 
       <Snackbar open={toast.open} autoHideDuration={3000}
-        onClose={()=>setToast(t=>({...t,open:false}))}
+        onClose={() => setToast(t => ({ ...t, open:false }))}
         anchorOrigin={{ vertical:"bottom", horizontal:"right" }}>
         <Alert severity={toast.severity} sx={{ borderRadius:"10px", fontWeight:600, fontSize:13 }}
-          onClose={()=>setToast(t=>({...t,open:false}))}>
+          onClose={() => setToast(t => ({ ...t, open:false }))}>
           {toast.msg}
         </Alert>
       </Snackbar>
-    </Box>
+    </>
   );
 }

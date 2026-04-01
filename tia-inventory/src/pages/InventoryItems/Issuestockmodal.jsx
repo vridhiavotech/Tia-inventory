@@ -10,7 +10,6 @@ import {
   FormControl,
   Button,
   IconButton,
-  InputAdornment,
   Divider,
   Snackbar,
   Alert,
@@ -18,27 +17,46 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import AddIcon from "@mui/icons-material/Add";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import CalendarTodayOutlinedIcon from "@mui/icons-material/CalendarTodayOutlined";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 
-// ─── Items with unitCost for value calculation ────────────────────────────────
-
 const availableItems = [
-  { label: "Epinephrine 1mg/mL 10mL Vial",  value: "epinephrine",  available: 4,   lot: "EP24B",  unitCost: 18.50 },
-  { label: "Amoxicillin 500mg Capsules",     value: "amoxicillin",  available: 200, lot: "AM12A",  unitCost: 2.40  },
-  { label: "Sodium Chloride 0.9% IV 1L",     value: "sodium",       available: 12,  lot: "SC09C",  unitCost: 3.20  },
-  { label: "Morphine Sulfate 10mg/mL",       value: "morphine",     available: 18,  lot: "MS10D",  unitCost: 22.00 },
-  { label: "Nitrile Exam Gloves (L) 100/bx", value: "gloves",       available: 30,  lot: "GL-L01", unitCost: 12.00 },
-  { label: "Surgical Mask ASTM Level 3",     value: "mask",         available: 450, lot: "MK-L3A", unitCost: 0.85  },
-  { label: "4×4 Gauze Pads Sterile 10/pk",   value: "gauze",        available: 200, lot: "GZ44B",  unitCost: 3.50  },
-  { label: "BD Vacutainer EDTA 10mL",        value: "vacutainer",   available: 600, lot: "BD-E01", unitCost: 1.20  },
+  { label: "Epinephrine 1mg/mL 10mL Vial",   value: "epinephrine",  available: 4,   lot: "EP24B",  unitCost: 18.50 },
+  { label: "Amoxicillin 500mg Capsules",      value: "amoxicillin",  available: 200, lot: "AM12A",  unitCost: 2.40  },
+  { label: "Sodium Chloride 0.9% IV 1L",      value: "sodium",       available: 12,  lot: "SC09C",  unitCost: 3.20  },
+  { label: "Morphine Sulfate 10mg/mL",        value: "morphine",     available: 18,  lot: "MS10D",  unitCost: 22.00 },
+  { label: "Nitrile Exam Gloves (L) 100/bx",  value: "gloves",       available: 30,  lot: "GL-L01", unitCost: 12.00 },
+  { label: "Surgical Mask ASTM Level 3",      value: "mask",         available: 450, lot: "MK-L3A", unitCost: 0.85  },
+  { label: "4×4 Gauze Pads Sterile 10/pk",    value: "gauze",        available: 200, lot: "GZ44B",  unitCost: 3.50  },
+  { label: "BD Vacutainer EDTA 10mL",         value: "vacutainer",   available: 600, lot: "BD-E01", unitCost: 1.20  },
+];
+
+const FROM_LOCATIONS = [
+  { label: "Central Store", value: "CS-01" },
+  { label: "ICU Store",     value: "CS-02" },
+  { label: "Pharmacy",      value: "PH-01" },
+  { label: "Pharmacy 2",    value: "PH-02" },
+];
+
+const TO_DEPTS = [
+  { label: "ICU",            value: "ICU"           },
+  { label: "Emergency Dept", value: "Emergency Dept" },
+  { label: "OR / Surgery",   value: "OR / Surgery"  },
+  { label: "Ward A",         value: "Ward A"        },
+  { label: "Ward B",         value: "Ward B"        },
+  { label: "OPD",            value: "OPD"           },
+  { label: "Radiology",      value: "Radiology"     },
+  { label: "Maternity",      value: "Maternity"     },
 ];
 
 function FieldLabel({ children, required }) {
   return (
-    <Typography sx={{ fontSize: 11, fontWeight: 600, color: "#6b7280", letterSpacing: "0.04em", mb: "6px", textTransform: "uppercase" }}>
-      {children}{required && <span style={{ color: "#ef4444", marginLeft: 2 }}>*</span>}
+    <Typography sx={{
+      fontSize: 11, fontWeight: 600, color: "#6b7280",
+      letterSpacing: "0.04em", mb: "6px", textTransform: "uppercase",
+    }}>
+      {children}
+      {required && <span style={{ color: "#ef4444", marginLeft: 2 }}>*</span>}
     </Typography>
   );
 }
@@ -49,6 +67,13 @@ const inputSx = {
     "& fieldset": { borderColor: "#e5e7eb" },
     "&:hover fieldset": { borderColor: "#d1d5db" },
     "&.Mui-focused fieldset": { borderColor: "#2563eb" },
+  },
+};
+
+const disabledInputSx = {
+  "& .MuiOutlinedInput-root": {
+    fontSize: 13, borderRadius: "8px", background: "#f3f4f6",
+    "& fieldset": { borderColor: "#e5e7eb" },
   },
 };
 
@@ -70,7 +95,7 @@ const selectErrSx = {
 const makeRow = () => ({ id: Date.now() + Math.random(), item: "", qty: "" });
 
 export default function IssueStockModal({ open, onClose, prefillItem = null, onIssued, onPending }) {
-  const today = new Date().toLocaleDateString("en-GB").replace(/\//g, "-");
+  const todayISO = new Date().toISOString().split("T")[0]; // "YYYY-MM-DD"
 
   const [issueType,   setIssueType]   = useState("Ward Requisition");
   const [issueFrom,   setIssueFrom]   = useState("");
@@ -78,6 +103,8 @@ export default function IssueStockModal({ open, onClose, prefillItem = null, onI
   const [requestedBy, setRequestedBy] = useState("");
   const [patientId,   setPatientId]   = useState("");
   const [remarks,     setRemarks]     = useState("");
+  // ── FIX: issueDate is now editable state ──
+  const [issueDate,   setIssueDate]   = useState(todayISO);
   const [items, setItems] = useState([
     prefillItem ? { id: Date.now(), item: prefillItem, qty: "" } : makeRow(),
   ]);
@@ -86,16 +113,13 @@ export default function IssueStockModal({ open, onClose, prefillItem = null, onI
 
   const getItemData = (v) => availableItems.find((a) => a.value === v);
 
-  // ── live issue value ──
   const issueValue = items.reduce((sum, row) => {
     const d   = getItemData(row.item);
     const qty = parseFloat(row.qty) || 0;
     return d && qty > 0 ? sum + qty * d.unitCost : sum;
   }, 0);
 
-  // ── item row ops ──
-  const addItem = () => setItems((p) => [...p, makeRow()]);
-
+  const addItem    = () => setItems((p) => [...p, makeRow()]);
   const removeItem = (id) => {
     if (items.length === 1) return;
     setItems((p) => p.filter((r) => r.id !== id));
@@ -106,18 +130,15 @@ export default function IssueStockModal({ open, onClose, prefillItem = null, onI
       return n;
     });
   };
-
   const updateItem = (id, field, value) => {
     setItems((p) => p.map((r) => r.id === id ? { ...r, [field]: value } : r));
     setErrors((e) => { const n = { ...e }; delete n[`${field}_${id}`]; return n; });
   };
 
-  // ── validation ──
   const validate = () => {
     const errs = {};
     if (!issueFrom) errs.issueFrom = true;
     if (!issueTo)   errs.issueTo   = true;
-
     items.forEach((row) => {
       if (!row.item) errs[`item_${row.id}`] = "Select an item";
       const qty  = parseFloat(row.qty);
@@ -128,22 +149,24 @@ export default function IssueStockModal({ open, onClose, prefillItem = null, onI
         errs[`qty_${row.id}`] = `Max ${data.available}`;
       }
     });
-
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
 
-  // ── reset + close ──
   const reset = () => {
     setIssueType("Ward Requisition");
     setIssueFrom(""); setIssueTo(""); setRequestedBy(""); setPatientId(""); setRemarks("");
+    // ── FIX: reset issueDate back to today ──
+    setIssueDate(new Date().toISOString().split("T")[0]);
     setItems([makeRow()]); setErrors({});
   };
+
   const handleClose = () => { reset(); onClose(); };
 
   const buildPayload = (status) => ({
-    issueNumber: "ISS-2026-0013", issueType, issueFrom, issueTo,
-    requestedBy, authorisedBy: "S. Anderson", issueDate: today, patientId, remarks,
+    issueType, issueFrom, issueTo,
+    // ── FIX: use issueDate state instead of hardcoded today ──
+    requestedBy, authorisedBy: "S. Anderson", issueDate, patientId, remarks,
     items: items.map((r) => {
       const d = getItemData(r.item);
       return { item: r.item, lot: d?.lot, qty: parseFloat(r.qty), unitCost: d?.unitCost };
@@ -151,14 +174,12 @@ export default function IssueStockModal({ open, onClose, prefillItem = null, onI
     totalValue: issueValue, status,
   });
 
-  // ── button handlers ──
   const handlePending = () => {
     if (!validate()) {
       setSnack({ open: true, msg: "Please fix the highlighted fields.", severity: "error" });
       return;
     }
     onPending?.(buildPayload("Pending Approval"));
-    setSnack({ open: true, msg: "Submitted for approval.", severity: "warning" });
     reset(); onClose();
   };
 
@@ -168,7 +189,6 @@ export default function IssueStockModal({ open, onClose, prefillItem = null, onI
       return;
     }
     onIssued?.(buildPayload("Issued"));
-    setSnack({ open: true, msg: "Stock issued successfully!", severity: "success" });
     reset(); onClose();
   };
 
@@ -177,8 +197,12 @@ export default function IssueStockModal({ open, onClose, prefillItem = null, onI
       <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth
         PaperProps={{ sx: { borderRadius: "14px", boxShadow: "0 20px 60px rgba(0,0,0,0.15)", overflow: "hidden" } }}>
 
-        {/* Header */}
-        <Box sx={{ px: "24px", pt: "20px", pb: "16px", display: "flex", alignItems: "flex-start", justifyContent: "space-between", borderBottom: "1px solid #f3f4f6", flexShrink: 0 }}>
+        {/* ── Header ── */}
+        <Box sx={{
+          px: "24px", pt: "20px", pb: "16px",
+          display: "flex", alignItems: "flex-start", justifyContent: "space-between",
+          borderBottom: "1px solid #f3f4f6", flexShrink: 0,
+        }}>
           <Box sx={{ display: "flex", alignItems: "center", gap: "12px" }}>
             <Box sx={{ width: 38, height: 38, borderRadius: "10px", background: "#eff6ff", display: "flex", alignItems: "center", justifyContent: "center" }}>
               <AssignmentIcon sx={{ fontSize: 20, color: "#2563eb" }} />
@@ -189,26 +213,23 @@ export default function IssueStockModal({ open, onClose, prefillItem = null, onI
             </Box>
           </Box>
           <IconButton size="small" onClick={handleClose}
-            sx={{ color: "#9ca3af", border: "1px solid #e5e7eb", borderRadius: "8px", width: 30, height: 30, "&:hover": { background: "#f3f4f6", color: "#374151" } }}>
+            sx={{ color: "#9ca3af", border: "1px solid #e5e7eb", borderRadius: "8px", width: 30, height: 30, "&:hover": { background: "#f3f4f6" } }}>
             <CloseIcon sx={{ fontSize: 15 }} />
           </IconButton>
         </Box>
 
-        {/* Scrollable body */}
+        {/* ── Body ── */}
         <DialogContent sx={{
           px: "24px", py: "20px", overflowY: "auto", maxHeight: "70vh",
           "&::-webkit-scrollbar": { width: 4 },
-          "&::-webkit-scrollbar-track": { background: "transparent" },
           "&::-webkit-scrollbar-thumb": { background: "#d1d5db", borderRadius: 4 },
-          "&::-webkit-scrollbar-thumb:hover": { background: "#a1a1aa" },
         }}>
 
-          {/* Row 1 */}
+          {/* Row 1 — Issue # + Type */}
           <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", mb: "16px" }}>
             <Box>
               <FieldLabel>Issue Number</FieldLabel>
-              <TextField fullWidth size="small" value="ISS-2026-0013" disabled
-                sx={{ ...inputSx, "& .MuiOutlinedInput-root": { ...inputSx["& .MuiOutlinedInput-root"], background: "#f3f4f6" } }} />
+              <TextField fullWidth size="small" value="ISS-2026-0013" disabled sx={disabledInputSx} />
             </Box>
             <Box>
               <FieldLabel required>Issue Type</FieldLabel>
@@ -222,17 +243,17 @@ export default function IssueStockModal({ open, onClose, prefillItem = null, onI
             </Box>
           </Box>
 
-          {/* Row 2 */}
+          {/* Row 2 — From + To */}
           <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", mb: "16px" }}>
             <Box>
-              <FieldLabel required>Issue From (Location)</FieldLabel>
+              <FieldLabel required>Issue From (Store)</FieldLabel>
               <FormControl fullWidth size="small">
                 <Select value={issueFrom} displayEmpty
                   onChange={(e) => { setIssueFrom(e.target.value); setErrors((er) => ({ ...er, issueFrom: false })); }}
                   sx={errors.issueFrom ? selectErrSx : selectSx}>
-                  <MenuItem value="" sx={{ fontSize: 13, color: "#9ca3af" }}>Select...</MenuItem>
-                  {["Central Store","ICU","Emergency Dept","Pharmacy","Surgery","Laboratory"].map((l) => (
-                    <MenuItem key={l} value={l} sx={{ fontSize: 13 }}>{l}</MenuItem>
+                  <MenuItem value="" sx={{ fontSize: 13, color: "#9ca3af" }}>Select store...</MenuItem>
+                  {FROM_LOCATIONS.map((l) => (
+                    <MenuItem key={l.value} value={l.value} sx={{ fontSize: 13 }}>{l.label}</MenuItem>
                   ))}
                 </Select>
               </FormControl>
@@ -244,9 +265,9 @@ export default function IssueStockModal({ open, onClose, prefillItem = null, onI
                 <Select value={issueTo} displayEmpty
                   onChange={(e) => { setIssueTo(e.target.value); setErrors((er) => ({ ...er, issueTo: false })); }}
                   sx={errors.issueTo ? selectErrSx : selectSx}>
-                  <MenuItem value="" sx={{ fontSize: 13, color: "#9ca3af" }}>Select...</MenuItem>
-                  {["Ward A","Ward B","ICU","Emergency","OPD","OR","Radiology","Maternity"].map((d) => (
-                    <MenuItem key={d} value={d} sx={{ fontSize: 13 }}>{d}</MenuItem>
+                  <MenuItem value="" sx={{ fontSize: 13, color: "#9ca3af" }}>Select dept...</MenuItem>
+                  {TO_DEPTS.map((d) => (
+                    <MenuItem key={d.value} value={d.value} sx={{ fontSize: 13 }}>{d.label}</MenuItem>
                   ))}
                 </Select>
               </FormControl>
@@ -254,7 +275,7 @@ export default function IssueStockModal({ open, onClose, prefillItem = null, onI
             </Box>
           </Box>
 
-          {/* Row 3 */}
+          {/* Row 3 — Requested By + Authorised By */}
           <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", mb: "16px" }}>
             <Box>
               <FieldLabel>Requested By</FieldLabel>
@@ -263,18 +284,33 @@ export default function IssueStockModal({ open, onClose, prefillItem = null, onI
             </Box>
             <Box>
               <FieldLabel>Authorised By</FieldLabel>
-              <TextField fullWidth size="small" value="S. Anderson" disabled
-                sx={{ ...inputSx, "& .MuiOutlinedInput-root": { ...inputSx["& .MuiOutlinedInput-root"], background: "#f3f4f6" } }} />
+              <TextField fullWidth size="small" value="S. Anderson" disabled sx={disabledInputSx} />
             </Box>
           </Box>
 
-          {/* Row 4 */}
+          {/* Row 4 — Date + Patient ID */}
           <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", mb: "20px" }}>
             <Box>
               <FieldLabel>Issue Date</FieldLabel>
-              <TextField fullWidth size="small" value={today} disabled
-                InputProps={{ endAdornment: <InputAdornment position="end"><CalendarTodayOutlinedIcon sx={{ fontSize: 15, color: "#9ca3af" }} /></InputAdornment> }}
-                sx={{ ...inputSx, "& .MuiOutlinedInput-root": { ...inputSx["& .MuiOutlinedInput-root"], background: "#f3f4f6" } }} />
+              <TextField
+                fullWidth
+                size="small"
+                type="date"
+                value={issueDate}
+                onChange={(e) => setIssueDate(e.target.value)}
+                sx={{
+                  ...inputSx,
+                  "& input[type=date]::-webkit-calendar-picker-indicator": {
+                    opacity: 1,
+                    display: "block",
+                    cursor: "pointer",
+                    filter: "invert(40%) sepia(10%) saturate(500%) hue-rotate(180deg)",
+                  },
+                  "& input[type=date]": {
+                    colorScheme: "light",
+                  },
+                }}
+              />
             </Box>
             <Box>
               <FieldLabel>Patient ID (Optional)</FieldLabel>
@@ -283,7 +319,7 @@ export default function IssueStockModal({ open, onClose, prefillItem = null, onI
             </Box>
           </Box>
 
-          {/* Items to Issue */}
+          {/* ── Items to Issue ── */}
           <Box sx={{ mb: "16px" }}>
             <Typography sx={{ fontSize: 12, fontWeight: 700, color: "#2563eb", letterSpacing: "0.05em", textTransform: "uppercase", mb: "12px" }}>
               Items to Issue
@@ -304,7 +340,7 @@ export default function IssueStockModal({ open, onClose, prefillItem = null, onI
                 return (
                   <Box key={row.id}>
                     <Box sx={{ display: "grid", gridTemplateColumns: "1fr 72px 88px 72px 32px", gap: "8px", alignItems: "center" }}>
-                      {/* Item */}
+                      {/* Item select */}
                       <FormControl size="small">
                         <Select value={row.item} displayEmpty
                           onChange={(e) => updateItem(row.id, "item", e.target.value)}
@@ -318,13 +354,17 @@ export default function IssueStockModal({ open, onClose, prefillItem = null, onI
 
                       {/* Available */}
                       <TextField size="small" value={data ? data.available : ""} disabled
-                        sx={{ "& .MuiOutlinedInput-root": { fontSize: 13, borderRadius: "8px", background: "#f3f4f6", "& fieldset": { borderColor: "#e5e7eb" } },
-                          "& input": { textAlign: "center", color: "#374151", fontWeight: 600, py: "7px" } }} />
+                        sx={{
+                          "& .MuiOutlinedInput-root": { fontSize: 13, borderRadius: "8px", background: "#f3f4f6", "& fieldset": { borderColor: "#e5e7eb" } },
+                          "& input": { textAlign: "center", color: "#374151", fontWeight: 600, py: "7px" },
+                        }} />
 
                       {/* Lot */}
                       <TextField size="small" value={data ? data.lot : ""} placeholder="LOT #" disabled
-                        sx={{ "& .MuiOutlinedInput-root": { fontSize: 12, borderRadius: "8px", background: "#f3f4f6", "& fieldset": { borderColor: "#e5e7eb" } },
-                          "& input": { py: "7px" } }} />
+                        sx={{
+                          "& .MuiOutlinedInput-root": { fontSize: 12, borderRadius: "8px", background: "#f3f4f6", "& fieldset": { borderColor: "#e5e7eb" } },
+                          "& input": { py: "7px" },
+                        }} />
 
                       {/* Qty */}
                       <TextField size="small" placeholder="Qty" type="number"
@@ -332,16 +372,9 @@ export default function IssueStockModal({ open, onClose, prefillItem = null, onI
                         onChange={(e) => updateItem(row.id, "qty", e.target.value)}
                         inputProps={{ min: 0, max: data?.available }}
                         sx={{
-                          // hide native browser spinner arrows
-                          "& input[type=number]": {
-                            MozAppearance: "textfield",
-                          },
-                          "& input[type=number]::-webkit-outer-spin-button": {
-                            WebkitAppearance: "none", margin: 0,
-                          },
-                          "& input[type=number]::-webkit-inner-spin-button": {
-                            WebkitAppearance: "none", margin: 0,
-                          },
+                          "& input[type=number]": { MozAppearance: "textfield" },
+                          "& input[type=number]::-webkit-outer-spin-button": { WebkitAppearance: "none", margin: 0 },
+                          "& input[type=number]::-webkit-inner-spin-button": { WebkitAppearance: "none", margin: 0 },
                           "& .MuiOutlinedInput-root": {
                             fontSize: 13, borderRadius: "8px",
                             background: qtyErr ? "#fff5f5" : "#f9fafb",
@@ -351,23 +384,18 @@ export default function IssueStockModal({ open, onClose, prefillItem = null, onI
                           "& input": { py: "7px", textAlign: "center" },
                         }} />
 
-                      {/* Delete — key fix: using onClick with the specific row id */}
-                      <IconButton
-                        size="small"
-                        onClick={() => removeItem(row.id)}
-                        disabled={items.length === 1}
+                      {/* Delete */}
+                      <IconButton size="small" onClick={() => removeItem(row.id)} disabled={items.length === 1}
                         sx={{
                           color: "#ef4444", border: "1px solid #fecaca",
                           borderRadius: "6px", width: 28, height: 28,
                           "&:hover": { background: "#fef2f2" },
                           "&.Mui-disabled": { color: "#d1d5db", borderColor: "#e5e7eb" },
-                        }}
-                      >
+                        }}>
                         <DeleteOutlineIcon sx={{ fontSize: 14 }} />
                       </IconButton>
                     </Box>
 
-                    {/* Inline error hints */}
                     {(itemErr || qtyErr) && (
                       <Box sx={{ display: "grid", gridTemplateColumns: "1fr 72px 88px 72px 32px", gap: "8px", mt: "2px" }}>
                         <Typography sx={{ fontSize: 10, color: "#ef4444" }}>{itemErr || ""}</Typography>
@@ -382,14 +410,17 @@ export default function IssueStockModal({ open, onClose, prefillItem = null, onI
             </Box>
 
             <Button onClick={addItem} startIcon={<AddIcon sx={{ fontSize: 14 }} />}
-              sx={{ mt: "10px", width: "100%", border: "1.5px dashed #bfdbfe", borderRadius: "8px", py: "8px",
-                fontSize: 12, fontWeight: 600, color: "#2563eb", textTransform: "none", background: "transparent",
-                "&:hover": { background: "#eff6ff", borderColor: "#93c5fd" } }}>
+              sx={{
+                mt: "10px", width: "100%", border: "1.5px dashed #bfdbfe",
+                borderRadius: "8px", py: "8px", fontSize: 12, fontWeight: 600,
+                color: "#2563eb", textTransform: "none", background: "transparent",
+                "&:hover": { background: "#eff6ff", borderColor: "#93c5fd" },
+              }}>
               Add Item
             </Button>
           </Box>
 
-          {/* Issue Value — updates live as qty changes */}
+          {/* ── Issue Value ── */}
           <Box sx={{
             display: "flex", justifyContent: "flex-end", mb: "16px",
             p: "10px 16px", borderRadius: "10px",
@@ -407,46 +438,45 @@ export default function IssueStockModal({ open, onClose, prefillItem = null, onI
 
           <Divider sx={{ mb: "16px" }} />
 
-          {/* Remarks */}
+          {/* ── Remarks ── */}
           <Box>
             <FieldLabel>Remarks</FieldLabel>
             <TextField fullWidth multiline rows={3} placeholder="Any special instructions..."
               value={remarks} onChange={(e) => setRemarks(e.target.value)}
-              sx={{ "& .MuiOutlinedInput-root": { fontSize: 13, borderRadius: "8px", background: "#f9fafb",
-                "& fieldset": { borderColor: "#e5e7eb" }, "&:hover fieldset": { borderColor: "#d1d5db" },
-                "&.Mui-focused fieldset": { borderColor: "#2563eb" } } }} />
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  fontSize: 13, borderRadius: "8px", background: "#f9fafb",
+                  "& fieldset": { borderColor: "#e5e7eb" },
+                  "&:hover fieldset": { borderColor: "#d1d5db" },
+                  "&.Mui-focused fieldset": { borderColor: "#2563eb" },
+                },
+              }} />
           </Box>
         </DialogContent>
 
-        {/* Footer */}
-        <Box sx={{ px: "24px", py: "16px", borderTop: "1px solid #f3f4f6", display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "10px", background: "#fff", flexShrink: 0 }}>
+        {/* ── Footer ── */}
+        <Box sx={{
+          px: "24px", py: "16px", borderTop: "1px solid #f3f4f6",
+          display: "flex", alignItems: "center", justifyContent: "flex-end",
+          gap: "10px", background: "#fff", flexShrink: 0,
+        }}>
           <Button onClick={handleClose}
-            sx={{ fontSize: 13, fontWeight: 600, color: "#374151", textTransform: "none", borderRadius: "8px", px: "20px", py: "9px",
-              border: "1px solid #e5e7eb", background: "#fff", "&:hover": { background: "#f9fafb" } }}>
+            sx={{ fontSize: 13, fontWeight: 600, color: "#374151", textTransform: "none", borderRadius: "8px", px: "20px", py: "9px", border: "1px solid #e5e7eb", background: "#fff", "&:hover": { background: "#f9fafb" } }}>
             Cancel
           </Button>
           <Button onClick={handlePending} startIcon={<AccessTimeIcon sx={{ fontSize: 15 }} />}
-            sx={{ fontSize: 13, fontWeight: 600, color: "#d97706", textTransform: "none", borderRadius: "8px", px: "20px", py: "9px",
-              border: "1px solid #fde68a", background: "#fffbeb", "&:hover": { background: "#fef3c7" } }}>
+            sx={{ fontSize: 13, fontWeight: 600, color: "#d97706", textTransform: "none", borderRadius: "8px", px: "20px", py: "9px", border: "1px solid #fde68a", background: "#fffbeb", "&:hover": { background: "#fef3c7" } }}>
             Pending Approval
           </Button>
           <Button onClick={handleIssue} startIcon={<AssignmentIcon sx={{ fontSize: 15 }} />}
-            sx={{ fontSize: 13, fontWeight: 600, color: "#fff", textTransform: "none", borderRadius: "8px", px: "20px", py: "9px",
-              background: "#2563eb", boxShadow: "0 2px 8px rgba(37,99,235,0.25)", "&:hover": { background: "#1d4ed8" } }}>
+            sx={{ fontSize: 13, fontWeight: 600, color: "#fff", textTransform: "none", borderRadius: "8px", px: "20px", py: "9px", background: "#2563eb", boxShadow: "0 2px 8px rgba(37,99,235,0.25)", "&:hover": { background: "#1d4ed8" } }}>
             Issue Now
           </Button>
         </Box>
       </Dialog>
 
-      {/* Toast notification */}
-      <Snackbar
-        open={snack.open}
-        autoHideDuration={3500}
-        onClose={() => setSnack((s) => ({ ...s, open: false }))}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      >
-        <Alert severity={snack.severity} variant="filled" sx={{ fontSize: 13, borderRadius: "10px" }}
-          onClose={() => setSnack((s) => ({ ...s, open: false }))}>
+      <Snackbar open={snack.open} autoHideDuration={3500} onClose={() => setSnack((s) => ({ ...s, open: false }))} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
+        <Alert severity={snack.severity} variant="filled" sx={{ fontSize: 13, borderRadius: "10px" }} onClose={() => setSnack((s) => ({ ...s, open: false }))}>
           {snack.msg}
         </Alert>
       </Snackbar>

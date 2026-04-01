@@ -193,6 +193,23 @@ export default function InventoryItems() {
   const openDeleteDialog  = (item) => setDeleteDialog({ open: true, item });
   const closeDeleteDialog = () => { if (!deleting) setDeleteDialog({ open: false, item: null }); };
 
+  // ── Issue Stock submitted → close modal immediately, then navigate ────────
+  const handleIssued = () => {
+    setIssueModal({ open: false, item: null });
+    navigate("/admin/stock-issue");
+  };
+
+  const handleIssuePending = () => {
+    setIssueModal({ open: false, item: null });
+    navigate("/admin/stock-issue");
+  };
+
+  // ── Transfer submitted → close modal immediately, then navigate ───────────
+  const handleTransferSubmitted = () => {
+    setTransferModal({ open: false, item: null });
+    navigate("/admin/transfers");
+  };
+
   const handleConfirmDelete = async () => {
     setDeleting(true);
     try {
@@ -216,8 +233,6 @@ export default function InventoryItems() {
 
   return (
     <Box sx={{ background: "#f8f9fb", minHeight: "100vh", p: "28px 32px", boxSizing: "border-box" }}>
-
-      {/* Header */}
       <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: "20px" }}>
         <Box>
           <Typography sx={{ fontSize: 20, fontWeight: 700, color: "#111827" }}>Inventory Items</Typography>
@@ -236,8 +251,6 @@ export default function InventoryItems() {
           Add Item
         </Button>
       </Box>
-
-      {/* Filters */}
       <Box sx={{ display: "flex", gap: "12px", alignItems: "center", flexWrap: "wrap", mb: "20px" }}>
         <FormControl size="small">
           <Select value={location} onChange={(e) => setLocation(e.target.value)} sx={{ ...selectSx, minWidth: 150 }}>
@@ -278,19 +291,13 @@ export default function InventoryItems() {
           ))}
         </Box>
       </Box>
-
-      {/* Table — thin horizontal scrollbar matching CreateTransferModal */}
       <Paper elevation={0} sx={{ borderRadius: "14px", border: "1px solid #f0f0f0", boxShadow: "0 1px 4px rgba(0,0,0,0.04)", overflow: "hidden" }}>
         <TableContainer
           sx={{
-            // ── thin horizontal scrollbar — same style as CreateTransferModal ──
             overflowX: "auto",
             "&::-webkit-scrollbar": { height: 4 },
             "&::-webkit-scrollbar-track": { background: "transparent" },
-            "&::-webkit-scrollbar-thumb": {
-              background: "#d1d5db",
-              borderRadius: 4,
-            },
+            "&::-webkit-scrollbar-thumb": { background: "#d1d5db", borderRadius: 4 },
             "&::-webkit-scrollbar-thumb:hover": { background: "#a1a1aa" },
             scrollbarWidth: "thin",
             scrollbarColor: "#d1d5db transparent",
@@ -418,13 +425,26 @@ export default function InventoryItems() {
           </Box>
         </Box>
       </Paper>
-
-      {/* Modals */}
-      <IssueStockModal open={issueModal.open} onClose={() => setIssueModal({ open: false, item: null })} prefillItem={issueModal.item} />
-      <CreateTransferModal open={transferModal.open} onClose={() => setTransferModal({ open: false, item: null })} prefillItem={transferModal.item} />
-      <DeleteConfirmDialog open={deleteDialog.open} item={deleteDialog.item} onCancel={closeDeleteDialog} onConfirm={handleConfirmDelete} deleting={deleting} />
-
-      {/* Toast */}
+      <IssueStockModal
+        open={issueModal.open}
+        onClose={() => setIssueModal({ open: false, item: null })}
+        prefillItem={issueModal.item}
+        onIssued={handleIssued}
+        onPending={handleIssuePending}
+      />
+      <CreateTransferModal
+        open={transferModal.open}
+        onClose={() => setTransferModal({ open: false, item: null })}
+        prefillItem={transferModal.item}
+        onSubmitted={handleTransferSubmitted}
+      />
+      <DeleteConfirmDialog
+        open={deleteDialog.open}
+        item={deleteDialog.item}
+        onCancel={closeDeleteDialog}
+        onConfirm={handleConfirmDelete}
+        deleting={deleting}
+      />
       <Snackbar open={toast.open} autoHideDuration={3500} onClose={() => setToast((p) => ({ ...p, open: false }))} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
         <Alert onClose={() => setToast((p) => ({ ...p, open: false }))} severity={toast.severity} variant="filled" sx={{ fontSize: 13, borderRadius: "10px", minWidth: 280 }}>
           {toast.message}

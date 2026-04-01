@@ -38,14 +38,13 @@ const availableItems = [
 
 const LOCATIONS = ["Central Store","ICU","Emergency Dept","Pharmacy","Surgery","Laboratory","Ward A","Ward B","OPD","Maternity"];
 
-// Priority — blue-themed active state to match IssueStockModal accent
 const PRIORITY_CONFIG = {
   Routine:  { color: "#2563eb", bg: "#eff6ff", border: "#bfdbfe" },
   Urgent:   { color: "#d97706", bg: "#fffbeb", border: "#fde68a" },
   Critical: { color: "#dc2626", bg: "#fef2f2", border: "#fecaca" },
 };
 
-// ─── Shared styles — identical to IssueStockModal ─────────────────────────────
+// ─── Shared styles ─────────────────────────────────────────────────────────────
 const inputSx = {
   "& .MuiOutlinedInput-root": {
     fontSize: 13, borderRadius: "8px", background: "#f9fafb",
@@ -77,7 +76,6 @@ const selectErrSx = {
   "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#ef4444" },
 };
 
-// hide browser number-input spinner arrows (same fix as IssueStockModal qty)
 const noSpinnerSx = {
   "& input[type=number]": { MozAppearance: "textfield" },
   "& input[type=number]::-webkit-outer-spin-button": { WebkitAppearance: "none", margin: 0 },
@@ -114,8 +112,16 @@ function validate({ fromLocation, toLocation, items }) {
 
 const makeRow = () => ({ id: Date.now() + Math.random(), item: "", qty: "" });
 
+// ─── Transfer ID counter (simple in-memory) ───────────────────────────────────
+let transferCounter = 9;
+const getNextId = () => {
+  const id = `TRF-2026-${String(transferCounter).padStart(4, "0")}`;
+  transferCounter++;
+  return id;
+};
+
 // ─── Main Component ───────────────────────────────────────────────────────────
-export default function CreateTransferModal({ open, onClose, prefillItem = null }) {
+export default function CreateTransferModal({ open, onClose, onSave, prefillItem = null }) {
   const [priority,     setPriority] = useState("Routine");
   const [fromLocation, setFrom]     = useState("");
   const [toLocation,   setTo]       = useState("");
@@ -164,9 +170,43 @@ export default function CreateTransferModal({ open, onClose, prefillItem = null 
     setErrors({});
     setLoading(true);
     try {
-      await new Promise(res => setTimeout(res, 1000));
-      showToast(successMsg, status === "Transferred" ? "success" : "warning");
-      setTimeout(() => { handleReset(); onClose(); }, 1800);
+      await new Promise(res => setTimeout(res, 800));
+
+      const newTransferId = getNextId();
+      const filledItems = items.filter(i => i.item);
+
+      const newTransfer = {
+        id: newTransferId,
+        from: fromLocation.replace(/\s+/g, "-").toUpperCase().slice(0, 2) + "-01",
+        fromLabel: fromLocation,
+        to: toLocation.replace(/\s+/g, "-").toUpperCase().slice(0, 2) + "-01",
+        toLabel: toLocation,
+        items: filledItems.map(i => {
+          const data = availableItems.find(a => a.value === i.item);
+          return { item: data?.label ?? i.item, qty: parseInt(i.qty) };
+        }),
+        itemsLabel: filledItems
+          .map(i => {
+            const data = availableItems.find(a => a.value === i.item);
+            return `${data?.label ?? i.item} ×${i.qty}`;
+          })
+          .join(", "),
+        priority,
+        notes: notes.trim() || "—",
+        by: "Current User",
+        date: new Date().toLocaleDateString("en-US", {
+          month: "short", day: "numeric", year: "numeric",
+        }),
+        status: status === "Transferred" ? "Completed" : "Pending",
+      };
+
+      // Call onSave FIRST so parent state updates before modal closes
+      onSave?.(newTransfer);
+
+      // Then close immediately — no setTimeout so state is never lost
+      handleReset();
+      onClose();
+
     } catch {
       showToast("Something went wrong. Please try again.", "error");
     } finally {
@@ -174,15 +214,15 @@ export default function CreateTransferModal({ open, onClose, prefillItem = null 
     }
   };
 
-  const handleTransferNow     = () => submit("Transferred",     `TRF-2026-0009 completed — ${totalQty} units moved from ${fromLocation} to ${toLocation}.`);
-  const handleRequestApproval = () => submit("Pending Approval", "Approval request sent for TRF-2026-0009. Awaiting supervisor sign-off.");
+  const handleTransferNow     = () => submit("Transferred",      `Transfer completed — ${totalQty} units moved from ${fromLocation} to ${toLocation}.`);
+  const handleRequestApproval = () => submit("Pending Approval", "Approval request sent. Awaiting supervisor sign-off.");
 
   return (
     <>
       <Dialog open={open} onClose={loading ? undefined : handleClose} maxWidth="sm" fullWidth
         PaperProps={{ sx: { borderRadius: "14px", boxShadow: "0 20px 60px rgba(0,0,0,0.15)", overflow: "hidden" } }}>
 
-        {/* ── Header — identical to IssueStockModal, blue icon ── */}
+        {/* ── Header ── */}
         <Box sx={{
           px: "24px", pt: "20px", pb: "16px",
           display: "flex", alignItems: "flex-start", justifyContent: "space-between",
@@ -216,7 +256,7 @@ export default function CreateTransferModal({ open, onClose, prefillItem = null 
           <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", mb: "16px" }}>
             <Box>
               <FieldLabel>Transfer Number</FieldLabel>
-              <TextField fullWidth size="small" value="TRF-2026-0009" disabled sx={disabledInputSx}
+              <TextField fullWidth size="small" value={`TRF-2026-${String(transferCounter).padStart(4, "0")}`} disabled sx={disabledInputSx}
                 inputProps={{ style: { color: "#9ca3af" } }} />
             </Box>
             <Box>
@@ -245,7 +285,7 @@ export default function CreateTransferModal({ open, onClose, prefillItem = null 
             </Box>
           </Box>
 
-          {/* Row 2: From + To — side by side, NO swap button */}
+          {/* Row 2: From + To */}
           <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", mb: "16px" }}>
             <Box>
               <FieldLabel required>From Location</FieldLabel>
@@ -275,7 +315,7 @@ export default function CreateTransferModal({ open, onClose, prefillItem = null 
             </Box>
           </Box>
 
-          {/* Route preview pill — blue theme */}
+          {/* Route preview pill */}
           {fromLocation && toLocation && (
             <Box sx={{
               display: "flex", alignItems: "center", gap: "8px",
@@ -295,7 +335,6 @@ export default function CreateTransferModal({ open, onClose, prefillItem = null 
               Items to Transfer
             </Typography>
 
-            {/* Column headers */}
             <Box sx={{ display: "grid", gridTemplateColumns: "1fr 72px 88px 72px 32px", gap: "8px", mb: "8px", px: "2px" }}>
               {["ITEM", "AVAIL.", "LOT #", "QTY", ""].map(h => (
                 <Typography key={h} sx={{ fontSize: 10, fontWeight: 600, color: "#9ca3af", letterSpacing: "0.04em", textTransform: "uppercase" }}>{h}</Typography>
@@ -310,8 +349,6 @@ export default function CreateTransferModal({ open, onClose, prefillItem = null 
                 return (
                   <Box key={row.id}>
                     <Box sx={{ display: "grid", gridTemplateColumns: "1fr 72px 88px 72px 32px", gap: "8px", alignItems: "center" }}>
-
-                      {/* Item */}
                       <FormControl size="small">
                         <Select value={row.item} displayEmpty
                           onChange={e => updateItem(row.id, "item", e.target.value)}
@@ -321,17 +358,14 @@ export default function CreateTransferModal({ open, onClose, prefillItem = null 
                         </Select>
                       </FormControl>
 
-                      {/* Available */}
                       <TextField size="small" value={data ? data.available : ""} disabled
                         sx={{ "& .MuiOutlinedInput-root": { fontSize: 13, borderRadius: "8px", background: "#f3f4f6", "& fieldset": { borderColor: "#e5e7eb" } },
                           "& input": { textAlign: "center", color: "#374151", fontWeight: 600, py: "7px" } }} />
 
-                      {/* Lot */}
                       <TextField size="small" value={data ? data.lot : ""} placeholder="LOT #" disabled
                         sx={{ "& .MuiOutlinedInput-root": { fontSize: 12, borderRadius: "8px", background: "#f3f4f6", "& fieldset": { borderColor: "#e5e7eb" } },
                           "& input": { py: "7px" } }} />
 
-                      {/* Qty — no spinner arrows, centered, same fix as IssueStockModal */}
                       <TextField size="small" placeholder="Qty" type="number"
                         value={row.qty} onChange={e => updateItem(row.id, "qty", e.target.value)}
                         inputProps={{ min: 0, max: data?.available }}
@@ -346,7 +380,6 @@ export default function CreateTransferModal({ open, onClose, prefillItem = null 
                           "& input": { py: "7px", textAlign: "center" },
                         }} />
 
-                      {/* Delete */}
                       <IconButton size="small" onClick={() => removeItem(row.id)} disabled={items.length === 1}
                         sx={{ color: "#ef4444", border: "1px solid #fecaca", borderRadius: "6px", width: 28, height: 28,
                           "&:hover": { background: "#fef2f2" },
@@ -355,7 +388,6 @@ export default function CreateTransferModal({ open, onClose, prefillItem = null 
                       </IconButton>
                     </Box>
 
-                    {/* Qty error hint */}
                     {qtyErr && (
                       <Box sx={{ display: "grid", gridTemplateColumns: "1fr 72px 88px 72px 32px", gap: "8px", mt: "2px" }}>
                         <Box /><Box /><Box />
@@ -370,7 +402,6 @@ export default function CreateTransferModal({ open, onClose, prefillItem = null 
               })}
             </Box>
 
-            {/* Add Item — blue dashed, matching IssueStockModal */}
             <Button onClick={addItem} disabled={loading} startIcon={<AddIcon sx={{ fontSize: 14 }} />}
               sx={{ mt: "10px", width: "100%", border: "1.5px dashed #bfdbfe", borderRadius: "8px", py: "8px",
                 fontSize: 12, fontWeight: 600, color: "#2563eb", textTransform: "none", background: "transparent",
@@ -379,7 +410,7 @@ export default function CreateTransferModal({ open, onClose, prefillItem = null 
             </Button>
           </Box>
 
-          {/* Total units — blue tint when > 0, matching Issue Value pill style */}
+          {/* Total units */}
           <Box sx={{
             display: "flex", justifyContent: "flex-end", mb: "16px",
             p: "10px 16px", borderRadius: "10px",
@@ -408,7 +439,7 @@ export default function CreateTransferModal({ open, onClose, prefillItem = null 
           </Box>
         </DialogContent>
 
-        {/* ── Footer — identical to IssueStockModal ── */}
+        {/* ── Footer ── */}
         <Box sx={{
           px: "24px", py: "16px", borderTop: "1px solid #f3f4f6",
           display: "flex", alignItems: "center", justifyContent: "flex-end",
