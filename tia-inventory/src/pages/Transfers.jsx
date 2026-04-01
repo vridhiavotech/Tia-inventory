@@ -603,72 +603,72 @@ export default function Transfers() {
       </div>
 
       {/* Stat Cards */}
-      <div style={{ display: "flex", gap: 16, marginBottom: 28 }}>
-        {[
-          {
-            label: "Total Transfers",
-            count: total,
-            accent: "#0e7490",
-            sub: null,
-          },
-          {
-            label: "Pending",
-            count: pending,
-            accent: "#d97706",
-            sub: "Awaiting approval",
-          },
-          {
-            label: "Completed",
-            count: completed,
-            accent: "#16a34a",
-            sub: null,
-          },
-        ].map(({ label, count, accent, sub }) => (
-          <div
-            key={label}
-            style={{
-              flex: 1,
-              background: "#fff",
-              borderRadius: 14,
-              border: "1.5px solid #e2e8f0",
-              overflow: "hidden",
-              boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
-              display: "flex",
-            }}
-          >
-            <div style={{ width: 4, background: accent }} />
-            <div style={{ padding: "18px 22px", flex: 1 }}>
-              <div
-                style={{
-                  fontSize: 11,
-                  fontWeight: 700,
-                  color: "#94a3b8",
-                  letterSpacing: "0.07em",
-                  textTransform: "uppercase",
-                  marginBottom: 8,
-                }}
-              >
-                {label}
-              </div>
-              <div
-                style={{
-                  fontSize: 38,
-                  fontWeight: 800,
-                  color: "#0f172a",
-                  lineHeight: 1,
-                }}
-              >
-                {count}
-              </div>
-              {sub && (
-                <div style={{ fontSize: 12, color: "#94a3b8", marginTop: 6 }}>
-                  {sub}
-                </div>
-              )}
-            </div>
+     <div style={{ display: "flex", gap: 12, marginBottom: 24 }}>
+  {[
+    {
+      label: "Total Transfers",
+      count: total,
+      accent: "#0e7490",
+      sub: null,
+    },
+    {
+      label: "Pending",
+      count: pending,
+      accent: "#d97706",
+      sub: "Awaiting approval",
+    },
+    {
+      label: "Completed",
+      count: completed,
+      accent: "#16a34a",
+      sub: null,
+    },
+  ].map(({ label, count, accent, sub }) => (
+    <div
+      key={label}
+      style={{
+        flex: 1,
+        background: "#fff",
+        borderRadius: 12,
+        border: "1.5px solid #e2e8f0",
+        overflow: "hidden",
+        boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
+        display: "flex",
+      }}
+    >
+      <div style={{ width: 3, background: accent }} />
+      <div style={{ padding: "12px 16px", flex: 1 }}>
+        <div
+          style={{
+            fontSize: 10,
+            fontWeight: 700,
+            color: "#94a3b8",
+            letterSpacing: "0.07em",
+            textTransform: "uppercase",
+            marginBottom: 6,
+          }}
+        >
+          {label}
+        </div>
+        <div
+          style={{
+            fontSize: 28,
+            fontWeight: 800,
+            color: "#0f172a",
+            lineHeight: 1,
+          }}
+        >
+          {count}
+        </div>
+        {sub && (
+          <div style={{ fontSize: 10, color: "#94a3b8", marginTop: 4 }}>
+            {sub}
           </div>
-        ))}
+        )}
       </div>
+    </div>
+  ))}
+</div>
 
       {/* Table */}
       <div

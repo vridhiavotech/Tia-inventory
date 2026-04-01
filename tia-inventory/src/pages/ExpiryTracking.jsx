@@ -938,69 +938,70 @@ export default function ExpiryTracking() {
 
       {/* Stat Cards */}
 
-      <div style={{ display: "flex", gap: 16, marginBottom: 28 }}>
-        {[
-          {
-            key: "EXPIRED",
-            count: expired.length,
-            sub: "Must be disposed immediately",
-            accent: "#ef4444",
-          },
-          {
-            key: "EXPIRING ≤ 60 DAYS",
-            count: expiringSoon.length,
-            sub: "Plan replacement now",
-            accent: "#d97706",
-          },
-          {
-            key: "OK",
-            count: ok.length,
-            sub: "No immediate concern",
-            accent: "#16a34a",
-          },
-        ].map(({ key, count, sub, accent }) => (
-          <div
-            key={key}
-            style={{
-              flex: 1,
-              background: "#fff",
-              borderRadius: 14,
-              overflow: "hidden",
-              boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
-              display: "flex",
-            }}
-          >
-            <div style={{ width: 4, background: accent }} />
-            <div style={{ padding: "18px 22px", flex: 1 }}>
-              <div
-                style={{
-                  fontSize: 11,
-                  fontWeight: 700,
-                  color: "#94a3b8",
-                  letterSpacing: "0.07em",
-                  textTransform: "uppercase",
-                  marginBottom: 8,
-                }}
-              >
-                {key}
-              </div>
-              <div
-                style={{
-                  fontSize: 36,
-                  fontWeight: 800,
-                  color: "#0f172a",
-                  lineHeight: 1,
-                }}
-              >
-                {count}
-              </div>
-              <div style={{ fontSize: 12, color: "#94a3b8", marginTop: 6 }}>
-                {sub}
-              </div>
-            </div>
-          </div>
-        ))}
+      <div style={{ display: "flex", gap: 12, marginBottom: 24 }}>
+  {[
+    {
+      key: "EXPIRED",
+      count: expired.length,
+      sub: "Must be disposed immediately",
+      accent: "#ef4444",
+    },
+    {
+      key: "EXPIRING ≤ 60 DAYS",
+      count: expiringSoon.length,
+      sub: "Plan replacement now",
+      accent: "#d97706",
+    },
+    {
+      key: "OK",
+      count: ok.length,
+      sub: "No immediate concern",
+      accent: "#16a34a",
+    },
+  ].map(({ key, count, sub, accent }) => (
+    <div
+      key={key}
+      style={{
+        flex: 1,
+        background: "#fff",
+        borderRadius: 12,
+        border: "1.5px solid #e2e8f0",
+        overflow: "hidden",
+        boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
+        display: "flex",
+      }}
+    >
+      <div style={{ width: 3, background: accent }} />
+      <div style={{ padding: "12px 16px", flex: 1 }}>
+        <div
+          style={{
+            fontSize: 10,
+            fontWeight: 700,
+            color: "#94a3b8",
+            letterSpacing: "0.07em",
+            textTransform: "uppercase",
+            marginBottom: 6,
+          }}
+        >
+          {key}
+        </div>
+        <div
+          style={{
+            fontSize: 28,
+            fontWeight: 800,
+            color: "#0f172a",
+            lineHeight: 1,
+          }}
+        >
+          {count}
+        </div>
+        <div style={{ fontSize: 10, color: "#94a3b8", marginTop: 4 }}>
+          {sub}
+        </div>
       </div>
+    </div>
+  ))}
+</div>
 
       {/* Filter tabs */}
       <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
