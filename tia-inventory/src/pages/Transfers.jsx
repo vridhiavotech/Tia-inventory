@@ -68,7 +68,7 @@ const inputSt = {
   border: "1.5px solid #e2e8f0",
   borderRadius: 8,
   fontSize: 13,
-  fontFamily: "'DM Sans', sans-serif",
+ 
   boxSizing: "border-box",
   outline: "none",
   color: "#0f172a",
@@ -177,7 +177,7 @@ function ViewTransferModal({ transfer, onClose }) {
           width: "100%",
           maxWidth: 480,
           boxShadow: "0 32px 80px rgba(0,0,0,0.22)",
-          fontFamily: "'DM Sans', sans-serif",
+         
         }}
       >
         <div
@@ -401,7 +401,7 @@ function ViewTransferModal({ transfer, onClose }) {
               fontSize: 13,
               fontWeight: 600,
               color: "#374151",
-              fontFamily: "'DM Sans', sans-serif",
+             
             }}
           >
             Close
@@ -452,7 +452,7 @@ export default function Transfers() {
   return (
     <div
       style={{
-        fontFamily: "'DM Sans', sans-serif",
+      
         background: "#f8fafc",
         minHeight: "100vh",
         padding: "28px 28px",
@@ -780,7 +780,7 @@ export default function Transfers() {
                             fontSize: 12,
                             fontWeight: 700,
                             color: "#0e7490",
-                            fontFamily: "'DM Sans', sans-serif",
+                       
                           }}
                         >
                           {row.id}

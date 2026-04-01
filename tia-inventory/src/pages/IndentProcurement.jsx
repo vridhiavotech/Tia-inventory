@@ -276,7 +276,7 @@ const IndentProcurement = () => {
               sx={{ 
                 fontSize: '11px', 
                 color: '#6c757d', 
-                fontFamily: "'Syne', sans-serif" 
+               
               }}
             >
               {indentDetails.indentNo}

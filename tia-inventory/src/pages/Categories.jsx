@@ -348,7 +348,7 @@ const inputSt = {
   border: "1.5px solid #e2e8f0",
   borderRadius: 8,
   fontSize: 13,
-  fontFamily: "'DM Sans', sans-serif",
+
   boxSizing: "border-box",
   outline: "none",
   color: "#0f172a",
@@ -513,7 +513,7 @@ function CategoryModal({
           width: "100%",
           maxWidth: 460,
           boxShadow: "0 24px 64px rgba(0,0,0,0.2)",
-          fontFamily: "'DM Sans', sans-serif",
+       
           maxHeight: "85vh",
           display: "flex",
           flexDirection: "column",
@@ -607,7 +607,7 @@ function CategoryModal({
                         ? "2px solid #2563eb"
                         : "1.5px solid #e2e8f0",
                     background: type === opt.val ? "#f0fdfa" : "#fff",
-                    fontFamily: "'DM Sans', sans-serif",
+                   
                     textAlign: "left",
                   }}
                 >
@@ -806,7 +806,7 @@ function CategoryModal({
               background: "#fff",
               cursor: "pointer",
               fontSize: 13,
-              fontFamily: "'DM Sans', sans-serif",
+            
               fontWeight: 600,
               color: "#374151",
             }}
@@ -822,7 +822,7 @@ function CategoryModal({
               background: "#2563eb",
               cursor: "pointer",
               fontSize: 13,
-              fontFamily: "'DM Sans', sans-serif",
+            
               fontWeight: 700,
               color: "#fff",
               boxShadow: "0 2px 8px rgba(14,116,144,0.25)",
@@ -1022,7 +1022,7 @@ export default function Categories() {
   return (
     <div
       style={{
-        fontFamily: "'DM Sans', sans-serif",
+  
         background: "#f8fafc",
         minHeight: "100vh",
         padding: "26px 24px",
@@ -1089,7 +1089,7 @@ export default function Categories() {
               fontSize: 13,
               fontWeight: 600,
               color: "#374151",
-              fontFamily: "'DM Sans', sans-serif",
+          
               boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
             }}
           >
@@ -1108,7 +1108,7 @@ export default function Categories() {
               fontSize: 13,
               fontWeight: 700,
               color: "#fff",
-              fontFamily: "'DM Sans', sans-serif",
+            
               boxShadow: "0 2px 8px rgba(14,116,144,0.28)",
             }}
           >
@@ -1194,7 +1194,7 @@ export default function Categories() {
                     fontSize: 11.5,
                     fontWeight: 600,
                     color: "#374151",
-                    fontFamily: "'DM Sans', sans-serif",
+                  
                     whiteSpace: "nowrap",
                   }}
                 >
