@@ -294,8 +294,8 @@ const IndentProcurement = () => {
                 padding: '6px 16px',
                 minWidth: 'auto',
                 '&:hover': {
-                  borderColor: '#6366f1',
-                  color: '#6366f1',
+                  borderColor: '#2563eb',
+                  color: '#2563eb',
                   backgroundColor: '#f8f9fa',
                 }
               }}
@@ -321,10 +321,10 @@ const IndentProcurement = () => {
                         height: { xs: 24, sm: 28, md: 32 },
                       },
                       '& .MuiStepIcon-root.Mui-active': { 
-                        color: '#6366f1',
+                        color: '#2563eb',
                       },
                       '& .MuiStepIcon-root.Mui-completed': { 
-                        color: '#6366f1',
+                        color: '#2563eb',
                       },
                     }
                   }}
@@ -333,7 +333,7 @@ const IndentProcurement = () => {
                     variant="caption" 
                     sx={{ 
                       fontWeight: activeStep === index ? 600 : 400, 
-                      color: activeStep === index ? '#6366f1' : '#6c757d',
+                      color: activeStep === index ? '#2563eb' : '#6c757d',
                       fontSize: { xs: '10px', sm: '11px', md: '12px' }
                     }}
                   >
@@ -692,7 +692,7 @@ const IndentProcurement = () => {
               sx={{
                 borderRadius: '8px',
                 textTransform: 'none',
-                color: '#6366f1',
+                color: '#2563eb',
                 fontSize: { xs: '12px', sm: '12px', md: '13px' },
                 fontWeight: 500,
                 width: { xs: '100%', sm: 'auto' },
@@ -1020,8 +1020,8 @@ const IndentProcurement = () => {
               fontWeight: 500,
               padding: { xs: '6px 16px', sm: '7px 20px', md: '8px 24px' },
               '&:hover': {
-                borderColor: '#6366f1',
-                color: '#6366f1',
+                borderColor: '#2563eb',
+                color: '#2563eb',
                 backgroundColor: '#f8f9fa',
               }
             }}
@@ -1036,12 +1036,12 @@ const IndentProcurement = () => {
             sx={{
               borderRadius: '8px',
               textTransform: 'none',
-              background: 'linear-gradient(135deg, #6366f1, #818cf8)',
+              background: 'linear-gradient(135deg, #2563eb, #818cf8)',
               fontSize: { xs: '12px', sm: '13px', md: '14px' },
               fontWeight: 500,
               padding: { xs: '6px 20px', sm: '7px 24px', md: '8px 28px' },
               '&:hover': {
-                background: 'linear-gradient(135deg, #4f46e5, #6366f1)',
+                background: 'linear-gradient(135deg, #4f46e5, #2563eb)',
               }
             }}
           >

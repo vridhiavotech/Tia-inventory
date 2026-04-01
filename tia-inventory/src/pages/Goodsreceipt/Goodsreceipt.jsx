@@ -221,9 +221,9 @@ export default function GoodsReceipt() {
               onClick={() => setNewGRNOpen(true)}
               sx={{
                 fontSize:13, fontWeight:700, color:"#fff", textTransform:"none",
-                bgcolor:"#6366f1", borderRadius:"8px", px:2, height:36,
+                bgcolor:"#2563eb", borderRadius:"8px", px:2, height:36,
                 boxShadow:"0 1px 4px rgba(99,102,241,0.35)",
-                "&:hover":{ bgcolor:"#4f46e5" },
+                "&:hover":{ bgcolor:"#2563eb" },
               }}
             >
               New GRN

@@ -26,21 +26,72 @@ import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 
 // ─── Mock Items ───────────────────────────────────────────────────────────────
 const availableItems = [
-  { label: "Epinephrine 1mg/mL 10mL Vial",   value: "epinephrine", available: 4,   lot: "EP24B"  },
-  { label: "Amoxicillin 500mg Capsules",       value: "amoxicillin", available: 200, lot: "AM12A"  },
-  { label: "Sodium Chloride 0.9% IV 1L",       value: "sodium",      available: 12,  lot: "SC09C"  },
-  { label: "Morphine Sulfate 10mg/mL",         value: "morphine",    available: 18,  lot: "MS10D"  },
-  { label: "Nitrile Exam Gloves (L) 100/bx",  value: "gloves",      available: 30,  lot: "GL-L01" },
-  { label: "Surgical Mask ASTM Level 3",       value: "mask",        available: 450, lot: "MK-L3A" },
-  { label: "4×4 Gauze Pads Sterile 10/pk",    value: "gauze",       available: 200, lot: "GZ44B"  },
-  { label: "BD Vacutainer EDTA 10mL",          value: "vacutainer",  available: 600, lot: "BD-E01" },
+  {
+    label: "Epinephrine 1mg/mL 10mL Vial",
+    value: "epinephrine",
+    available: 4,
+    lot: "EP24B",
+  },
+  {
+    label: "Amoxicillin 500mg Capsules",
+    value: "amoxicillin",
+    available: 200,
+    lot: "AM12A",
+  },
+  {
+    label: "Sodium Chloride 0.9% IV 1L",
+    value: "sodium",
+    available: 12,
+    lot: "SC09C",
+  },
+  {
+    label: "Morphine Sulfate 10mg/mL",
+    value: "morphine",
+    available: 18,
+    lot: "MS10D",
+  },
+  {
+    label: "Nitrile Exam Gloves (L) 100/bx",
+    value: "gloves",
+    available: 30,
+    lot: "GL-L01",
+  },
+  {
+    label: "Surgical Mask ASTM Level 3",
+    value: "mask",
+    available: 450,
+    lot: "MK-L3A",
+  },
+  {
+    label: "4×4 Gauze Pads Sterile 10/pk",
+    value: "gauze",
+    available: 200,
+    lot: "GZ44B",
+  },
+  {
+    label: "BD Vacutainer EDTA 10mL",
+    value: "vacutainer",
+    available: 600,
+    lot: "BD-E01",
+  },
 ];
 
-const LOCATIONS = ["Central Store", "ICU", "Emergency Dept", "Pharmacy", "Surgery", "Laboratory", "Ward A", "Ward B", "OPD", "Maternity"];
+const LOCATIONS = [
+  "Central Store",
+  "ICU",
+  "Emergency Dept",
+  "Pharmacy",
+  "Surgery",
+  "Laboratory",
+  "Ward A",
+  "Ward B",
+  "OPD",
+  "Maternity",
+];
 
 const PRIORITY_CONFIG = {
-  Routine:  { color: "#2563eb", bg: "#eff6ff", border: "#bfdbfe" },
-  Urgent:   { color: "#d97706", bg: "#fffbeb", border: "#fde68a" },
+  Routine: { color: "#2563eb", bg: "#eff6ff", border: "#bfdbfe" },
+  Urgent: { color: "#d97706", bg: "#fffbeb", border: "#fde68a" },
   Critical: { color: "#dc2626", bg: "#fef2f2", border: "#fecaca" },
 };
 
@@ -93,7 +144,8 @@ function FieldLabel({ children, required }) {
 }
 
 function PriorityIcon({ priority }) {
-  if (priority === "Critical") return <ErrorOutlineIcon sx={{ fontSize: 14 }} />;
+  if (priority === "Critical")
+    return <ErrorOutlineIcon sx={{ fontSize: 14 }} />;
   if (priority === "Urgent") return <WarningAmberIcon sx={{ fontSize: 14 }} />;
   return <InfoOutlinedIcon sx={{ fontSize: 14 }} />;
 }
@@ -108,7 +160,8 @@ function validate({ fromLocation, toLocation, items }) {
 
   for (const row of filledItems) {
     const qty = parseInt(row.qty);
-    if (!row.qty || isNaN(qty) || qty <= 0) return "All items must have a valid quantity.";
+    if (!row.qty || isNaN(qty) || qty <= 0)
+      return "All items must have a valid quantity.";
     const data = availableItems.find((a) => a.value === row.item);
     if (data && qty > data.available)
       return `Quantity for "${data.label}" exceeds available stock (${data.available}).`;
@@ -118,11 +171,15 @@ function validate({ fromLocation, toLocation, items }) {
 }
 
 // ─── Main Component ───────────────────────────────────────────────────────────
-export default function CreateTransferModal({ open, onClose, prefillItem = null }) {
-  const [priority, setPriority]     = useState("Routine");
-  const [fromLocation, setFrom]     = useState("");
-  const [toLocation, setTo]         = useState("");
-  const [notes, setNotes]           = useState("");
+export default function CreateTransferModal({
+  open,
+  onClose,
+  prefillItem = null,
+}) {
+  const [priority, setPriority] = useState("Routine");
+  const [fromLocation, setFrom] = useState("");
+  const [toLocation, setTo] = useState("");
+  const [notes, setNotes] = useState("");
   const [items, setItems] = useState([
     prefillItem
       ? { id: Date.now(), item: prefillItem, qty: "" }
@@ -130,14 +187,19 @@ export default function CreateTransferModal({ open, onClose, prefillItem = null 
   ]);
 
   // UI state
-  const [loading, setLoading]       = useState(false);
-  const [toast, setToast]           = useState({ open: false, message: "", severity: "success" });
+  const [loading, setLoading] = useState(false);
+  const [toast, setToast] = useState({
+    open: false,
+    message: "",
+    severity: "success",
+  });
   const [fieldErrors, setFieldErrors] = useState({});
 
   const showToast = (message, severity = "success") =>
     setToast({ open: true, message, severity });
 
-  const addItem    = () => setItems((p) => [...p, { id: Date.now(), item: "", qty: "" }]);
+  const addItem = () =>
+    setItems((p) => [...p, { id: Date.now(), item: "", qty: "" }]);
   const removeItem = (id) => setItems((p) => p.filter((i) => i.id !== id));
   const updateItem = (id, field, value) =>
     setItems((p) => p.map((i) => (i.id === id ? { ...i, [field]: value } : i)));
@@ -198,7 +260,10 @@ export default function CreateTransferModal({ open, onClose, prefillItem = null 
       };
 
       console.log("Transfer submitted:", payload);
-      showToast(`Transfer TRF-2026-0009 completed — ${totalQty} units moved from ${fromLocation} to ${toLocation}.`, "success");
+      showToast(
+        `Transfer TRF-2026-0009 completed — ${totalQty} units moved from ${fromLocation} to ${toLocation}.`,
+        "success",
+      );
 
       // Close after a short delay so the user sees the success toast
       setTimeout(() => onClose(), 1800);
@@ -243,7 +308,10 @@ export default function CreateTransferModal({ open, onClose, prefillItem = null 
       };
 
       console.log("Approval requested:", payload);
-      showToast(`Approval request sent for TRF-2026-0009. Awaiting supervisor sign-off.`, "warning");
+      showToast(
+        `Approval request sent for TRF-2026-0009. Awaiting supervisor sign-off.`,
+        "warning",
+      );
 
       setTimeout(() => onClose(), 1800);
     } catch (err) {
@@ -266,7 +334,8 @@ export default function CreateTransferModal({ open, onClose, prefillItem = null 
           sx: {
             borderRadius: "14px",
             boxShadow: "0 20px 60px rgba(0,0,0,0.15)",
-            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+            fontFamily:
+              '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
             overflow: "hidden",
           },
         }}
@@ -274,23 +343,33 @@ export default function CreateTransferModal({ open, onClose, prefillItem = null 
         {/* ── Header ── */}
         <Box
           sx={{
-            px: "24px", pt: "20px", pb: "16px",
-            display: "flex", alignItems: "flex-start", justifyContent: "space-between",
+            px: "24px",
+            pt: "20px",
+            pb: "16px",
+            display: "flex",
+            alignItems: "flex-start",
+            justifyContent: "space-between",
             borderBottom: "1px solid #f3f4f6",
           }}
         >
           <Box sx={{ display: "flex", alignItems: "center", gap: "12px" }}>
             <Box
               sx={{
-                width: 38, height: 38, borderRadius: "10px",
+                width: 38,
+                height: 38,
+                borderRadius: "10px",
                 background: "#f5f3ff",
-                display: "flex", alignItems: "center", justifyContent: "center",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
               }}
             >
-              <SwapHorizIcon sx={{ fontSize: 20, color: "#7c3aed" }} />
+              <SwapHorizIcon sx={{ fontSize: 20, color: "#2563eb" }} />
             </Box>
             <Box>
-              <Typography sx={{ fontSize: 16, fontWeight: 700, color: "#111827" }}>
+              <Typography
+                sx={{ fontSize: 16, fontWeight: 700, color: "#111827" }}
+              >
                 Create Transfer
               </Typography>
               <Typography sx={{ fontSize: 12, color: "#9ca3af", mt: "1px" }}>
@@ -306,7 +385,8 @@ export default function CreateTransferModal({ open, onClose, prefillItem = null 
               color: "#9ca3af",
               border: "1px solid #e5e7eb",
               borderRadius: "8px",
-              width: 30, height: 30,
+              width: 30,
+              height: 30,
               "&:hover": { background: "#f3f4f6", color: "#374151" },
             }}
           >
@@ -314,12 +394,19 @@ export default function CreateTransferModal({ open, onClose, prefillItem = null 
           </IconButton>
         </Box>
 
-        <DialogContent sx={{ px: "24px", py: "20px", overflowY: "auto", maxHeight: "70vh" }}>
-
+        <DialogContent
+          sx={{ px: "24px", py: "20px", overflowY: "auto", maxHeight: "70vh" }}
+        >
           {/* ── Transfer Number ── */}
           <Box sx={{ mb: "16px" }}>
             <FieldLabel>Transfer Number</FieldLabel>
-            <TextField fullWidth size="small" value="TRF-2026-0009" disabled sx={disabledInputSx} />
+            <TextField
+              fullWidth
+              size="small"
+              value="TRF-2026-0009"
+              disabled
+              sx={disabledInputSx}
+            />
           </Box>
 
           {/* ── Priority ── */}
@@ -349,10 +436,20 @@ export default function CreateTransferModal({ open, onClose, prefillItem = null 
                       cursor: "pointer",
                       transition: "all 0.15s ease",
                       userSelect: "none",
-                      "&:hover": { borderColor: cfg.border, background: cfg.bg, color: cfg.color },
+                      "&:hover": {
+                        borderColor: cfg.border,
+                        background: cfg.bg,
+                        color: cfg.color,
+                      },
                     }}
                   >
-                    <Box sx={{ display: "flex", alignItems: "center", color: "inherit" }}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        color: "inherit",
+                      }}
+                    >
                       <PriorityIcon priority={p} />
                     </Box>
                     {p}
@@ -364,13 +461,23 @@ export default function CreateTransferModal({ open, onClose, prefillItem = null 
 
           {/* ── From / Swap / To ── */}
           <Box sx={{ mb: "16px" }}>
-            <Box sx={{ display: "grid", gridTemplateColumns: "1fr 36px 1fr", gap: "8px", alignItems: "flex-end" }}>
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: "1fr 36px 1fr",
+                gap: "8px",
+                alignItems: "flex-end",
+              }}
+            >
               <Box>
                 <FieldLabel required>From Location</FieldLabel>
                 <FormControl fullWidth size="small">
                   <Select
                     value={fromLocation}
-                    onChange={(e) => { setFrom(e.target.value); setFieldErrors((p) => ({ ...p, from: false })); }}
+                    onChange={(e) => {
+                      setFrom(e.target.value);
+                      setFieldErrors((p) => ({ ...p, from: false }));
+                    }}
                     displayEmpty
                     sx={{
                       ...selectSx,
@@ -379,28 +486,46 @@ export default function CreateTransferModal({ open, onClose, prefillItem = null 
                       },
                     }}
                   >
-                    <MenuItem value="" sx={{ fontSize: 13, color: "#9ca3af" }}>Select...</MenuItem>
+                    <MenuItem value="" sx={{ fontSize: 13, color: "#9ca3af" }}>
+                      Select...
+                    </MenuItem>
                     {LOCATIONS.map((l) => (
-                      <MenuItem key={l} value={l} sx={{ fontSize: 13 }}>{l}</MenuItem>
+                      <MenuItem key={l} value={l} sx={{ fontSize: 13 }}>
+                        {l}
+                      </MenuItem>
                     ))}
                   </Select>
                 </FormControl>
                 {fieldErrors.from && (
-                  <Typography sx={{ fontSize: 11, color: "#ef4444", mt: "4px" }}>Required</Typography>
+                  <Typography
+                    sx={{ fontSize: 11, color: "#ef4444", mt: "4px" }}
+                  >
+                    Required
+                  </Typography>
                 )}
               </Box>
 
-              <Box sx={{ display: "flex", justifyContent: "center", pb: fieldErrors.from || fieldErrors.to ? "20px" : "1px" }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  pb: fieldErrors.from || fieldErrors.to ? "20px" : "1px",
+                }}
+              >
                 <IconButton
                   size="small"
                   onClick={swapLocations}
                   sx={{
-                    width: 32, height: 32,
+                    width: 32,
+                    height: 32,
                     border: "1.5px solid #e5e7eb",
                     borderRadius: "8px",
-                    color: "#7c3aed",
+                    color: "#2563eb",
                     background: "#f9fafb",
-                    "&:hover": { background: "#f5f3ff", borderColor: "#ddd6fe" },
+                    "&:hover": {
+                      background: "#f5f3ff",
+                      borderColor: "#ddd6fe",
+                    },
                     transition: "all 0.15s",
                   }}
                 >
@@ -413,7 +538,10 @@ export default function CreateTransferModal({ open, onClose, prefillItem = null 
                 <FormControl fullWidth size="small">
                   <Select
                     value={toLocation}
-                    onChange={(e) => { setTo(e.target.value); setFieldErrors((p) => ({ ...p, to: false })); }}
+                    onChange={(e) => {
+                      setTo(e.target.value);
+                      setFieldErrors((p) => ({ ...p, to: false }));
+                    }}
                     displayEmpty
                     sx={{
                       ...selectSx,
@@ -422,14 +550,22 @@ export default function CreateTransferModal({ open, onClose, prefillItem = null 
                       },
                     }}
                   >
-                    <MenuItem value="" sx={{ fontSize: 13, color: "#9ca3af" }}>Select...</MenuItem>
+                    <MenuItem value="" sx={{ fontSize: 13, color: "#9ca3af" }}>
+                      Select...
+                    </MenuItem>
                     {LOCATIONS.filter((l) => l !== fromLocation).map((l) => (
-                      <MenuItem key={l} value={l} sx={{ fontSize: 13 }}>{l}</MenuItem>
+                      <MenuItem key={l} value={l} sx={{ fontSize: 13 }}>
+                        {l}
+                      </MenuItem>
                     ))}
                   </Select>
                 </FormControl>
                 {fieldErrors.to && (
-                  <Typography sx={{ fontSize: 11, color: "#ef4444", mt: "4px" }}>Required</Typography>
+                  <Typography
+                    sx={{ fontSize: 11, color: "#ef4444", mt: "4px" }}
+                  >
+                    Required
+                  </Typography>
                 )}
               </Box>
             </Box>
@@ -448,12 +584,25 @@ export default function CreateTransferModal({ open, onClose, prefillItem = null 
                   border: "1px solid #ede9fe",
                 }}
               >
-                <LocalShippingOutlinedIcon sx={{ fontSize: 14, color: "#7c3aed" }} />
-                <Typography sx={{ fontSize: 12, color: "#7c3aed", fontWeight: 600 }}>
+                <LocalShippingOutlinedIcon
+                  sx={{ fontSize: 14, color: "#2563eb" }}
+                />
+                <Typography
+                  sx={{ fontSize: 12, color: "#2563eb", fontWeight: 600 }}
+                >
                   {fromLocation}
                 </Typography>
-                <Box sx={{ flex: 1, height: "1px", borderTop: "1.5px dashed #c4b5fd", mx: "4px" }} />
-                <Typography sx={{ fontSize: 12, color: "#7c3aed", fontWeight: 600 }}>
+                <Box
+                  sx={{
+                    flex: 1,
+                    height: "1px",
+                    borderTop: "1.5px dashed #c4b5fd",
+                    mx: "4px",
+                  }}
+                />
+                <Typography
+                  sx={{ fontSize: 12, color: "#2563eb", fontWeight: 600 }}
+                >
                   {toLocation}
                 </Typography>
               </Box>
@@ -464,8 +613,12 @@ export default function CreateTransferModal({ open, onClose, prefillItem = null 
           <Box sx={{ mb: "16px" }}>
             <Typography
               sx={{
-                fontSize: 12, fontWeight: 700, color: "#7c3aed",
-                letterSpacing: "0.05em", textTransform: "uppercase", mb: "12px",
+                fontSize: 12,
+                fontWeight: 700,
+                color: "#2563eb",
+                letterSpacing: "0.05em",
+                textTransform: "uppercase",
+                mb: "12px",
               }}
             >
               Items to Transfer
@@ -475,15 +628,20 @@ export default function CreateTransferModal({ open, onClose, prefillItem = null 
               sx={{
                 display: "grid",
                 gridTemplateColumns: "1fr 90px 100px 80px 32px",
-                gap: "8px", mb: "8px", px: "2px",
+                gap: "8px",
+                mb: "8px",
+                px: "2px",
               }}
             >
               {["ITEM", "AVAILABLE", "LOT #", "QTY", ""].map((h) => (
                 <Typography
                   key={h}
                   sx={{
-                    fontSize: 10, fontWeight: 600, color: "#9ca3af",
-                    letterSpacing: "0.04em", textTransform: "uppercase",
+                    fontSize: 10,
+                    fontWeight: 600,
+                    color: "#9ca3af",
+                    letterSpacing: "0.04em",
+                    textTransform: "uppercase",
                   }}
                 >
                   {h}
@@ -494,7 +652,8 @@ export default function CreateTransferModal({ open, onClose, prefillItem = null 
             <Box sx={{ display: "flex", flexDirection: "column", gap: "8px" }}>
               {items.map((row) => {
                 const data = getItemData(row.item);
-                const overQty = data && row.qty && parseInt(row.qty) > data.available;
+                const overQty =
+                  data && row.qty && parseInt(row.qty) > data.available;
                 const qtyError = fieldErrors[`qty_${row.id}`];
                 return (
                   <Box
@@ -509,13 +668,24 @@ export default function CreateTransferModal({ open, onClose, prefillItem = null 
                     <FormControl size="small">
                       <Select
                         value={row.item}
-                        onChange={(e) => updateItem(row.id, "item", e.target.value)}
+                        onChange={(e) =>
+                          updateItem(row.id, "item", e.target.value)
+                        }
                         displayEmpty
                         sx={{ ...selectSx, fontSize: 12 }}
                       >
-                        <MenuItem value="" sx={{ fontSize: 12, color: "#9ca3af" }}>Select item...</MenuItem>
+                        <MenuItem
+                          value=""
+                          sx={{ fontSize: 12, color: "#9ca3af" }}
+                        >
+                          Select item...
+                        </MenuItem>
                         {availableItems.map((a) => (
-                          <MenuItem key={a.value} value={a.value} sx={{ fontSize: 12 }}>
+                          <MenuItem
+                            key={a.value}
+                            value={a.value}
+                            sx={{ fontSize: 12 }}
+                          >
                             {a.label}
                           </MenuItem>
                         ))}
@@ -528,10 +698,17 @@ export default function CreateTransferModal({ open, onClose, prefillItem = null 
                       disabled
                       sx={{
                         "& .MuiOutlinedInput-root": {
-                          fontSize: 13, borderRadius: "8px", background: "#f3f4f6",
+                          fontSize: 13,
+                          borderRadius: "8px",
+                          background: "#f3f4f6",
                           "& fieldset": { borderColor: "#e5e7eb" },
                         },
-                        "& input": { textAlign: "center", color: "#374151", fontWeight: 600, py: "7px" },
+                        "& input": {
+                          textAlign: "center",
+                          color: "#374151",
+                          fontWeight: 600,
+                          py: "7px",
+                        },
                       }}
                     />
 
@@ -542,7 +719,9 @@ export default function CreateTransferModal({ open, onClose, prefillItem = null 
                       disabled
                       sx={{
                         "& .MuiOutlinedInput-root": {
-                          fontSize: 12, borderRadius: "8px", background: "#f3f4f6",
+                          fontSize: 12,
+                          borderRadius: "8px",
+                          background: "#f3f4f6",
                           "& fieldset": { borderColor: "#e5e7eb" },
                         },
                         "& input": { py: "7px" },
@@ -556,7 +735,10 @@ export default function CreateTransferModal({ open, onClose, prefillItem = null 
                       value={row.qty}
                       onChange={(e) => {
                         updateItem(row.id, "qty", e.target.value);
-                        setFieldErrors((p) => ({ ...p, [`qty_${row.id}`]: false }));
+                        setFieldErrors((p) => ({
+                          ...p,
+                          [`qty_${row.id}`]: false,
+                        }));
                       }}
                       inputProps={{ min: 0, max: data?.available }}
                       sx={{
@@ -564,9 +746,18 @@ export default function CreateTransferModal({ open, onClose, prefillItem = null 
                           fontSize: 13,
                           borderRadius: "8px",
                           background: "#f9fafb",
-                          "& fieldset": { borderColor: overQty || qtyError ? "#fca5a5" : "#e5e7eb" },
-                          "&:hover fieldset": { borderColor: overQty || qtyError ? "#f87171" : "#d1d5db" },
-                          "&.Mui-focused fieldset": { borderColor: overQty || qtyError ? "#ef4444" : "#7c3aed" },
+                          "& fieldset": {
+                            borderColor:
+                              overQty || qtyError ? "#fca5a5" : "#e5e7eb",
+                          },
+                          "&:hover fieldset": {
+                            borderColor:
+                              overQty || qtyError ? "#f87171" : "#d1d5db",
+                          },
+                          "&.Mui-focused fieldset": {
+                            borderColor:
+                              overQty || qtyError ? "#ef4444" : "#2563eb",
+                          },
                         },
                         "& input": { py: "7px" },
                       }}
@@ -580,9 +771,13 @@ export default function CreateTransferModal({ open, onClose, prefillItem = null 
                         color: "#ef4444",
                         border: "1px solid #fecaca",
                         borderRadius: "6px",
-                        width: 28, height: 28,
+                        width: 28,
+                        height: 28,
                         "&:hover": { background: "#fef2f2" },
-                        "&.Mui-disabled": { color: "#d1d5db", borderColor: "#e5e7eb" },
+                        "&.Mui-disabled": {
+                          color: "#d1d5db",
+                          borderColor: "#e5e7eb",
+                        },
                       }}
                     >
                       <DeleteOutlineIcon sx={{ fontSize: 14 }} />
@@ -597,11 +792,16 @@ export default function CreateTransferModal({ open, onClose, prefillItem = null 
               disabled={loading}
               startIcon={<AddIcon sx={{ fontSize: 14 }} />}
               sx={{
-                mt: "10px", width: "100%",
+                mt: "10px",
+                width: "100%",
                 border: "1.5px dashed #ddd6fe",
-                borderRadius: "8px", py: "8px",
-                fontSize: 12, fontWeight: 600, color: "#7c3aed",
-                textTransform: "none", background: "transparent",
+                borderRadius: "8px",
+                py: "8px",
+                fontSize: 12,
+                fontWeight: 600,
+                color: "#2563eb",
+                textTransform: "none",
+                background: "transparent",
                 "&:hover": { background: "#f5f3ff", borderColor: "#c4b5fd" },
               }}
             >
@@ -613,7 +813,14 @@ export default function CreateTransferModal({ open, onClose, prefillItem = null 
           <Box sx={{ display: "flex", justifyContent: "flex-end", mb: "16px" }}>
             <Typography sx={{ fontSize: 13, color: "#6b7280" }}>
               Total Units:{" "}
-              <span style={{ fontSize: 16, fontWeight: 800, color: "#111827", fontStyle: "italic" }}>
+              <span
+                style={{
+                  fontSize: 16,
+                  fontWeight: 800,
+                  color: "#111827",
+                  fontStyle: "italic",
+                }}
+              >
                 {totalQty}
               </span>
             </Typography>
@@ -625,17 +832,21 @@ export default function CreateTransferModal({ open, onClose, prefillItem = null 
           <Box>
             <FieldLabel>Reason / Notes</FieldLabel>
             <TextField
-              fullWidth multiline rows={3}
+              fullWidth
+              multiline
+              rows={3}
               placeholder="e.g. ICU surge — urgent restock request..."
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               disabled={loading}
               sx={{
                 "& .MuiOutlinedInput-root": {
-                  fontSize: 13, borderRadius: "8px", background: "#f9fafb",
+                  fontSize: 13,
+                  borderRadius: "8px",
+                  background: "#f9fafb",
                   "& fieldset": { borderColor: "#e5e7eb" },
                   "&:hover fieldset": { borderColor: "#d1d5db" },
-                  "&.Mui-focused fieldset": { borderColor: "#7c3aed" },
+                  "&.Mui-focused fieldset": { borderColor: "#2563eb" },
                 },
               }}
             />
@@ -645,20 +856,29 @@ export default function CreateTransferModal({ open, onClose, prefillItem = null 
         {/* ── Footer ── */}
         <Box
           sx={{
-            px: "24px", py: "16px",
+            px: "24px",
+            py: "16px",
             borderTop: "1px solid #f3f4f6",
-            display: "flex", alignItems: "center", justifyContent: "flex-end",
-            gap: "10px", background: "#fff",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "flex-end",
+            gap: "10px",
+            background: "#fff",
           }}
         >
           <Button
             onClick={onClose}
             disabled={loading}
             sx={{
-              fontSize: 13, fontWeight: 600, color: "#374151",
-              textTransform: "none", borderRadius: "8px",
-              px: "20px", py: "9px",
-              border: "1px solid #e5e7eb", background: "#fff",
+              fontSize: 13,
+              fontWeight: 600,
+              color: "#374151",
+              textTransform: "none",
+              borderRadius: "8px",
+              px: "20px",
+              py: "9px",
+              border: "1px solid #e5e7eb",
+              background: "#fff",
               "&:hover": { background: "#f9fafb" },
             }}
           >
@@ -670,15 +890,33 @@ export default function CreateTransferModal({ open, onClose, prefillItem = null 
             onClick={handleRequestApproval}
             disabled={loading}
             startIcon={
-              loading
-                ? <Box component="span" sx={{ width: 14, height: 14, border: "2px solid #fde68a", borderTopColor: "#d97706", borderRadius: "50%", animation: "spin 0.7s linear infinite", "@keyframes spin": { to: { transform: "rotate(360deg)" } } }} />
-                : <WarningAmberIcon sx={{ fontSize: 15 }} />
+              loading ? (
+                <Box
+                  component="span"
+                  sx={{
+                    width: 14,
+                    height: 14,
+                    border: "2px solid #fde68a",
+                    borderTopColor: "#d97706",
+                    borderRadius: "50%",
+                    animation: "spin 0.7s linear infinite",
+                    "@keyframes spin": { to: { transform: "rotate(360deg)" } },
+                  }}
+                />
+              ) : (
+                <WarningAmberIcon sx={{ fontSize: 15 }} />
+              )
             }
             sx={{
-              fontSize: 13, fontWeight: 600, color: "#d97706",
-              textTransform: "none", borderRadius: "8px",
-              px: "20px", py: "9px",
-              border: "1px solid #fde68a", background: "#fffbeb",
+              fontSize: 13,
+              fontWeight: 600,
+              color: "#d97706",
+              textTransform: "none",
+              borderRadius: "8px",
+              px: "20px",
+              py: "9px",
+              border: "1px solid #fde68a",
+              background: "#fffbeb",
               "&:hover": { background: "#fef3c7" },
               "&.Mui-disabled": { opacity: 0.6 },
             }}
@@ -691,17 +929,34 @@ export default function CreateTransferModal({ open, onClose, prefillItem = null 
             onClick={handleTransferNow}
             disabled={loading}
             startIcon={
-              loading
-                ? <Box component="span" sx={{ width: 14, height: 14, border: "2px solid rgba(255,255,255,0.3)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.7s linear infinite", "@keyframes spin": { to: { transform: "rotate(360deg)" } } }} />
-                : <SwapHorizIcon sx={{ fontSize: 15 }} />
+              loading ? (
+                <Box
+                  component="span"
+                  sx={{
+                    width: 14,
+                    height: 14,
+                    border: "2px solid rgba(255,255,255,0.3)",
+                    borderTopColor: "#fff",
+                    borderRadius: "50%",
+                    animation: "spin 0.7s linear infinite",
+                    "@keyframes spin": { to: { transform: "rotate(360deg)" } },
+                  }}
+                />
+              ) : (
+                <SwapHorizIcon sx={{ fontSize: 15 }} />
+              )
             }
             sx={{
-              fontSize: 13, fontWeight: 600, color: "#fff",
-              textTransform: "none", borderRadius: "8px",
-              px: "20px", py: "9px",
-              background: "#7c3aed",
+              fontSize: 13,
+              fontWeight: 600,
+              color: "#fff",
+              textTransform: "none",
+              borderRadius: "8px",
+              px: "20px",
+              py: "9px",
+              background: "#2563eb",
               boxShadow: "0 2px 8px rgba(124,58,237,0.25)",
-              "&:hover": { background: "#6d28d9" },
+
               "&.Mui-disabled": { opacity: 0.6, color: "#fff" },
             }}
           >
@@ -722,7 +977,11 @@ export default function CreateTransferModal({ open, onClose, prefillItem = null 
           severity={toast.severity}
           variant="filled"
           sx={{ fontSize: 13, borderRadius: "10px", minWidth: 320 }}
-          icon={toast.severity === "success" ? <CheckCircleOutlineIcon fontSize="inherit" /> : undefined}
+          icon={
+            toast.severity === "success" ? (
+              <CheckCircleOutlineIcon fontSize="inherit" />
+            ) : undefined
+          }
         >
           {toast.message}
         </Alert>

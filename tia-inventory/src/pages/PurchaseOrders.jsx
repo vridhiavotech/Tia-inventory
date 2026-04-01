@@ -669,13 +669,11 @@ Total: $${po.total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFr
           sx={{
             borderRadius: '8px',
             textTransform: 'none',
-            background: 'linear-gradient(135deg, #6366f1, #818cf8)',
+            background: "#2563eb",
             fontSize: { xs: '12px', sm: '13px', md: '14px' },
             fontWeight: 500,
             padding: { xs: '6px 16px', sm: '7px 20px', md: '8px 24px' },
-            '&:hover': {
-              background: 'linear-gradient(135deg, #4f46e5, #6366f1)',
-            }
+           
           }}
         >
           New PO
