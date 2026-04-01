@@ -31,6 +31,7 @@ import StockIssue from "./pages/Stockissue";
 import AdminOverview from "./pages/Admin/Adminoverview";
 
 import Categories from "./pages/Categories";
+import Suppliers from "./pages/Suppliers";
 
 // ── Theme: removes focus outlines globally ──
 const theme = createTheme({
@@ -271,6 +272,18 @@ function App() {
               </PrivateRoute>
             }
           />
+
+          <Route
+            path="/admin/suppliers"
+            element={
+              <PrivateRoute>
+                <DashboardLayout>
+                  <Suppliers />
+                </DashboardLayout>
+              </PrivateRoute>
+            }
+          />
+
         </Routes>
       </Router>
     </ThemeProvider>
