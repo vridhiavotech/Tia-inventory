@@ -44,7 +44,8 @@ const adminItems = [
   { icon: <LocalShippingOutlinedIcon fontSize="small" />, label: "Suppliers", path: "/admin/suppliers" },
   { icon: <FactoryOutlinedIcon fontSize="small" />, label: "Manufacturers", path: "/admin/manufacturers" },
   { icon: <HistoryOutlinedIcon fontSize="small" />, label: "Audit Log", path: "/admin/audit-log" },
-  { icon: <KeyOutlinedIcon fontSize="small" />, label: "Settings", path: "/admin/settings" },
+ { icon: <KeyOutlinedIcon fontSize="small" />, label: "Settings", path: "/admin/system-settings" }
+
 ];
 
 export default function Sidebar() {
