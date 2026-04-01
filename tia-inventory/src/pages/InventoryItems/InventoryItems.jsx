@@ -108,11 +108,11 @@ function StatusChip({ label, color, icon }) {
   );
 }
 
-// ─── Delete Confirmation Dialog ───────────────────────────────────────────────
+// Delete Confirmation Dialog
 function DeleteConfirmDialog({ open, item, onCancel, onConfirm, deleting }) {
   return (
     <Dialog open={open} onClose={deleting ? undefined : onCancel} maxWidth="xs" fullWidth
-      PaperProps={{ sx: { borderRadius: "14px", boxShadow: "0 20px 60px rgba(0,0,0,0.15)", fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', overflow: "hidden" } }}>
+      PaperProps={{ sx: { borderRadius: "14px", boxShadow: "0 20px 60px rgba(0,0,0,0.15)", overflow: "hidden" } }}>
       <Box sx={{ px: "24px", pt: "20px", pb: "16px", display: "flex", alignItems: "flex-start", justifyContent: "space-between", borderBottom: "1px solid #f3f4f6" }}>
         <Box sx={{ display: "flex", alignItems: "center", gap: "12px" }}>
           <Box sx={{ width: 38, height: 38, borderRadius: "10px", background: "#fef2f2", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -162,7 +162,7 @@ function DeleteConfirmDialog({ open, item, onCancel, onConfirm, deleting }) {
   );
 }
 
-// ─── Main Component ───────────────────────────────────────────────────────────
+// Main Component
 export default function InventoryItems() {
   const navigate = useNavigate();
 
@@ -215,7 +215,7 @@ export default function InventoryItems() {
   };
 
   return (
-    <Box sx={{ background: "#f8f9fb", minHeight: "100vh", p: "28px 32px", fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', boxSizing: "border-box" }}>
+    <Box sx={{ background: "#f8f9fb", minHeight: "100vh", p: "28px 32px", boxSizing: "border-box" }}>
 
       {/* Header */}
       <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: "20px" }}>
@@ -223,8 +223,6 @@ export default function InventoryItems() {
           <Typography sx={{ fontSize: 20, fontWeight: 700, color: "#111827" }}>Inventory Items</Typography>
           <Typography sx={{ fontSize: 12, color: "#9ca3af", mt: "4px" }}>{inventoryItems.length} items across all locations</Typography>
         </Box>
-
-        {/* ── Add Item → /admin/inventory/add ── */}
         <Button
           startIcon={<AddIcon sx={{ fontSize: 16 }} />}
           onClick={() => navigate("/admin/inventory/add")}
@@ -281,9 +279,23 @@ export default function InventoryItems() {
         </Box>
       </Box>
 
-      {/* Table */}
+      {/* Table — thin horizontal scrollbar matching CreateTransferModal */}
       <Paper elevation={0} sx={{ borderRadius: "14px", border: "1px solid #f0f0f0", boxShadow: "0 1px 4px rgba(0,0,0,0.04)", overflow: "hidden" }}>
-        <TableContainer>
+        <TableContainer
+          sx={{
+            // ── thin horizontal scrollbar — same style as CreateTransferModal ──
+            overflowX: "auto",
+            "&::-webkit-scrollbar": { height: 4 },
+            "&::-webkit-scrollbar-track": { background: "transparent" },
+            "&::-webkit-scrollbar-thumb": {
+              background: "#d1d5db",
+              borderRadius: 4,
+            },
+            "&::-webkit-scrollbar-thumb:hover": { background: "#a1a1aa" },
+            scrollbarWidth: "thin",
+            scrollbarColor: "#d1d5db transparent",
+          }}
+        >
           <Table sx={{ minWidth: 900 }}>
             <TableHead>
               <TableRow sx={{ background: "#f8f9fb" }}>
@@ -346,15 +358,10 @@ export default function InventoryItems() {
 
                   <TableCell>
                     <Box sx={{ display: "flex", gap: "4px" }}>
-
-                      {/* ── Edit → /admin/inventory/add?id=X&edit=true ── */}
                       <Tooltip title="Edit">
-                        <IconButton
-                          size="small"
-                          onClick={() => navigate(`/admin/inventory/add?id=${item.id}&edit=true`)}
+                        <IconButton size="small" onClick={() => navigate(`/admin/inventory/add?id=${item.id}&edit=true`)}
                           sx={{ color: "#6b7280", border: "1px solid #e5e7eb", borderRadius: "6px", width: 28, height: 28,
-                            "&:hover": { background: "#eff6ff", color: "#2563eb", borderColor: "#bfdbfe" } }}
-                        >
+                            "&:hover": { background: "#eff6ff", color: "#2563eb", borderColor: "#bfdbfe" } }}>
                           <EditIcon sx={{ fontSize: 14 }} />
                         </IconButton>
                       </Tooltip>
@@ -412,12 +419,12 @@ export default function InventoryItems() {
         </Box>
       </Paper>
 
-      {/* ── Modals ── */}
+      {/* Modals */}
       <IssueStockModal open={issueModal.open} onClose={() => setIssueModal({ open: false, item: null })} prefillItem={issueModal.item} />
       <CreateTransferModal open={transferModal.open} onClose={() => setTransferModal({ open: false, item: null })} prefillItem={transferModal.item} />
       <DeleteConfirmDialog open={deleteDialog.open} item={deleteDialog.item} onCancel={closeDeleteDialog} onConfirm={handleConfirmDelete} deleting={deleting} />
 
-      {/* ── Toast ── */}
+      {/* Toast */}
       <Snackbar open={toast.open} autoHideDuration={3500} onClose={() => setToast((p) => ({ ...p, open: false }))} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
         <Alert onClose={() => setToast((p) => ({ ...p, open: false }))} severity={toast.severity} variant="filled" sx={{ fontSize: 13, borderRadius: "10px", minWidth: 280 }}>
           {toast.message}

@@ -61,8 +61,7 @@ function DateField({ value, onChange }) {
         style={{
           border: "none", outline: "none", background: "transparent",
           fontSize: 13, color: value ? "#111827" : "#9ca3af",
-          flex: 1, cursor: "pointer", minWidth: 0, fontFamily: "inherit",
-          WebkitAppearance: "none",
+          flex: 1, cursor: "pointer", minWidth: 0,         WebkitAppearance: "none",
         }} />
       <CalendarTodayOutlinedIcon
         sx={{ fontSize: 15, color: "#9ca3af", flexShrink: 0, ml: 0.5 }}

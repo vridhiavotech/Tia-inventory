@@ -250,10 +250,10 @@ export default function StockIssue() {
             {/* Opens Issuestockmodal */}
             <Button startIcon={<Add sx={{ fontSize:16 }} />} variant="contained"
               onClick={() => setIssueModalOpen(true)}
-              sx={{ bgcolor:"#1976D2", textTransform:"none", fontWeight:700, fontSize:13,
+              sx={{ bgcolor:"#2563eb", textTransform:"none", fontWeight:700, fontSize:13,
                 borderRadius:"8px", height:36, px:2.5,
-                boxShadow:"0 1px 4px rgba(25,118,210,0.35)",
-                "&:hover":{ bgcolor:"#1256A0", boxShadow:"0 2px 8px rgba(25,118,210,0.4)" } }}>
+              
+                }}>
               Issue Stock
             </Button>
           </Stack>

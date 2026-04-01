@@ -141,7 +141,7 @@ function Dropdown({ options, value, onChange }) {
                 cursor: "pointer",
                 fontSize: 13,
            
-                color: value === opt ? "#0ea5e9" : "#374151",
+                color: value === opt ? "#2563eb" : "#374151",
                 fontWeight: value === opt ? 600 : 400,
                 background: value === opt ? "#f0f9ff" : "transparent",
                 transition: "background 0.1s",
@@ -197,7 +197,7 @@ const selectStyle = {
 const autoInputStyle = { ...inputStyle, background: "#f1f5f9", color: "#94a3b8", cursor: "not-allowed" };
 
 const sectionLabel = (text) => (
-  <div style={{ fontSize: 11, fontWeight: 700, color: "#0ea5e9", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 14, marginTop: 4 }}>
+  <div style={{ fontSize: 11, fontWeight: 700, color: "#2563eb", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 14, marginTop: 4 }}>
     {text}
   </div>
 );
@@ -555,7 +555,7 @@ export default function Replacement() {
           <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 5, fontSize: 12, color: "#94a3b8" }}>
             {["Flag", "Request", "PO", "Receive", "Close"].map((step, i, arr) => (
               <span key={step} style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <span style={{ color: i === 1 ? "#0ea5e9" : "#cbd5e1", fontWeight: i === 1 ? 700 : 400 }}>{step}</span>
+                <span style={{ color: i === 1 ? "#2563eb" : "#cbd5e1", fontWeight: i === 1 ? 700 : 400 }}>{step}</span>
                 {i < arr.length - 1 && <span style={{ color: "#cbd5e1" }}>→</span>}
               </span>
             ))}
@@ -577,7 +577,7 @@ export default function Replacement() {
             display: "flex", alignItems: "center", gap: 6, padding: "9px 18px",
             border: "none", borderRadius: 9, background: "rgb(37, 99, 235)",
             cursor: "pointer", fontSize: 13, fontWeight: 700, color: "#fff",
-            boxShadow: "0 2px 8px rgba(14,165,233,0.35)",
+           
           }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
               <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
@@ -635,7 +635,7 @@ export default function Replacement() {
                 <tr key={row.id} style={{ borderBottom: i < filtered.length - 1 ? "1px solid #f1f5f9" : "none", transition: "background 0.1s" }}
                   onMouseEnter={(e) => e.currentTarget.style.background = "#fafbff"}
                   onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}>
-                  <td style={{ padding: "14px 14px", fontSize: 12.5, fontWeight: 700, color: "#0ea5e9", whiteSpace: "nowrap" }}>{row.id}</td>
+                  <td style={{ padding: "14px 14px", fontSize: 12.5, fontWeight: 700, color: "#2563eb", whiteSpace: "nowrap" }}>{row.id}</td>
                   <td style={{ padding: "14px 14px", minWidth: 160 }}>
                     <div style={{ fontSize: 13, fontWeight: 600, color: "#0f172a" }}>{row.item}</div>
                     <div style={{ fontSize: 11.5, color: "#94a3b8", marginTop: 2 }}>{row.location}</div>

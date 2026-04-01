@@ -348,7 +348,7 @@ const inputSt = {
   border: "1.5px solid #e2e8f0",
   borderRadius: 8,
   fontSize: 13,
-  fontFamily: "'DM Sans', sans-serif",
+
   boxSizing: "border-box",
   outline: "none",
   color: "#0f172a",
@@ -513,7 +513,7 @@ function CategoryModal({
           width: "100%",
           maxWidth: 460,
           boxShadow: "0 24px 64px rgba(0,0,0,0.2)",
-          fontFamily: "'DM Sans', sans-serif",
+       
           maxHeight: "85vh",
           display: "flex",
           flexDirection: "column",
@@ -604,10 +604,10 @@ function CategoryModal({
                     cursor: "pointer",
                     border:
                       type === opt.val
-                        ? "2px solid #0e7490"
+                        ? "2px solid #2563eb"
                         : "1.5px solid #e2e8f0",
                     background: type === opt.val ? "#f0fdfa" : "#fff",
-                    fontFamily: "'DM Sans', sans-serif",
+                   
                     textAlign: "left",
                   }}
                 >
@@ -622,7 +622,7 @@ function CategoryModal({
                         style={{
                           fontSize: 13,
                           fontWeight: 700,
-                          color: type === opt.val ? "#0e7490" : "#374151",
+                          color: type === opt.val ? "#2563eb" : "#374151",
                         }}
                       >
                         {opt.label}
@@ -722,7 +722,7 @@ function CategoryModal({
                   justifyContent: "center",
                   fontSize: 20,
                   cursor: "pointer",
-                  border: `1.5px solid ${showEmoji ? "#0e7490" : "#e2e8f0"}`,
+                  border: `1.5px solid ${showEmoji ? "#2563eb" : "#e2e8f0"}`,
                   boxShadow: showEmoji ? "0 0 0 3px #ccfbf1" : "none",
                   padding: "3px",
                 }}
@@ -758,7 +758,7 @@ function CategoryModal({
                         background: icon === em ? "#f0fdfa" : "#f8fafc",
                         border:
                           icon === em
-                            ? "2px solid #0e7490"
+                            ? "2px solid #2563eb"
                             : "1.5px solid #e2e8f0",
                         borderRadius: 7,
                         padding: "4px",
@@ -806,7 +806,7 @@ function CategoryModal({
               background: "#fff",
               cursor: "pointer",
               fontSize: 13,
-              fontFamily: "'DM Sans', sans-serif",
+            
               fontWeight: 600,
               color: "#374151",
             }}
@@ -819,10 +819,10 @@ function CategoryModal({
               padding: "8px 22px",
               border: "none",
               borderRadius: 8,
-              background: "#0e7490",
+              background: "#2563eb",
               cursor: "pointer",
               fontSize: 13,
-              fontFamily: "'DM Sans', sans-serif",
+            
               fontWeight: 700,
               color: "#fff",
               boxShadow: "0 2px 8px rgba(14,116,144,0.25)",
@@ -1022,7 +1022,7 @@ export default function Categories() {
   return (
     <div
       style={{
-        fontFamily: "'DM Sans', sans-serif",
+  
         background: "#f8fafc",
         minHeight: "100vh",
         padding: "26px 24px",
@@ -1089,7 +1089,7 @@ export default function Categories() {
               fontSize: 13,
               fontWeight: 600,
               color: "#374151",
-              fontFamily: "'DM Sans', sans-serif",
+          
               boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
             }}
           >
@@ -1103,12 +1103,12 @@ export default function Categories() {
               padding: "9px 18px",
               border: "none",
               borderRadius: 9,
-              background: "#0e7490",
+              background: "#2563eb",
               cursor: "pointer",
               fontSize: 13,
               fontWeight: 700,
               color: "#fff",
-              fontFamily: "'DM Sans', sans-serif",
+            
               boxShadow: "0 2px 8px rgba(14,116,144,0.28)",
             }}
           >
@@ -1159,7 +1159,7 @@ export default function Categories() {
               <span
                 style={{
                   background: "#f0f9ff",
-                  color: "#0e7490",
+                  color: "#2563eb",
                   border: "1.5px solid #bae6fd",
                   padding: "2px 10px",
                   borderRadius: 99,
@@ -1194,7 +1194,7 @@ export default function Categories() {
                     fontSize: 11.5,
                     fontWeight: 600,
                     color: "#374151",
-                    fontFamily: "'DM Sans', sans-serif",
+                  
                     whiteSpace: "nowrap",
                   }}
                 >
@@ -1298,7 +1298,7 @@ export default function Categories() {
                       style={{
                         background: "none",
                         border: "none",
-                        color: "#0e7490",
+                        color: "#2563eb",
                         cursor: "pointer",
                         fontSize: 12.5,
                         fontWeight: 600,
@@ -1355,7 +1355,7 @@ export default function Categories() {
                     <span
                       style={{
                         background: "#f0f9ff",
-                        color: "#0e7490",
+                        color: "#2563eb",
                         border: "1.5px solid #bae6fd",
                         padding: "2px 8px",
                         borderRadius: 99,
