@@ -31,7 +31,14 @@ import StockIssue from "./pages/Stockissue";
 import AdminOverview from "./pages/Admin/Adminoverview";
 import AuditLog from "./pages/AuditLog";
 import Categories from "./pages/Categories";
+
 import SystemSettings from "./pages/SystemSettings"; 
+
+import Suppliers from "./pages/Suppliers";
+import Users from "./pages/UsersRoles";
+import Locations  from "./pages/Locations";
+
+
 
 // ── Theme: removes focus outlines globally ──
 const theme = createTheme({
@@ -272,6 +279,7 @@ function App() {
               </PrivateRoute>
             }
           />
+
         <Route
           path="/admin/audit-log"
           element={
@@ -293,6 +301,40 @@ function App() {
             </PrivateRoute>
           }
         />
+
+
+          <Route
+            path="/admin/suppliers"
+            element={
+              <PrivateRoute>
+                <DashboardLayout>
+                  <Suppliers />
+                </DashboardLayout>
+              </PrivateRoute>
+            }
+          />
+          
+            <Route
+            path="/admin/users"
+            element={
+              <PrivateRoute>
+                <DashboardLayout>
+                  <Users />
+                </DashboardLayout>
+              </PrivateRoute>
+            }
+          />
+            <Route
+            path="/admin/locations"
+            element={
+              <PrivateRoute>
+                <DashboardLayout>
+                  <Locations />
+                </DashboardLayout>
+              </PrivateRoute>
+            }
+          />
+
 
         </Routes>
       </Router>
