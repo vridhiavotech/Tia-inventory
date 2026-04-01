@@ -604,7 +604,7 @@ function CategoryModal({
                     cursor: "pointer",
                     border:
                       type === opt.val
-                        ? "2px solid #0e7490"
+                        ? "2px solid #2563eb"
                         : "1.5px solid #e2e8f0",
                     background: type === opt.val ? "#f0fdfa" : "#fff",
                     fontFamily: "'DM Sans', sans-serif",
@@ -622,7 +622,7 @@ function CategoryModal({
                         style={{
                           fontSize: 13,
                           fontWeight: 700,
-                          color: type === opt.val ? "#0e7490" : "#374151",
+                          color: type === opt.val ? "#2563eb" : "#374151",
                         }}
                       >
                         {opt.label}
@@ -722,7 +722,7 @@ function CategoryModal({
                   justifyContent: "center",
                   fontSize: 20,
                   cursor: "pointer",
-                  border: `1.5px solid ${showEmoji ? "#0e7490" : "#e2e8f0"}`,
+                  border: `1.5px solid ${showEmoji ? "#2563eb" : "#e2e8f0"}`,
                   boxShadow: showEmoji ? "0 0 0 3px #ccfbf1" : "none",
                   padding: "3px",
                 }}
@@ -758,7 +758,7 @@ function CategoryModal({
                         background: icon === em ? "#f0fdfa" : "#f8fafc",
                         border:
                           icon === em
-                            ? "2px solid #0e7490"
+                            ? "2px solid #2563eb"
                             : "1.5px solid #e2e8f0",
                         borderRadius: 7,
                         padding: "4px",
@@ -819,7 +819,7 @@ function CategoryModal({
               padding: "8px 22px",
               border: "none",
               borderRadius: 8,
-              background: "#0e7490",
+              background: "#2563eb",
               cursor: "pointer",
               fontSize: 13,
               fontFamily: "'DM Sans', sans-serif",
@@ -1103,7 +1103,7 @@ export default function Categories() {
               padding: "9px 18px",
               border: "none",
               borderRadius: 9,
-              background: "#0e7490",
+              background: "#2563eb",
               cursor: "pointer",
               fontSize: 13,
               fontWeight: 700,
@@ -1159,7 +1159,7 @@ export default function Categories() {
               <span
                 style={{
                   background: "#f0f9ff",
-                  color: "#0e7490",
+                  color: "#2563eb",
                   border: "1.5px solid #bae6fd",
                   padding: "2px 10px",
                   borderRadius: 99,
@@ -1298,7 +1298,7 @@ export default function Categories() {
                       style={{
                         background: "none",
                         border: "none",
-                        color: "#0e7490",
+                        color: "#2563eb",
                         cursor: "pointer",
                         fontSize: 12.5,
                         fontWeight: 600,
@@ -1355,7 +1355,7 @@ export default function Categories() {
                     <span
                       style={{
                         background: "#f0f9ff",
-                        color: "#0e7490",
+                        color: "#2563eb",
                         border: "1.5px solid #bae6fd",
                         padding: "2px 8px",
                         borderRadius: 99,
