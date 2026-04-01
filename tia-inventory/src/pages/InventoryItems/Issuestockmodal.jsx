@@ -18,6 +18,7 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import AddIcon from "@mui/icons-material/Add";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import CalendarTodayOutlinedIcon from "@mui/icons-material/CalendarTodayOutlined";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 
@@ -272,7 +273,7 @@ export default function IssueStockModal({ open, onClose, prefillItem = null, onI
             <Box>
               <FieldLabel>Issue Date</FieldLabel>
               <TextField fullWidth size="small" value={today} disabled
-                InputProps={{ endAdornment: <InputAdornment position="end"><AccessTimeIcon sx={{ fontSize: 16, color: "#9ca3af" }} /></InputAdornment> }}
+                InputProps={{ endAdornment: <InputAdornment position="end"><CalendarTodayOutlinedIcon sx={{ fontSize: 15, color: "#9ca3af" }} /></InputAdornment> }}
                 sx={{ ...inputSx, "& .MuiOutlinedInput-root": { ...inputSx["& .MuiOutlinedInput-root"], background: "#f3f4f6" } }} />
             </Box>
             <Box>
@@ -331,13 +332,23 @@ export default function IssueStockModal({ open, onClose, prefillItem = null, onI
                         onChange={(e) => updateItem(row.id, "qty", e.target.value)}
                         inputProps={{ min: 0, max: data?.available }}
                         sx={{
+                          // hide native browser spinner arrows
+                          "& input[type=number]": {
+                            MozAppearance: "textfield",
+                          },
+                          "& input[type=number]::-webkit-outer-spin-button": {
+                            WebkitAppearance: "none", margin: 0,
+                          },
+                          "& input[type=number]::-webkit-inner-spin-button": {
+                            WebkitAppearance: "none", margin: 0,
+                          },
                           "& .MuiOutlinedInput-root": {
                             fontSize: 13, borderRadius: "8px",
                             background: qtyErr ? "#fff5f5" : "#f9fafb",
                             "& fieldset": { borderColor: qtyErr ? "#fca5a5" : "#e5e7eb" },
                             "&:hover fieldset": { borderColor: qtyErr ? "#f87171" : "#d1d5db" },
                           },
-                          "& input": { py: "7px" },
+                          "& input": { py: "7px", textAlign: "center" },
                         }} />
 
                       {/* Delete — key fix: using onClick with the specific row id */}

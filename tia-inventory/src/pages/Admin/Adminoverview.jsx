@@ -1,7 +1,7 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Box, Typography, Button, Chip, IconButton,
-  Dialog, DialogTitle, DialogContent, DialogActions,
   Snackbar, Alert, Tooltip, Stack, Avatar, Divider,
 } from "@mui/material";
 import {
@@ -28,12 +28,12 @@ const C = {
 
 // ── Seed data ─────────────────────────────────────────────────────────────
 const SEED_LOCATIONS = [
-  { id:"CS-01",  name:"Central Store",  type:"CENTRAL STORE", inCharge:"Admin",           users:1, skus:8, code:"CS",  phone:"",   address:"" },
-  { id:"ICU-01", name:"ICU",            type:"WARD/DEPT",     inCharge:"Dr. Patel",        users:1, skus:2, code:"ICU", phone:"",   address:"" },
-  { id:"ED-01",  name:"Emergency Dept", type:"WARD/DEPT",     inCharge:"Dr. Mehra",        users:0, skus:1, code:"ED",  phone:"",   address:"" },
-  { id:"PH-01",  name:"Pharmacy",       type:"PHARMACY",      inCharge:"P. Chen, PharmD",  users:1, skus:2, code:"PH",  phone:"",   address:"" },
-  { id:"OR-01",  name:"OR / Surgery",   type:"OT / SURGERY",  inCharge:"Dr. Kapoor",       users:0, skus:2, code:"OR",  phone:"",   address:"" },
-  { id:"LAB-01", name:"Laboratory",     type:"LABORATORY",    inCharge:"T. Williams",      users:0, skus:0, code:"LAB", phone:"",   address:"" },
+  { id:"CS-01",  name:"Central Store",  type:"CENTRAL STORE", inCharge:"Admin",           users:1, skus:8, code:"CS",  phone:"", address:"" },
+  { id:"ICU-01", name:"ICU",            type:"WARD/DEPT",     inCharge:"Dr. Patel",        users:1, skus:2, code:"ICU", phone:"", address:"" },
+  { id:"ED-01",  name:"Emergency Dept", type:"WARD/DEPT",     inCharge:"Dr. Mehra",        users:0, skus:1, code:"ED",  phone:"", address:"" },
+  { id:"PH-01",  name:"Pharmacy",       type:"PHARMACY",      inCharge:"P. Chen, PharmD",  users:1, skus:2, code:"PH",  phone:"", address:"" },
+  { id:"OR-01",  name:"OR / Surgery",   type:"OT / SURGERY",  inCharge:"Dr. Kapoor",       users:0, skus:2, code:"OR",  phone:"", address:"" },
+  { id:"LAB-01", name:"Laboratory",     type:"LABORATORY",    inCharge:"T. Williams",      users:0, skus:0, code:"LAB", phone:"", address:"" },
 ];
 
 const SEED_USERS = [
@@ -94,7 +94,8 @@ function StatCard({ label, value, sub, color, icon: Icon }) {
 }
 
 // ── Location Card ─────────────────────────────────────────────────────────
-function LocationCard({ loc, onManage, onUsers }) {
+function LocationCard({ loc }) {
+  const navigate = useNavigate();
   const c = LOC_COLORS[loc.code] || DEFAULT_LOC_COLOR;
   return (
     <Box sx={{
@@ -137,7 +138,8 @@ function LocationCard({ loc, onManage, onUsers }) {
       )}
 
       <Box sx={{ display:"flex", gap:1, mt:0.5 }}>
-        <Button size="small" variant="outlined" onClick={() => onManage(loc)}
+        <Button size="small" variant="outlined"
+          onClick={() => navigate("/admin/locations")}
           sx={{
             fontSize:11, fontWeight:600, textTransform:"none", borderRadius:"6px",
             border:`1px solid ${C.border}`, color:C.textSecondary,
@@ -145,7 +147,8 @@ function LocationCard({ loc, onManage, onUsers }) {
           }}>
           <Settings sx={{ fontSize:12, mr:0.4 }} /> Manage
         </Button>
-        <Button size="small" variant="outlined" onClick={() => onUsers(loc)}
+        <Button size="small" variant="outlined"
+          onClick={() => navigate("/admin/users")}
           sx={{
             fontSize:11, fontWeight:600, textTransform:"none", borderRadius:"6px",
             border:`1px solid ${C.border}`, color:C.textSecondary,
@@ -203,96 +206,15 @@ function UserCard({ user, onToggle }) {
   );
 }
 
-// ── Manage Dialog ─────────────────────────────────────────────────────────
-function ManageDialog({ open, onClose, loc }) {
-  if (!loc) return null;
-  const rows = [
-    { label:"Location ID",    value:loc.id       },
-    { label:"Type",           value:loc.type      },
-    { label:"In-Charge",      value:loc.inCharge || "—" },
-    { label:"Phone",          value:loc.phone    || "—" },
-    { label:"Address",        value:loc.address  || "—" },
-    { label:"Users",          value:loc.users     },
-    { label:"Item SKUs",      value:loc.skus      },
-  ];
-  return (
-    <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth
-      PaperProps={{ sx:{ borderRadius:"12px" } }}>
-      <DialogTitle sx={{ fontWeight:700, fontSize:16, color:C.textPrimary, borderBottom:`1px solid ${C.border}`, pb:1.5 }}>
-        Manage — {loc.name}
-      </DialogTitle>
-      <DialogContent sx={{ pt:"16px !important" }}>
-        <Stack spacing={1.5}>
-          {rows.map(f => (
-            <Box key={f.label} sx={{ display:"flex", justifyContent:"space-between" }}>
-              <Typography sx={{ fontSize:12, color:C.textSecondary, fontWeight:600 }}>{f.label}</Typography>
-              <Typography sx={{ fontSize:13, color:C.textPrimary, fontWeight:500 }}>{f.value}</Typography>
-            </Box>
-          ))}
-        </Stack>
-      </DialogContent>
-      <DialogActions sx={{ px:3, py:2, borderTop:`1px solid ${C.border}` }}>
-        <Button onClick={onClose} sx={{ color:C.textSecondary, textTransform:"none", fontWeight:600 }}>Close</Button>
-      </DialogActions>
-    </Dialog>
-  );
-}
-
-// ── Location Users Dialog ─────────────────────────────────────────────────
-function LocationUsersDialog({ open, onClose, loc, users }) {
-  if (!loc) return null;
-  const filtered = users.filter(u => u.location === loc.name);
-  return (
-    <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth
-      PaperProps={{ sx:{ borderRadius:"12px" } }}>
-      <DialogTitle sx={{ fontWeight:700, fontSize:16, color:C.textPrimary, borderBottom:`1px solid ${C.border}`, pb:1.5 }}>
-        Users — {loc.name}
-      </DialogTitle>
-      <DialogContent sx={{ pt:"16px !important" }}>
-        {filtered.length === 0 ? (
-          <Typography sx={{ fontSize:13, color:C.textSecondary, textAlign:"center", py:2 }}>
-            No users assigned to this location.
-          </Typography>
-        ) : (
-          <Stack spacing={1}>
-            {filtered.map(u => (
-              <Box key={u.id} sx={{ display:"flex", alignItems:"center", gap:1.5, p:"8px 12px", bgcolor:"#F9FAFB", borderRadius:"8px" }}>
-                <Avatar sx={{ width:30, height:30, bgcolor:u.avatarBg, fontSize:11, fontWeight:700 }}>{u.initials}</Avatar>
-                <Box sx={{ flex:1 }}>
-                  <Typography sx={{ fontSize:12, fontWeight:700, color:C.textPrimary }}>{u.name}</Typography>
-                  <Typography sx={{ fontSize:11, color:C.textSecondary }}>{u.role}</Typography>
-                </Box>
-                <Chip label={u.status} size="small" sx={{
-                  bgcolor: u.status==="Blocked" ? "#FEF2F2":"#F0FDF4",
-                  color:   u.status==="Blocked" ? "#DC2626":"#16A34A",
-                  fontWeight:700, fontSize:10, height:18,
-                }} />
-              </Box>
-            ))}
-          </Stack>
-        )}
-      </DialogContent>
-      <DialogActions sx={{ px:3, py:2, borderTop:`1px solid ${C.border}` }}>
-        <Button onClick={onClose} sx={{ color:C.textSecondary, textTransform:"none", fontWeight:600 }}>Close</Button>
-      </DialogActions>
-    </Dialog>
-  );
-}
-
 // ── MAIN COMPONENT ────────────────────────────────────────────────────────
 export default function AdminOverview() {
+  const navigate = useNavigate();
   const [locations, setLocations] = useState(SEED_LOCATIONS);
   const [users,     setUsers]     = useState(SEED_USERS);
 
   // Modal states
   const [addLocOpen,  setAddLocOpen]  = useState(false);
   const [addUserOpen, setAddUserOpen] = useState(false);
-
-  // Sub-dialog states
-  const [manageTarget,    setManageTarget]    = useState(null);
-  const [manageOpen,      setManageOpen]      = useState(false);
-  const [locUsersTarget,  setLocUsersTarget]  = useState(null);
-  const [locUsersOpen,    setLocUsersOpen]    = useState(false);
 
   const [toast, setToast] = useState({ open:false, msg:"", severity:"success" });
   const showToast = (msg, severity="success") => setToast({ open:true, msg, severity });
@@ -328,22 +250,21 @@ export default function AdminOverview() {
     const rc       = ROLE_COLORS[form.role] || ROLE_COLORS["Nurse"];
     const initials = form.fullName.split(" ").map(w => w[0]).join("").slice(0,2).toUpperCase();
     const newUser  = {
-      id:        initials + Date.now(),
-      name:      form.fullName,
-      role:      form.role,
-      roleBg:    rc.bg,
-      roleColor: rc.color,
-      avatarBg:  rc.avatarBg,
-      location:  form.location,
-      status:    "Active",
+      id:          initials + Date.now(),
+      name:        form.fullName,
+      role:        form.role,
+      roleBg:      rc.bg,
+      roleColor:   rc.color,
+      avatarBg:    rc.avatarBg,
+      location:    form.location,
+      status:      "Active",
       initials,
-      email:     form.email,
-      phone:     form.phone,
-      department:form.department,
-      permissions:form.permissions,
+      email:       form.email,
+      phone:       form.phone,
+      department:  form.department,
+      permissions: form.permissions,
     };
     setUsers(p => [...p, newUser]);
-    // bump user count on that location card
     setLocations(p =>
       p.map(l => l.name === form.location ? { ...l, users: l.users + 1 } : l)
     );
@@ -389,7 +310,7 @@ export default function AdminOverview() {
                 borderRadius:"8px", height:36, px:2, bgcolor:"#fff",
                 "&:hover":{ borderColor:"#9CA3AF", bgcolor:"#F9FAFB" },
               }}>
-               Add User
+              Add User
             </Button>
             <Button
               startIcon={<AddLocation sx={{ fontSize:16 }} />}
@@ -408,10 +329,10 @@ export default function AdminOverview() {
 
         {/* ── Stat Cards — row 1 ── */}
         <Stack direction="row" spacing={1.5} sx={{ mb:1.5 }}>
-          <StatCard label="Active Users"  value={activeCount}      sub={`${blockedCount} blocked`}   color="#7C3AED" icon={People}       />
-          <StatCard label="Locations"     value={locations.length} sub="Active facilities"           color="#2563EB" icon={Business}      />
-          <StatCard label="Suppliers"     value={4}                sub="Approved vendors"            color="#16A34A" icon={LocalShipping} />
-          <StatCard label="Manufacturers" value={8}                sub="Registered brands"           color="#D97706" icon={Factory}       />
+          <StatCard label="Active Users"  value={activeCount}      sub={`${blockedCount} blocked`} color="#7C3AED" icon={People}       />
+          <StatCard label="Locations"     value={locations.length} sub="Active facilities"         color="#2563EB" icon={Business}      />
+          <StatCard label="Suppliers"     value={4}                sub="Approved vendors"          color="#16A34A" icon={LocalShipping} />
+          <StatCard label="Manufacturers" value={8}                sub="Registered brands"         color="#D97706" icon={Factory}       />
         </Stack>
 
         {/* ── Stat Cards — row 2 ── */}
@@ -427,6 +348,7 @@ export default function AdminOverview() {
             Locations
           </Typography>
           <Button size="small" endIcon={<ExpandMore sx={{ fontSize:14 }} />}
+            onClick={() => navigate("/admin/locations")}
             sx={{ fontSize:12, fontWeight:600, color:C.textSecondary, textTransform:"none" }}>
             View All
           </Button>
@@ -434,10 +356,7 @@ export default function AdminOverview() {
 
         <Box sx={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:1.5, mb:3 }}>
           {locations.map(loc => (
-            <LocationCard key={loc.id} loc={loc}
-              onManage={(l) => { setManageTarget(l); setManageOpen(true); }}
-              onUsers={(l)  => { setLocUsersTarget(l); setLocUsersOpen(true); }}
-            />
+            <LocationCard key={loc.id} loc={loc} />
           ))}
         </Box>
 
@@ -447,6 +366,7 @@ export default function AdminOverview() {
             Users
           </Typography>
           <Button size="small" endIcon={<ExpandMore sx={{ fontSize:14 }} />}
+            onClick={() => navigate("/admin/users")}
             sx={{ fontSize:12, fontWeight:600, color:C.textSecondary, textTransform:"none" }}>
             View All
           </Button>
@@ -471,19 +391,6 @@ export default function AdminOverview() {
         onClose={() => setAddUserOpen(false)}
         onSave={handleSaveUser}
         locations={locations}
-      />
-
-      {/* ── Sub-dialogs ── */}
-      <ManageDialog
-        open={manageOpen}
-        onClose={() => setManageOpen(false)}
-        loc={manageTarget}
-      />
-      <LocationUsersDialog
-        open={locUsersOpen}
-        onClose={() => setLocUsersOpen(false)}
-        loc={locUsersTarget}
-        users={users}
       />
 
       {/* ── Toast ── */}

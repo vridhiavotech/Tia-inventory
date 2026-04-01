@@ -206,16 +206,7 @@ export default function GoodsReceipt() {
             </Box>
           </Box>
           <Box sx={{ display:"flex", gap:1 }}>
-            <Button
-              startIcon={<FileDownloadOutlinedIcon sx={{ fontSize:16 }} />}
-              sx={{
-                fontSize:13, fontWeight:500, color:"#374151", textTransform:"none",
-                border:"1px solid #e5e7eb", borderRadius:"8px", px:2, height:36,
-                bgcolor:"#fff", "&:hover":{ bgcolor:"#f9fafb" },
-              }}
-            >
-              Export
-            </Button>
+          
             <Button
               startIcon={<AddIcon sx={{ fontSize:16 }} />}
               onClick={() => setNewGRNOpen(true)}

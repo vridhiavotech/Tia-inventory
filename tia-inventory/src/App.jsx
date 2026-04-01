@@ -29,8 +29,10 @@ import Manufacturers from "./pages/Manufacturers";
 import ReportsAnalytics from "./pages/ReportsAnalytics";
 import StockIssue from "./pages/Stockissue";
 import AdminOverview from "./pages/Admin/Adminoverview";
-
 import Categories from "./pages/Categories";
+import Users from "./pages/UsersRoles";
+import Locations  from "./pages/Locations";
+
 
 // ── Theme: removes focus outlines globally ──
 const theme = createTheme({
@@ -271,6 +273,27 @@ function App() {
               </PrivateRoute>
             }
           />
+            <Route
+            path="/admin/users"
+            element={
+              <PrivateRoute>
+                <DashboardLayout>
+                  <Users />
+                </DashboardLayout>
+              </PrivateRoute>
+            }
+          />
+            <Route
+            path="/admin/locations"
+            element={
+              <PrivateRoute>
+                <DashboardLayout>
+                  <Locations />
+                </DashboardLayout>
+              </PrivateRoute>
+            }
+          />
+
         </Routes>
       </Router>
     </ThemeProvider>
