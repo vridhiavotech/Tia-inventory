@@ -598,39 +598,7 @@ Total: $${po.total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFr
 
   return (
     <Box sx={{ width: '100%', px: 0, overflow: 'hidden' }}>
-      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: 'repeat(4, 1fr)' }, gap: 2, mb: 3 }}>
-        {statCards.map((card, index) => (
-          <Card
-            key={index}
-            sx={{
-              backgroundColor: '#ffffff',
-              borderLeft: `4px solid ${card.color}`,
-              borderRadius: 3,
-              boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
-            }}
-          >
-            <CardContent sx={{ p: 1.5, '&:last-child': { pb: 1.5 } }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <Box>
-                  <Typography sx={{ fontSize: '0.7rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                    {card.title}
-                  </Typography>
-                  <Typography sx={{ fontSize: '1.3rem', fontWeight: 700, color: card.color, mt: 0.5 }}>
-                    {card.value}
-                  </Typography>
-                  <Typography sx={{ fontSize: '0.65rem', color: '#64748b', mt: 0.5 }}>
-                    {card.subtitle}
-                  </Typography>
-                </Box>
-                <Box sx={{ opacity: 0.7 }}>
-                  {card.icon}
-                </Box>
-              </Box>
-            </CardContent>
-          </Card>
-        ))}
-      </Box>
-
+      {/* Page Header with Title and Button on Right */}
       <Box sx={{ 
         display: 'flex', 
         justifyContent: 'space-between', 
@@ -638,7 +606,6 @@ Total: $${po.total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFr
         flexDirection: { xs: 'column', sm: 'row' },
         gap: { xs: 1.5, sm: 0 },
         mb: { xs: 2, sm: 3 },
-        px: { xs: 0.5, sm: 1, md: 1.5 }
       }}>
         <Box>
           <Typography 
@@ -673,19 +640,52 @@ Total: $${po.total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFr
             fontSize: { xs: '12px', sm: '13px', md: '14px' },
             fontWeight: 500,
             padding: { xs: '6px 16px', sm: '7px 20px', md: '8px 24px' },
-           
           }}
         >
           New PO
         </Button>
       </Box>
+      
+      {/* Stats Cards */}
+      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: 'repeat(4, 1fr)' }, gap: 2, mb: 3 }}>
+        {statCards.map((card, index) => (
+          <Card
+            key={index}
+            sx={{
+              backgroundColor: '#ffffff',
+              borderLeft: `4px solid ${card.color}`,
+              borderRadius: 3,
+              boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+            }}
+          >
+            <CardContent sx={{ p: 1.5, '&:last-child': { pb: 1.5 } }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <Box>
+                  <Typography sx={{ fontSize: '0.7rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    {card.title}
+                  </Typography>
+                  <Typography sx={{ fontSize: '1.3rem', fontWeight: 700, color: card.color, mt: 0.5 }}>
+                    {card.value}
+                  </Typography>
+                  <Typography sx={{ fontSize: '0.65rem', color: '#64748b', mt: 0.5 }}>
+                    {card.subtitle}
+                  </Typography>
+                </Box>
+                <Box sx={{ opacity: 0.7 }}>
+                  {card.icon}
+                </Box>
+              </Box>
+            </CardContent>
+          </Card>
+        ))}
+      </Box>
 
+      {/* Invoice Summary */}
       <Box sx={{ 
         display: 'flex', 
         gap: 1.5, 
         mb: { xs: 2, sm: 3 },
         flexWrap: 'wrap',
-        px: { xs: 0.5, sm: 1, md: 1.5 }
       }}>
         <Paper sx={{ 
           display: 'flex', 
@@ -706,6 +706,7 @@ Total: $${po.total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFr
         </Paper>
       </Box>
 
+      {/* Purchase Orders Table */}
       <Card sx={{ 
         width: '100%',
         borderRadius: { xs: 1, sm: 2 },
