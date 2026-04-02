@@ -184,6 +184,7 @@ const navigate = useNavigate();
     color: "#fff",
     border: "none",
     borderRadius: 8,
+    outline: "none",  
     padding: "10px 18px",
     fontSize: 13,
     fontWeight: 600,

@@ -31,6 +31,7 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import CloseIcon from "@mui/icons-material/Close";
 
 import IssueStockModal from "./IssueStockModal";
+import { useInventory } from "./useInventory";
 import CreateTransferModal from "./CreateTransferModal";
 
 const CATEGORY_ICONS = {
@@ -56,17 +57,6 @@ const SUBCATEGORY_ICONS = {
   Monitoring:                     { icon: <MonitorHeartIcon sx={{ fontSize: 13 }} />,     color: "#475569" },
 };
 
-const initialInventory = [
-  { id: 1, name: "Amoxicillin 500mg Capsules",       ndc: "0093-4155-01", category: "Pharmaceuticals",  subcategory: "Antibiotics",                  location: "CS-01",  qty: 200, par: 50,  cost: 2.4,  expiry: "Mar 1, 2027",  expiryRaw: new Date("2027-03-01"), status: [{ label: "In Stock", color: "success" }, { label: "Quarantined", color: "warning", icon: <WarningAmberIcon sx={{ fontSize: 10 }} /> }] },
-  { id: 2, name: "Epinephrine 1mg/mL 10mL Vial",    ndc: "0409-7166-01", category: "Pharmaceuticals",  subcategory: "Emergency Drugs",              location: "CS-01",  qty: 4,   par: 20,  cost: 18.5, expiry: "Sep 15, 2026", expiryRaw: new Date("2026-09-15"), status: [{ label: "Low Stock", color: "warning" }] },
-  { id: 3, name: "Sodium Chloride 0.9% IV 1L",       ndc: "0338-0049-04", category: "Pharmaceuticals",  subcategory: "IV Fluids & Electrolytes",      location: "CS-01",  qty: 12,  par: 40,  cost: 3.2,  expiry: "Jan 31, 2026", expiryRaw: new Date("2026-01-31"), expired: true, status: [{ label: "Low Stock", color: "warning" }] },
-  { id: 4, name: "Morphine Sulfate 10mg/mL",         ndc: "0641-6083-25", category: "Pharmaceuticals",  subcategory: "Analgesics / Pain Management", location: "CS-01",  qty: 18,  par: 10,  cost: 14.8, expiry: "Apr 15, 2026", expiryRaw: new Date("2026-04-15"), expiringSoon: true, status: [{ label: "In Stock", color: "success" }, { label: "Schedule II", color: "error" }] },
-  { id: 5, name: "Nitrile Exam Gloves (L) 100/bx",   ndc: "SKU-GLV-L",   category: "PPE & Protective", subcategory: "Gloves",                       location: "CS-01",  qty: 30,  par: 15,  cost: 12.0, expiry: "Jun 1, 2028",  expiryRaw: new Date("2028-06-01"), status: [{ label: "In Stock", color: "success" }] },
-  { id: 6, name: "Surgical Mask ASTM Level 3",       ndc: "SKU-MASK-L3",  category: "PPE & Protective", subcategory: "Masks & Respirators",          location: "CS-01",  qty: 450, par: 100, cost: 0.48, expiry: "Jan 1, 2028",  expiryRaw: new Date("2028-01-01"), status: [{ label: "In Stock", color: "success" }] },
-  { id: 7, name: "4×4 Gauze Pads Sterile 10/pk",    ndc: "SKU-GAUZE-44", category: "Wound Care",       subcategory: "Dressings",                    location: "CS-01",  qty: 200, par: 50,  cost: 2.8,  expiry: "Jan 1, 2029",  expiryRaw: new Date("2029-01-01"), status: [{ label: "In Stock", color: "success" }] },
-  { id: 8, name: "BD Vacutainer EDTA 10mL",          ndc: "SKU-BD-EDTA",  category: "Lab Supplies",     subcategory: "Collection Tubes",             location: "CS-01",  qty: 600, par: 150, cost: 0.35, expiry: "Dec 1, 2027",  expiryRaw: new Date("2027-12-01"), status: [{ label: "In Stock", color: "success" }] },
-  { id: 9, name: "Epinephrine 1mg/mL 10mL Vial",    ndc: "0409-7166-01", category: "Pharmaceuticals",  subcategory: "Emergency Drugs",              location: "ICU-01", qty: 4,   par: 10,  cost: 18.5, expiry: "Sep 15, 2026", expiryRaw: new Date("2026-09-15"), status: [{ label: "Low Stock", color: "warning" }] },
-];
 
 function CategoryTile({ category }) {
   const cfg = CATEGORY_ICONS[category] || { icon: <MedicationIcon sx={{ fontSize: 17 }} />, bg: "#f3f4f6", color: "#6b7280" };
@@ -165,8 +155,8 @@ function DeleteConfirmDialog({ open, item, onCancel, onConfirm, deleting }) {
 // Main Component
 export default function InventoryItems() {
   const navigate = useNavigate();
+  const { items: inventoryItems, deleteItem } = useInventory();
 
-  const [inventoryItems, setInventoryItems] = useState(initialInventory);
   const [search, setSearch]               = useState("");
   const [location, setLocation]           = useState("All Locations");
   const [category, setCategory]           = useState("All Categories");
@@ -215,7 +205,7 @@ export default function InventoryItems() {
     try {
       await new Promise((res) => setTimeout(res, 900));
       const name = deleteDialog.item.name;
-      setInventoryItems((prev) => prev.filter((i) => i.id !== deleteDialog.item.id));
+      deleteItem(deleteDialog.item.id);
       setDeleteDialog({ open: false, item: null });
       setToast({ open: true, message: `"${name}" has been deleted.`, severity: "success" });
     } catch {

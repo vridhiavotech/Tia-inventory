@@ -104,10 +104,10 @@ function Dropdown({ options, value, onChange }) {
           background: "#fff",
           cursor: "pointer",
           fontSize: 13,
-         
           color: "#374151",
           fontWeight: 500,
           whiteSpace: "nowrap",
+          outline: "none",
           boxShadow: open ? "0 0 0 3px #e0f2fe" : "none",
           transition: "box-shadow 0.15s",
         }}
@@ -140,7 +140,6 @@ function Dropdown({ options, value, onChange }) {
                 padding: "9px 16px",
                 cursor: "pointer",
                 fontSize: 13,
-           
                 color: value === opt ? "#2563eb" : "#374151",
                 fontWeight: value === opt ? 600 : 400,
                 background: value === opt ? "#f0f9ff" : "transparent",
@@ -203,7 +202,7 @@ const sectionLabel = (text) => (
 );
 
 const fieldLabel = (text) => (
-  <label style={{ display: "block", fontSize: 11, fontWeight: 700, color: "#64748b", letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 6, background:"none" }}>{text}</label>
+  <label style={{ display: "block", fontSize: 11, fontWeight: 700, color: "#64748b", letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 6, background: "none" }}>{text}</label>
 );
 
 const divider = () => (
@@ -221,7 +220,6 @@ function RaiseReplacementModal({ onClose, onSubmit }) {
 
   const set = (k, v) => setForm((p) => ({ ...p, [k]: v }));
 
-  // Auto-fill qty/location when item selected
   const handleItemChange = (val) => {
     const mock = {
       "Sodium Chloride 0.9% IV 1L — Central Store": { currentQty: "8", location: "Central Store" },
@@ -283,14 +281,13 @@ function RaiseReplacementModal({ onClose, onSubmit }) {
           <button onClick={onClose} style={{
             border: "1.5px solid #e2e8f0", borderRadius: 8, width: 32, height: 32,
             display: "flex", alignItems: "center", justifyContent: "center",
-            background: "#fff", cursor: "pointer", color: "#64748b", fontSize: 16, flexShrink: 0,
+            background: "#fff", cursor: "pointer", color: "#64748b", fontSize: 16, flexShrink: 0, outline: "none",
           }}>×</button>
         </div>
 
         {/* Scrollable Body */}
         <div className="modal-body" style={{ padding: "20px 24px", overflowY: "auto", flex: 1 }}>
 
-          {/* Section: Item Being Replaced */}
           {sectionLabel("Item Being Replaced")}
 
           <div style={{ marginBottom: 14 }}>
@@ -344,7 +341,6 @@ function RaiseReplacementModal({ onClose, onSubmit }) {
 
           {divider()}
 
-          {/* Section: Substitute Item */}
           {sectionLabel("Substitute Item (If Different)")}
 
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: form.useSubstitute ? 14 : 0 }}>
@@ -381,7 +377,6 @@ function RaiseReplacementModal({ onClose, onSubmit }) {
 
           {divider()}
 
-          {/* Section: Procurement */}
           {sectionLabel("Procurement")}
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 14 }}>
@@ -410,12 +405,12 @@ function RaiseReplacementModal({ onClose, onSubmit }) {
           <button onClick={onClose} style={{
             padding: "9px 20px", border: "1.5px solid #e2e8f0", borderRadius: 8,
             background: "#fff", cursor: "pointer", fontSize: 13,
-            fontWeight: 600, color: "#374151",
+            fontWeight: 600, color: "#374151", outline: "none",
           }}>Cancel</button>
           <button onClick={() => handleSave(false)} style={{
             padding: "9px 18px", border: "1.5px solid #e2e8f0", borderRadius: 8,
             background: "#fff", cursor: "pointer", fontSize: 13,
-           fontWeight: 600, color: "#374151",
+            fontWeight: 600, color: "#374151", outline: "none",
             display: "flex", alignItems: "center", gap: 6,
           }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -426,7 +421,7 @@ function RaiseReplacementModal({ onClose, onSubmit }) {
           <button onClick={() => handleSave(true)} style={{
             padding: "9px 18px", border: "none", borderRadius: 8,
             background: "rgb(37,99,235)", cursor: "pointer", fontSize: 13,
-            fontWeight: 700, color: "#fff",
+            fontWeight: 700, color: "#fff", outline: "none",
             display: "flex", alignItems: "center", gap: 6,
             boxShadow: "0 2px 8px rgba(37,99,235,0.3)",
           }}>
@@ -505,7 +500,7 @@ export default function Replacement() {
 
   const StatCard = ({ iconEl, label, count, sub, iconBg }) => (
     <div style={{
-      flex: 1, background: "#fff",  borderRadius: 14,
+      flex: 1, background: "#fff", borderRadius: 14,
       padding: "18px 22px", display: "flex", alignItems: "center", gap: 16,
       boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
     }}>
@@ -521,7 +516,7 @@ export default function Replacement() {
   );
 
   return (
-    <div style={{  background: "#f8fafc", minHeight: "100vh", padding: "24px 16px" }}>
+    <div style={{ background: "#f8fafc", minHeight: "100vh", padding: "24px 16px" }}>
       <style>{`
         @media (max-width: 768px) {
           .stat-cards { flex-wrap: wrap !important; }
@@ -543,6 +538,8 @@ export default function Replacement() {
         .modal-body::-webkit-scrollbar-track { background: transparent; }
         .modal-body::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 99px; }
         .modal-body::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
+        button:focus { outline: none !important; }
+        button:focus-visible { outline: none !important; box-shadow: none !important; }
       `}</style>
       <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
@@ -566,7 +563,7 @@ export default function Replacement() {
             display: "flex", alignItems: "center", gap: 6, padding: "9px 18px",
             border: "1.5px solid #e2e8f0", borderRadius: 9, background: "#fff",
             cursor: "pointer", fontSize: 13, fontWeight: 600, color: "#374151",
-            boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
+            boxShadow: "0 1px 3px rgba(0,0,0,0.06)", outline: "none",
           }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" />
@@ -576,8 +573,7 @@ export default function Replacement() {
           <button onClick={() => setShowModal(true)} style={{
             display: "flex", alignItems: "center", gap: 6, padding: "9px 18px",
             border: "none", borderRadius: 9, background: "rgb(37, 99, 235)",
-            cursor: "pointer", fontSize: 13, fontWeight: 700, color: "#fff",
-           
+            cursor: "pointer", fontSize: 13, fontWeight: 700, color: "#fff", outline: "none",
           }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
               <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
@@ -611,83 +607,82 @@ export default function Replacement() {
       <div className="filter-row" style={{ display: "flex", gap: 10, marginBottom: 20, alignItems: "center" }}>
         <Dropdown options={REASONS} value={reasonFilter} onChange={setReasonFilter} />
         <Dropdown options={STATUSES} value={statusFilter} onChange={setStatusFilter} />
-        
       </div>
 
       {/* Table */}
       <div style={{ background: "#fff", borderRadius: 14, border: "1.5px solid #e2e8f0", overflow: "hidden", boxShadow: "0 1px 6px rgba(0,0,0,0.05)" }}>
         <div className="table-scroll" style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
-        <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 900 }}>
-          <thead>
-            <tr style={{ background: "#f8fafc", borderBottom: "1.5px solid #e2e8f0" }}>
-              {["Request#", "Item", "Reason", "Urgency", "Disposed", "Replace QTY", "Substitute", "Linked PO", "Raised by", "Date", "Status", "Action"].map((h) => (
-                <th key={h} style={{ padding: "12px 14px", textAlign: "left", fontSize: 11.5, fontWeight: 700, color: "#94a3b8", letterSpacing: "0.05em", textTransform: "uppercase", whiteSpace: "nowrap" }}>{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.length === 0 ? (
-              <tr><td colSpan={12} style={{ padding: 40, textAlign: "center", color: "#94a3b8", fontSize: 14 }}>No records found.</td></tr>
-            ) : filtered.map((row, i) => {
-              const uc = urgencyColor(row.urgency);
-              const sc = statusStyle(row.status);
-              return (
-                <tr key={row.id} style={{ borderBottom: i < filtered.length - 1 ? "1px solid #f1f5f9" : "none", transition: "background 0.1s" }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = "#fafbff"}
-                  onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}>
-                  <td style={{ padding: "14px 14px", fontSize: 12.5, fontWeight: 700, color: "#2563eb", whiteSpace: "nowrap" }}>{row.id}</td>
-                  <td style={{ padding: "14px 14px", minWidth: 160 }}>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: "#0f172a" }}>{row.item}</div>
-                    <div style={{ fontSize: 11.5, color: "#94a3b8", marginTop: 2 }}>{row.location}</div>
-                  </td>
-                  <td style={{ padding: "14px 14px", fontSize: 13, color: "#374151", whiteSpace: "nowrap" }}>{row.reason}</td>
-                  <td style={{ padding: "14px 14px" }}>
-                    <span style={{ background: uc.bg, color: uc.color, padding: "3px 10px", borderRadius: 6, fontSize: 12, fontWeight: 700 }}>{row.urgency}</span>
-                  </td>
-                  <td style={{ padding: "14px 14px", fontSize: 13, color: "#374151", textAlign: "center" }}>{row.disposed}</td>
-                  <td style={{ padding: "14px 14px", fontSize: 13, fontWeight: 600, color: "#0f172a", textAlign: "center" }}>{row.replaceQty}</td>
-                  <td style={{ padding: "14px 14px", fontSize: 12.5, color: "#374151", maxWidth: 140 }}>{row.substitute}</td>
-                  <td style={{ padding: "14px 14px", fontSize: 12.5, color: row.linkedPO === "-" ? "#cbd5e1" : "#0284c7", fontWeight: row.linkedPO !== "-" ? 600 : 400, whiteSpace: "nowrap" }}>{row.linkedPO}</td>
-                  <td style={{ padding: "14px 14px", fontSize: 12.5, color: "#374151", whiteSpace: "nowrap" }}>{row.raisedBy}</td>
-                  <td style={{ padding: "14px 14px", fontSize: 12.5, color: "#94a3b8", whiteSpace: "nowrap" }}>{row.date}</td>
-                  <td style={{ padding: "14px 14px" }}>
-                    <span style={{ background: sc.bg, color: sc.color, border: `1.5px solid ${sc.border}`, padding: "3px 10px", borderRadius: 6, fontSize: 12, fontWeight: 700, whiteSpace: "nowrap" }}>{row.status}</span>
-                  </td>
-                  <td style={{ padding: "14px 14px" }}>
-                    <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-                      <button
-                        onClick={() => handleRaiseOrder(row.id)}
-                        disabled={row.status === "Closed" || row.status === "PO Raised"}
-                        title="Raise PO"
-                        style={{
-                          border: "1.5px solid #e2e8f0", borderRadius: 7, padding: "5px 8px", background: "#fff",
-                          cursor: row.status === "Closed" || row.status === "PO Raised" ? "not-allowed" : "pointer",
-                          opacity: row.status === "Closed" || row.status === "PO Raised" ? 0.4 : 1,
-                          display: "flex", alignItems: "center",
-                        }}>
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" />
-                          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-                        </svg>
-                      </button>
-                      <button
-                        onClick={() => handleDelete(row.id)}
-                        title="Remove"
-                        style={{
-                          border: "1.5px solid #fee2e2", borderRadius: 7, padding: "5px 8px", background: "#fff",
-                          cursor: "pointer", display: "flex", alignItems: "center",
-                        }}>
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-                        </svg>
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+          <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 900 }}>
+            <thead>
+              <tr style={{ background: "#f8fafc", borderBottom: "1.5px solid #e2e8f0" }}>
+                {["Request#", "Item", "Reason", "Urgency", "Disposed", "Replace QTY", "Substitute", "Linked PO", "Raised by", "Date", "Status", "Action"].map((h) => (
+                  <th key={h} style={{ padding: "12px 14px", textAlign: "left", fontSize: 11.5, fontWeight: 700, color: "#94a3b8", letterSpacing: "0.05em", textTransform: "uppercase", whiteSpace: "nowrap" }}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.length === 0 ? (
+                <tr><td colSpan={12} style={{ padding: 40, textAlign: "center", color: "#94a3b8", fontSize: 14 }}>No records found.</td></tr>
+              ) : filtered.map((row, i) => {
+                const uc = urgencyColor(row.urgency);
+                const sc = statusStyle(row.status);
+                return (
+                  <tr key={row.id} style={{ borderBottom: i < filtered.length - 1 ? "1px solid #f1f5f9" : "none", transition: "background 0.1s" }}
+                    onMouseEnter={(e) => e.currentTarget.style.background = "#fafbff"}
+                    onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}>
+                    <td style={{ padding: "14px 14px", fontSize: 12.5, fontWeight: 700, color: "#2563eb", whiteSpace: "nowrap" }}>{row.id}</td>
+                    <td style={{ padding: "14px 14px", minWidth: 160 }}>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: "#0f172a" }}>{row.item}</div>
+                      <div style={{ fontSize: 11.5, color: "#94a3b8", marginTop: 2 }}>{row.location}</div>
+                    </td>
+                    <td style={{ padding: "14px 14px", fontSize: 13, color: "#374151", whiteSpace: "nowrap" }}>{row.reason}</td>
+                    <td style={{ padding: "14px 14px" }}>
+                      <span style={{ background: uc.bg, color: uc.color, padding: "3px 10px", borderRadius: 6, fontSize: 12, fontWeight: 700 }}>{row.urgency}</span>
+                    </td>
+                    <td style={{ padding: "14px 14px", fontSize: 13, color: "#374151", textAlign: "center" }}>{row.disposed}</td>
+                    <td style={{ padding: "14px 14px", fontSize: 13, fontWeight: 600, color: "#0f172a", textAlign: "center" }}>{row.replaceQty}</td>
+                    <td style={{ padding: "14px 14px", fontSize: 12.5, color: "#374151", maxWidth: 140 }}>{row.substitute}</td>
+                    <td style={{ padding: "14px 14px", fontSize: 12.5, color: row.linkedPO === "-" ? "#cbd5e1" : "#0284c7", fontWeight: row.linkedPO !== "-" ? 600 : 400, whiteSpace: "nowrap" }}>{row.linkedPO}</td>
+                    <td style={{ padding: "14px 14px", fontSize: 12.5, color: "#374151", whiteSpace: "nowrap" }}>{row.raisedBy}</td>
+                    <td style={{ padding: "14px 14px", fontSize: 12.5, color: "#94a3b8", whiteSpace: "nowrap" }}>{row.date}</td>
+                    <td style={{ padding: "14px 14px" }}>
+                      <span style={{ background: sc.bg, color: sc.color, border: `1.5px solid ${sc.border}`, padding: "3px 10px", borderRadius: 6, fontSize: 12, fontWeight: 700, whiteSpace: "nowrap" }}>{row.status}</span>
+                    </td>
+                    <td style={{ padding: "14px 14px" }}>
+                      <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                        <button
+                          onClick={() => handleRaiseOrder(row.id)}
+                          disabled={row.status === "Closed" || row.status === "PO Raised"}
+                          title="Raise PO"
+                          style={{
+                            border: "1.5px solid #e2e8f0", borderRadius: 7, padding: "5px 8px", background: "#fff",
+                            cursor: row.status === "Closed" || row.status === "PO Raised" ? "not-allowed" : "pointer",
+                            opacity: row.status === "Closed" || row.status === "PO Raised" ? 0.4 : 1,
+                            display: "flex", alignItems: "center", outline: "none",
+                          }}>
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" />
+                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => handleDelete(row.id)}
+                          title="Remove"
+                          style={{
+                            border: "1.5px solid #fee2e2", borderRadius: 7, padding: "5px 8px", background: "#fff",
+                            cursor: "pointer", display: "flex", alignItems: "center", outline: "none",
+                          }}>
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                          </svg>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
         <div style={{ padding: "12px 16px", borderTop: "1px solid #f1f5f9", fontSize: 12, color: "#94a3b8", display: "flex", justifyContent: "space-between" }}>
           <span>Showing {filtered.length} of {data.length} records</span>

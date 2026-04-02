@@ -36,6 +36,7 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import WarningIcon from '@mui/icons-material/Warning';
 import NewPO from '../components/NewPO';
 import UploadInvoice from '../components/UploadInvoice';
+import NewGRNDialog from './Goodsreceipt/newgrnmodal';
 
 const PurchaseOrders = () => {
   const theme = useTheme();
@@ -45,6 +46,8 @@ const PurchaseOrders = () => {
   const [viewInvoiceModalOpen, setViewInvoiceModalOpen] = useState(false);
   const [selectedPO, setSelectedPO] = useState(null);
   const [selectedInvoice, setSelectedInvoice] = useState(null);
+  const [newGRNModalOpen, setNewGRNModalOpen] = useState(false);
+const [selectedGRNPO, setSelectedGRNPO] = useState(null);
   
   const [purchaseOrders, setPurchaseOrders] = useState([
     {
@@ -249,9 +252,10 @@ Total: $${po.total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFr
     setViewInvoiceModalOpen(true);
   };
 
-  const handleCreateGRN = (id) => {
-    alert(`Create GRN for PO: ${id}`);
-  };
+ const handleCreateGRN = (po) => {
+  setSelectedGRNPO(po);
+  setNewGRNModalOpen(true);
+};
 
   const handleNewPO = () => {
     setNewPOModalOpen(true);
@@ -888,7 +892,7 @@ Total: $${po.total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFr
                             <Tooltip title="Create GRN">
                               <IconButton 
                                 size="small" 
-                                onClick={() => handleCreateGRN(po.id)}
+                                onClick={() => handleCreateGRN(po)}
                                 sx={{ color: '#14b8a6', padding: '2px' }}
                               >
                                 <InventoryIcon sx={{ fontSize: '16px' }} />
@@ -959,6 +963,20 @@ Total: $${po.total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFr
         po={selectedPO}
         invoice={selectedInvoice}
       />
+         <NewGRNDialog
+        open={newGRNModalOpen}
+        onClose={() => {
+          setNewGRNModalOpen(false);
+          setSelectedGRNPO(null);
+        }}
+        onSave={(grnData) => {
+          console.log('GRN saved:', grnData);
+          setNewGRNModalOpen(false);
+          setSelectedGRNPO(null);
+        }}
+        nextId="GRN-2026-0006"
+        linkedPO={selectedGRNPO?.id}
+      />      
     </Box>
   );
 };

@@ -910,6 +910,7 @@ export default function ExpiryTracking() {
             padding: "9px 18px",
             border: "1.5px solid #e2e8f0",
             borderRadius: 9,
+            outline: "none",
             background: "#fff",
             cursor: "pointer",
             fontSize: 13,

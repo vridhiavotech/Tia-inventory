@@ -292,6 +292,7 @@ export default function Transfers() {
             padding: "10px 20px", border: "none", borderRadius: 10,
             background: "#2563eb", cursor: "pointer",
             fontSize: 13.5, fontWeight: 700, color: "#fff", letterSpacing: "0.01em",
+                outline: "none",
           }}
         >
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
