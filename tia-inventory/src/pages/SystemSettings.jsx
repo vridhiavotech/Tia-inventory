@@ -10,6 +10,9 @@ import {
   Alert,
   Typography,
 } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
+
 
 const inputStyles = {
   "& .MuiOutlinedInput-root": {
@@ -300,11 +303,15 @@ const SystemSettings = () => {
                   size="small"
                   sx={inputStyles}
                 >
-                  <MenuItem value="Yes — Create draft PO">
+                  <MenuItem value="Yes — Create draft PO"sx={{ fontSize: '0.75rem' }}>
                     Yes — Create draft PO
                   </MenuItem>
-                  <MenuItem value="Alert only">Alert only</MenuItem>
-                  <MenuItem value="No">No</MenuItem>
+                  <MenuItem value="Alert only" sx={{ fontSize: '0.75rem' }}>
+                    Alert only
+                  </MenuItem>
+                  <MenuItem value="No" sx={{ fontSize: '0.75rem' }}>
+                    No
+                  </MenuItem>
                 </TextField>
               </Box>
             </Grid>

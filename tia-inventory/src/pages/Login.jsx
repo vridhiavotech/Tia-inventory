@@ -178,8 +178,8 @@ const Login = () => {
           <form onSubmit={handleLogin}>
             <FormControl fullWidth sx={{ mb: 2 }}>
               <TextField
-                label="Email"
-                placeholder="Enter your email"
+                label="Username"
+                placeholder="Enter your username"
                 size="small"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
