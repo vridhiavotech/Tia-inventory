@@ -508,15 +508,15 @@ export default function Replacement() {
         {iconEl}
       </div>
       <div>
-        <div style={{ fontSize: 13, fontWeight: 500, color: "#374151" }}>{label}</div>
-        <div style={{ fontSize: 28, fontWeight: 800, color: "#0f172a", lineHeight: 1.15 }}>{count}</div>
-        <div style={{ fontSize: 12, color: "#94a3b8" }}>{sub}</div>
+        <div style={{ fontSize: 11, fontWeight: 600, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.05em" }}>{label}</div>
+        <div style={{ fontSize: 22, fontWeight: 700, color: "#111827", lineHeight: 1.2 }}>{count}</div>
+        <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 2 }}>{sub}</div>
       </div>
     </div>
   );
 
   return (
-    <div style={{ background: "#f8fafc", minHeight: "100vh", padding: "24px 16px" }}>
+    <div style={{ background: "#f8f9fb", minHeight: "100vh", padding: "28px 32px", boxSizing: "border-box" }}>
       <style>{`
         @media (max-width: 768px) {
           .stat-cards { flex-wrap: wrap !important; }
@@ -546,10 +546,10 @@ export default function Replacement() {
       {showModal && <RaiseReplacementModal onClose={() => setShowModal(false)} onSubmit={handleRaiseReplacement} />}
 
       {/* Header */}
-      <div className="header-row" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24 }}>
+      <div className="header-row" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
         <div>
-          <h1 style={{ margin: 0, fontSize: 24, fontWeight: 800, color: "#0f172a" }}>Replacement Tracking</h1>
-          <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 5, fontSize: 12, color: "#94a3b8" }}>
+          <h1 style={{ margin: 0, fontSize: 20, fontWeight: 700, color: "#111827" }}>Replacement Tracking</h1>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 4, fontSize: 12, color: "#9ca3af" }}>
             {["Flag", "Request", "PO", "Receive", "Close"].map((step, i, arr) => (
               <span key={step} style={{ display: "flex", alignItems: "center", gap: 6 }}>
                 <span style={{ color: i === 1 ? "#2563eb" : "#cbd5e1", fontWeight: i === 1 ? 700 : 400 }}>{step}</span>
@@ -560,10 +560,10 @@ export default function Replacement() {
         </div>
         <div style={{ display: "flex", gap: 10 }}>
           <button onClick={handleExport} style={{
-            display: "flex", alignItems: "center", gap: 6, padding: "9px 18px",
-            border: "1.5px solid #e2e8f0", borderRadius: 9, background: "#fff",
+            display: "flex", alignItems: "center", gap: 6, padding: "10px 18px",
+            border: "1px solid #e5e7eb", borderRadius: 8, background: "#fff",
             cursor: "pointer", fontSize: 13, fontWeight: 600, color: "#374151",
-            boxShadow: "0 1px 3px rgba(0,0,0,0.06)", outline: "none",
+            outline: "none",
           }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" />
@@ -571,9 +571,10 @@ export default function Replacement() {
             Export
           </button>
           <button onClick={() => setShowModal(true)} style={{
-            display: "flex", alignItems: "center", gap: 6, padding: "9px 18px",
-            border: "none", borderRadius: 9, background: "rgb(37, 99, 235)",
-            cursor: "pointer", fontSize: 13, fontWeight: 700, color: "#fff", outline: "none",
+            display: "flex", alignItems: "center", gap: 6, padding: "10px 18px",
+            border: "none", borderRadius: 8, background: "#2563eb",
+            cursor: "pointer", fontSize: 13, fontWeight: 600, color: "#fff",
+            outline: "none", boxShadow: "0 2px 8px rgba(37,99,235,0.25)",
           }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
               <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
@@ -584,7 +585,7 @@ export default function Replacement() {
       </div>
 
       {/* Stat Cards */}
-      <div className="stat-cards" style={{ display: "flex", gap: 16, marginBottom: 24 }}>
+      <div className="stat-cards" style={{ display: "flex", gap: 12, marginBottom: 20 }}>
         <StatCard
           iconEl={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>}
           label="Open Requests" count={counts.open} sub="Awaiting action" iconBg="#F59E0B"
@@ -604,19 +605,19 @@ export default function Replacement() {
       </div>
 
       {/* Filters */}
-      <div className="filter-row" style={{ display: "flex", gap: 10, marginBottom: 20, alignItems: "center" }}>
+      <div className="filter-row" style={{ display: "flex", gap: 12, marginBottom: 20, alignItems: "center" }}>
         <Dropdown options={REASONS} value={reasonFilter} onChange={setReasonFilter} />
         <Dropdown options={STATUSES} value={statusFilter} onChange={setStatusFilter} />
       </div>
 
       {/* Table */}
-      <div style={{ background: "#fff", borderRadius: 14, border: "1.5px solid #e2e8f0", overflow: "hidden", boxShadow: "0 1px 6px rgba(0,0,0,0.05)" }}>
+      <div style={{ background: "#fff", borderRadius: 14, border: "1px solid #f0f0f0", overflow: "hidden", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
         <div className="table-scroll" style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
           <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 900 }}>
             <thead>
-              <tr style={{ background: "#f8fafc", borderBottom: "1.5px solid #e2e8f0" }}>
+              <tr style={{ background: "#f8f9fb", borderBottom: "1px solid #f3f4f6" }}>
                 {["Request#", "Item", "Reason", "Urgency", "Disposed", "Replace QTY", "Substitute", "Linked PO", "Raised by", "Date", "Status", "Action"].map((h) => (
-                  <th key={h} style={{ padding: "12px 14px", textAlign: "left", fontSize: 11.5, fontWeight: 700, color: "#94a3b8", letterSpacing: "0.05em", textTransform: "uppercase", whiteSpace: "nowrap" }}>{h}</th>
+                  <th key={h} style={{ padding: "12px 16px", textAlign: "left", fontSize: 11, fontWeight: 600, color: "#9ca3af", letterSpacing: "0.05em", whiteSpace: "nowrap" }}>{h}</th>
                 ))}
               </tr>
             </thead>
@@ -627,24 +628,24 @@ export default function Replacement() {
                 const uc = urgencyColor(row.urgency);
                 const sc = statusStyle(row.status);
                 return (
-                  <tr key={row.id} style={{ borderBottom: i < filtered.length - 1 ? "1px solid #f1f5f9" : "none", transition: "background 0.1s" }}
-                    onMouseEnter={(e) => e.currentTarget.style.background = "#fafbff"}
+                  <tr key={row.id} style={{ borderBottom: i < filtered.length - 1 ? "1px solid #f3f4f6" : "none", transition: "background 0.1s" }}
+                    onMouseEnter={(e) => e.currentTarget.style.background = "#fafafa"}
                     onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}>
-                    <td style={{ padding: "14px 14px", fontSize: 12.5, fontWeight: 700, color: "#2563eb", whiteSpace: "nowrap" }}>{row.id}</td>
-                    <td style={{ padding: "14px 14px", minWidth: 160 }}>
-                      <div style={{ fontSize: 13, fontWeight: 600, color: "#0f172a" }}>{row.item}</div>
+                    <td style={{ padding: "14px 16px", fontSize: 12.5, fontWeight: 700, color: "#2563eb", whiteSpace: "nowrap" }}>{row.id}</td>
+                    <td style={{ padding: "14px 16px", minWidth: 160 }}>
+                      <div style={{ fontSize: 13, color: "#0f172a" }}>{row.item}</div>
                       <div style={{ fontSize: 11.5, color: "#94a3b8", marginTop: 2 }}>{row.location}</div>
                     </td>
-                    <td style={{ padding: "14px 14px", fontSize: 13, color: "#374151", whiteSpace: "nowrap" }}>{row.reason}</td>
+                    <td style={{ padding: "14px 16px", fontSize: 13, color: "#374151", whiteSpace: "nowrap" }}>{row.reason}</td>
                     <td style={{ padding: "14px 14px" }}>
                       <span style={{ background: uc.bg, color: uc.color, padding: "3px 10px", borderRadius: 6, fontSize: 12, fontWeight: 700 }}>{row.urgency}</span>
                     </td>
-                    <td style={{ padding: "14px 14px", fontSize: 13, color: "#374151", textAlign: "center" }}>{row.disposed}</td>
-                    <td style={{ padding: "14px 14px", fontSize: 13, fontWeight: 600, color: "#0f172a", textAlign: "center" }}>{row.replaceQty}</td>
-                    <td style={{ padding: "14px 14px", fontSize: 12.5, color: "#374151", maxWidth: 140 }}>{row.substitute}</td>
-                    <td style={{ padding: "14px 14px", fontSize: 12.5, color: row.linkedPO === "-" ? "#cbd5e1" : "#0284c7", fontWeight: row.linkedPO !== "-" ? 600 : 400, whiteSpace: "nowrap" }}>{row.linkedPO}</td>
-                    <td style={{ padding: "14px 14px", fontSize: 12.5, color: "#374151", whiteSpace: "nowrap" }}>{row.raisedBy}</td>
-                    <td style={{ padding: "14px 14px", fontSize: 12.5, color: "#94a3b8", whiteSpace: "nowrap" }}>{row.date}</td>
+                    <td style={{ padding: "14px 16px", fontSize: 13, color: "#374151", textAlign: "center" }}>{row.disposed}</td>
+                    <td style={{ padding: "14px 16px", fontSize: 13, fontWeight: 600, color: "#0f172a", textAlign: "center" }}>{row.replaceQty}</td>
+                    <td style={{ padding: "14px 16px", fontSize: 12.5, color: "#374151", maxWidth: 140 }}>{row.substitute}</td>
+                    <td style={{ padding: "14px 16px", fontSize: 12.5, color: row.linkedPO === "-" ? "#cbd5e1" : "#0284c7", fontWeight: row.linkedPO !== "-" ? 600 : 400, whiteSpace: "nowrap" }}>{row.linkedPO}</td>
+                    <td style={{ padding: "14px 16px", fontSize: 12.5, color: "#374151", whiteSpace: "nowrap" }}>{row.raisedBy}</td>
+                    <td style={{ padding: "14px 16px", fontSize: 12.5, color: "#94a3b8", whiteSpace: "nowrap" }}>{row.date}</td>
                     <td style={{ padding: "14px 14px" }}>
                       <span style={{ background: sc.bg, color: sc.color, border: `1.5px solid ${sc.border}`, padding: "3px 10px", borderRadius: 6, fontSize: 12, fontWeight: 700, whiteSpace: "nowrap" }}>{row.status}</span>
                     </td>
@@ -684,7 +685,7 @@ export default function Replacement() {
             </tbody>
           </table>
         </div>
-        <div style={{ padding: "12px 16px", borderTop: "1px solid #f1f5f9", fontSize: 12, color: "#94a3b8", display: "flex", justifyContent: "space-between" }}>
+        <div style={{ padding: "12px 16px", borderTop: "1px solid #f3f4f6", fontSize: 12, color: "#9ca3af", display: "flex", justifyContent: "space-between" }}>
           <span>Showing {filtered.length} of {data.length} records</span>
           <span>Replacement Tracking • TiaTELE</span>
         </div>

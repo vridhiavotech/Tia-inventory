@@ -67,6 +67,36 @@ const seedTransfers = [
   },
 ];
 
+// ─── Stat Card — matches Stock Issue style exactly ────────────────────────────
+function StatCard({ label, value, sub, color }) {
+  return (
+    <div style={{
+      flex: 1,
+      background: "#fff",
+      border: "1px solid #e5e7eb",
+      borderLeft: `3px solid ${color}`,
+      borderRadius: 10,
+      padding: "12px 16px",
+      minWidth: 0,
+    }}>
+      <div style={{
+        fontSize: 11, fontWeight: 600, color: "#9ca3af",
+        letterSpacing: "0.05em", textTransform: "uppercase", marginBottom: 4,
+      }}>
+        {label}
+      </div>
+      <div style={{ fontSize: 22, fontWeight: 700, color: "#111827", lineHeight: 1.2 }}>
+        {value}
+      </div>
+      {sub && (
+        <div style={{ fontSize: 11, fontWeight: 600, color: color, marginTop: 3 }}>
+          {sub}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── Icon helpers ─────────────────────────────────────────────────────────────
 const CheckIcon = ({ size = 10 }) => (
   <span style={{ fontSize: size + 2, color: "#16a34a" }}>✅</span>
@@ -194,13 +224,11 @@ function ViewTransferModal({ transfer, onClose }) {
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function Transfers() {
-  // Lazy initialiser: read localStorage first, fall back to seed data
   const [transfers, setTransfers] = useState(() => loadTransfers() ?? seedTransfers);
   const [showCreate, setShowCreate] = useState(false);
   const [viewItem,   setViewItem]   = useState(null);
   const [toast,      setToast]      = useState(null);
 
-  // Persist every change to localStorage automatically
   useEffect(() => {
     saveTransfers(transfers);
   }, [transfers]);
@@ -220,7 +248,6 @@ export default function Transfers() {
     showToast(`${id} rejected.`, "error");
   };
 
-  // Called by CreateTransferModal via onSave
   const handleCreate = (newTransfer) => {
     setTransfers((prev) => [newTransfer, ...prev]);
     showToast(`${newTransfer.id} created successfully.`);
@@ -229,6 +256,7 @@ export default function Transfers() {
   const total     = transfers.length;
   const pending   = transfers.filter((t) => t.status === "Pending").length;
   const completed = transfers.filter((t) => t.status === "Completed").length;
+  const rejected  = transfers.filter((t) => t.status === "Rejected").length;
 
   return (
     <div style={{ background: "#f8fafc", minHeight: "100vh", padding: "28px 28px" }}>
@@ -265,7 +293,6 @@ export default function Transfers() {
         </div>
       )}
 
-      {/* Modals — always mounted, MUI Dialog controls visibility via open prop */}
       <CreateTransferModal
         open={showCreate}
         onClose={() => setShowCreate(false)}
@@ -279,7 +306,7 @@ export default function Transfers() {
       {/* Header */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 26 }}>
         <div>
-          <h1 style={{ margin: 0, fontSize: 26, fontWeight: 800, color: "#0f172a" }}>Stock Transfers</h1>
+          <h1 style={{ margin: 0, fontSize: 20, fontWeight: 700, color: "#111827" }}>Stock Transfers</h1>
           <div style={{ fontSize: 13, color: "#94a3b8", marginTop: 4 }}>
             Inter-location stock movements —{" "}
             <span style={{ color: "#d97706", fontWeight: 600 }}>{pending} pending approval</span>
@@ -292,7 +319,7 @@ export default function Transfers() {
             padding: "10px 20px", border: "none", borderRadius: 10,
             background: "#2563eb", cursor: "pointer",
             fontSize: 13.5, fontWeight: 700, color: "#fff", letterSpacing: "0.01em",
-                outline: "none",
+            outline: "none",
           }}
         >
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
@@ -302,26 +329,12 @@ export default function Transfers() {
         </button>
       </div>
 
-      {/* Stat Cards */}
+      {/* Stat Cards — Stock Issue style */}
       <div style={{ display: "flex", gap: 12, marginBottom: 24 }}>
-        {[
-          { label: "Total Transfers", count: total,     accent: "#0e7490", sub: null },
-          { label: "Pending",         count: pending,   accent: "#d97706", sub: "Awaiting approval" },
-          { label: "Completed",       count: completed, accent: "#16a34a", sub: null },
-        ].map(({ label, count, accent, sub }) => (
-          <div key={label} style={{
-            flex: 1, background: "#fff", borderRadius: 12,
-            border: "1.5px solid #e2e8f0", overflow: "hidden",
-            boxShadow: "0 1px 4px rgba(0,0,0,0.04)", display: "flex",
-          }}>
-            <div style={{ width: 3, background: accent }} />
-            <div style={{ padding: "12px 16px", flex: 1 }}>
-              <div style={{ fontSize: 10, fontWeight: 700, color: "#94a3b8", letterSpacing: "0.07em", textTransform: "uppercase", marginBottom: 6 }}>{label}</div>
-              <div style={{ fontSize: 28, fontWeight: 800, color: "#0f172a", lineHeight: 1 }}>{count}</div>
-              {sub && <div style={{ fontSize: 10, color: "#94a3b8", marginTop: 4 }}>{sub}</div>}
-            </div>
-          </div>
-        ))}
+        <StatCard label="Total Transfers" value={total}     color="#f59e0b" sub="All transfers" />
+        <StatCard label="Pending"         value={pending}   color="#8b5cf6" sub="Awaiting approval" />
+        <StatCard label="Completed"       value={completed} color="#10b981" sub="Successfully moved" />
+        <StatCard label="Rejected"        value={rejected}  color="#ef4444" sub="Needs review" />
       </div>
 
       {/* Table */}

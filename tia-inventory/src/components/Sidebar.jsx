@@ -1,14 +1,13 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { useState, useEffect } from "react";
 import { Box, Typography, ButtonBase, Badge, Divider } from "@mui/material";
 
 import GridViewOutlinedIcon from "@mui/icons-material/GridViewOutlined";
 import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
 import EditNoteOutlinedIcon from "@mui/icons-material/EditNoteOutlined";
 import InboxOutlinedIcon from "@mui/icons-material/InboxOutlined";
-import OutputOutlinedIcon from "@mui/icons-material/OutputOutlined";        // ✅ Stock Issue
+import OutputOutlinedIcon from "@mui/icons-material/OutputOutlined";
 import CompareArrowsOutlinedIcon from "@mui/icons-material/CompareArrowsOutlined";
-import FactoryOutlinedIcon from "@mui/icons-material/FactoryOutlined";      // ✅ Manufacturers
+import FactoryOutlinedIcon from "@mui/icons-material/FactoryOutlined";
 import AccessTimeOutlinedIcon from "@mui/icons-material/AccessTimeOutlined";
 import TrendingUpOutlinedIcon from "@mui/icons-material/TrendingUpOutlined";
 import BarChartOutlinedIcon from "@mui/icons-material/BarChartOutlined";
@@ -44,27 +43,17 @@ const adminItems = [
   { icon: <LocalShippingOutlinedIcon fontSize="small" />, label: "Suppliers", path: "/admin/suppliers" },
   { icon: <FactoryOutlinedIcon fontSize="small" />, label: "Manufacturers", path: "/admin/manufacturers" },
   { icon: <HistoryOutlinedIcon fontSize="small" />, label: "Audit Log", path: "/admin/audit-log" },
- { icon: <KeyOutlinedIcon fontSize="small" />, label: "Settings", path: "/admin/system-settings" }
-
+  { icon: <KeyOutlinedIcon fontSize="small" />, label: "Settings", path: "/admin/system-settings" },
 ];
 
 export default function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Single source of truth — always derived from the real URL
   const isActive = (path) => location.pathname === path;
-  const [activeNav, setActiveNav] = useState("Dashboard");
 
-  useEffect(() => {
-    // Set active based on current path
-    const currentItem = navItems.find(item => item.path === location.pathname);
-    if (currentItem) {
-      setActiveNav(currentItem.label);
-    }
-  }, [location.pathname]);
-
-  const handleNavigation = (label, path) => {
-    setActiveNav(label);
+  const handleNavigation = (path) => {
     navigate(path);
   };
 
@@ -122,13 +111,13 @@ export default function Sidebar() {
           "&::-webkit-scrollbar-thumb:hover": { background: "#a1a1aa" },
         }}
       >
-        {/* Main Nav */}
+        {/* ── Main Nav ── */}
         {navItems.map((item) => {
-          const active = activeNav === item.label;
+          const active = isActive(item.path);
           return (
             <ButtonBase
               key={item.label}
-              onClick={() => handleNavigation(item.label, item.path)}
+              onClick={() => handleNavigation(item.path)}
               sx={{
                 display: "flex",
                 alignItems: "center",
@@ -144,14 +133,18 @@ export default function Sidebar() {
                 transition: "background 0.15s",
                 "&:hover": {
                   bgcolor: active ? "#ede9fe" : "#f5f5f5",
+                  "& .nav-icon": { color: active ? "#6366f1" : "#6366f1" },
+                  "& .nav-label": { color: active ? "#6366f1" : "#6366f1" },
                 },
               }}
             >
               <Box
+                className="nav-icon"
                 sx={{
                   display: "flex",
                   color: active ? "#6366f1" : "#999",
                   flexShrink: 0,
+                  transition: "color 0.15s",
                 }}
               >
                 {item.badge ? (
@@ -174,11 +167,13 @@ export default function Sidebar() {
                 )}
               </Box>
               <Typography
+                className="nav-label"
                 sx={{
                   fontSize: 13,
                   fontWeight: active ? 700 : 500,
                   color: active ? "#6366f1" : "#666",
                   lineHeight: 1,
+                  transition: "color 0.15s",
                 }}
               >
                 {item.label}
@@ -196,7 +191,7 @@ export default function Sidebar() {
           return (
             <ButtonBase
               key={item.label}
-              onClick={() => handleNavigation(item.label, item.path)}
+              onClick={() => handleNavigation(item.path)}
               sx={{
                 display: "flex",
                 alignItems: "center",
@@ -211,7 +206,7 @@ export default function Sidebar() {
                 "&:focus-visible": { outline: "none" },
                 transition: "color 0.15s, background 0.15s",
                 "&:hover": {
-                  bgcolor: "#f5f5f5",
+                  bgcolor: active ? "#ede9fe" : "#f5f5f5",
                   "& .admin-icon": { color: "#6366f1" },
                   "& .admin-label": { color: "#6366f1" },
                 },

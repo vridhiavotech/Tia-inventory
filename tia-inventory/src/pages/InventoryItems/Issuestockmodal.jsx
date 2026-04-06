@@ -33,20 +33,22 @@ const availableItems = [
 
 const FROM_LOCATIONS = [
   { label: "Central Store", value: "CS-01" },
-  { label: "ICU Store",     value: "CS-02" },
-  { label: "Pharmacy",      value: "PH-01" },
-  { label: "Pharmacy 2",    value: "PH-02" },
+  { label: "ICU ",     value: "CS-02" },
+  { label: "Emergency Dept",      value: "PH-01" },
+  { label: "Pharmacy ",    value: "PH-02" },
+  { label: "Surgery ",     value: "SU-01" },
+  { label: "Laboratory ",  value: "LA-01" },
+
 ];
 
 const TO_DEPTS = [
+  { label: "Central Store", value: "Central Store"        },
   { label: "ICU",            value: "ICU"           },
   { label: "Emergency Dept", value: "Emergency Dept" },
   { label: "OR / Surgery",   value: "OR / Surgery"  },
-  { label: "Ward A",         value: "Ward A"        },
-  { label: "Ward B",         value: "Ward B"        },
-  { label: "OPD",            value: "OPD"           },
-  { label: "Radiology",      value: "Radiology"     },
-  { label: "Maternity",      value: "Maternity"     },
+  { label: "Pharmacy",       value: "Pharmacy"      },
+  { label: "Laboratory",     value: "Laboratory"    },
+
 ];
 
 function FieldLabel({ children, required }) {

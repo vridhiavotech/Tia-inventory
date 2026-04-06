@@ -29,7 +29,6 @@ const INITIAL_ISSUES = [
 
 const ISSUE_TYPES = ["Ward Requisition","Emergency Issue","OT Request","Patient Dispensing"];
 
-// ── Use a ref-based counter so nextId never reads stale closure state ────────
 const getNextId = (list) => {
   const nums = list.map(r => parseInt(r.id.split("-")[2]));
   return `ISS-2026-${String(Math.max(...nums) + 1).padStart(4, "0")}`;
@@ -38,28 +37,32 @@ const getNextId = (list) => {
 const nowStr = () =>
   new Date().toLocaleString("en-US", { month:"short", day:"2-digit", year:"numeric", hour:"2-digit", minute:"2-digit", hour12:false });
 
-// ── Stat Card ─────────────────────────────────────────────────────────────────
+// ── Stat Card — matches Goods Receipt card style exactly ──
 function StatCard({ label, value, sub, color }) {
   return (
     <Box sx={{
-      flex: 1, bgcolor: "#fff",
-      border: `1px solid ${C.border}`,
+      flex: 1,
+      bgcolor: "#fff",
+      border: "1px solid #e5e7eb",
       borderLeft: `3px solid ${color}`,
-      borderRadius: "8px",
-      px: 2, py: 1.5, minWidth: 0,
+      borderRadius: "10px",
+      px: 2,
+      py: 1.5,
+      minWidth: 0,
     }}>
-      <Typography sx={{ fontSize:10, fontWeight:700, color:C.textSecondary, letterSpacing:0.7, textTransform:"uppercase", mb:0.4 }}>
+      <Typography sx={{ fontSize: 11, fontWeight: 600, color: "#9ca3af", letterSpacing: "0.05em", textTransform: "uppercase", mb: 0.5 }}>
         {label}
       </Typography>
       <Typography sx={{
-        fontSize: typeof value === "string" && value.length > 8 ? 15 : 22,
-        fontWeight:800, color:C.textPrimary, lineHeight:1.2,
-        whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis",
+        fontSize: 22,
+        fontWeight: 700,
+        color: "#111827",
+        lineHeight: 1.2,
       }}>
         {value}
       </Typography>
       {sub && (
-        <Typography sx={{ fontSize:11, fontWeight:600, color, mt:0.3, whiteSpace:"nowrap" }}>
+        <Typography sx={{ fontSize: 11, fontWeight: 600, color: color, mt: 0.3 }}>
           {sub}
         </Typography>
       )}
@@ -70,27 +73,27 @@ function StatCard({ label, value, sub, color }) {
 // ── Chips ─────────────────────────────────────────────────────────────────────
 function StatusChip({ status }) {
   const map = {
-    Issued:   { bg:"#F0FDF4", color:"#16A34A", border:"#BBF7D0" },
-    Pending:  { bg:"#FFFBEB", color:"#D97706", border:"#FDE68A" },
-    Rejected: { bg:"#FEF2F2", color:"#DC2626", border:"#FECACA" },
+    Issued:   { bg:"#dcfce7", color:"#16a34a" },
+    Pending:  { bg:"#e0f2fe", color:"#0284c7" },
+    Rejected: { bg:"#fef9c3", color:"#ca8a04" },
   };
   const s = map[status] || map.Pending;
   return (
     <Chip label={status} size="small" sx={{
-      bgcolor:s.bg, color:s.color, border:`1px solid ${s.border}`,
-      fontWeight:700, fontSize:11, height:22, px:0.2,
+      bgcolor:s.bg, color:s.color,
+      fontWeight:600, fontSize:11, height:22, px:0.2,
     }} />
   );
 }
 
 function TypeChip({ type }) {
   const map = {
-    "Ward Requisition":   { bg:"#EFF6FF", color:"#1D4ED8", border:"#BFDBFE" },
-    "Emergency Issue":    { bg:"#FFF1F2", color:"#BE123C", border:"#FECDD3" },
-    "OT Request":         { bg:"#FAF5FF", color:"#7E22CE", border:"#E9D5FF" },
-    "Patient Dispensing": { bg:"#F0FDF4", color:"#15803D", border:"#BBF7D0" },
+    "Ward Requisition":   { bg:"#eff6ff", color:"#1d4ed8", border:"#bfdbfe" },
+    "Emergency Issue":    { bg:"#fff1f2", color:"#be123c", border:"#fecdd3" },
+    "OT Request":         { bg:"#faf5ff", color:"#7e22ce", border:"#e9d5ff" },
+    "Patient Dispensing": { bg:"#dcfce7", color:"#15803d", border:"#bbf7d0" },
   };
-  const c = map[type] || { bg:"#F9FAFB", color:"#374151", border:"#E5E7EB" };
+  const c = map[type] || { bg:"#f3f4f6", color:"#374151", border:"#e5e7eb" };
   return (
     <Chip label={type} size="small" sx={{
       bgcolor:c.bg, color:c.color, border:`1px solid ${c.border}`,
@@ -101,10 +104,10 @@ function TypeChip({ type }) {
 
 function DeptChip({ dept }) {
   const map = {
-    ICU:           { bg:"#FFF7ED", color:"#C2410C", border:"#FED7AA" },
-    "OR / Surgery":{ bg:"#FAF5FF", color:"#7E22CE", border:"#E9D5FF" },
+    ICU:           { bg:"#fff7ed", color:"#c2410c", border:"#fed7aa" },
+    "OR / Surgery":{ bg:"#faf5ff", color:"#7e22ce", border:"#e9d5ff" },
   };
-  const c = map[dept] || { bg:"#EFF6FF", color:"#1D4ED8", border:"#BFDBFE" };
+  const c = map[dept] || { bg:"#eff6ff", color:"#1d4ed8", border:"#bfdbfe" };
   return (
     <Chip label={dept} size="small" sx={{
       bgcolor:c.bg, color:c.color, border:`1px solid ${c.border}`,
@@ -160,12 +163,10 @@ export default function StockIssue() {
   const [viewOpen, setViewOpen] = useState(false);
   const [toast,    setToast]    = useState({ open:false, msg:"", severity:"success" });
 
-  // ── Highlight state ──────────────────────────────────────────────────────
   const [highlightId, setHighlightId] = useState(null);
   const highlightTimer = useRef(null);
   const rowRefs = useRef({});
 
-  // ── Keep a ref to latest issues so callbacks never read stale state ──────
   const issuesRef = useRef(issues);
   issuesRef.current = issues;
 
@@ -173,9 +174,17 @@ export default function StockIssue() {
 
   const issued     = issues.filter(i => i.status === "Issued");
   const pending    = issues.filter(i => i.status === "Pending");
+  const rejected   = issues.filter(i => i.status === "Rejected");
   const issuedVal  = issued.reduce((s, i) => s + i.value, 0);
   const deptCount  = issued.reduce((acc, i) => { acc[i.dept] = (acc[i.dept]||0)+1; return acc; }, {});
   const mostActive = Object.entries(deptCount).sort((a,b) => b[1]-a[1])[0]?.[0] || "—";
+
+  const stats = [
+    { label:"Total Issues",   value:issues.length,                                    sub:"All issues",        color:"#f59e0b" },
+    { label:"Issued",         value:issued.length,   sub:`$${issuedVal.toFixed(0)} total value`, color:"#10b981" },
+    { label:"Pending",        value:pending.length,                                   sub:"Awaiting approval", color:"#8b5cf6" },
+    { label:"Rejected",       value:rejected.length,                                  sub:"Needs review",      color:"#ef4444" },
+  ];
 
   const filtered = issues.filter(i =>
     (typeFilter   === "All Types"    || i.type   === typeFilter) &&
@@ -185,7 +194,6 @@ export default function StockIssue() {
   const approve = (id) => { setIssues(p => p.map(i => i.id===id ? {...i, status:"Issued"}   : i)); showToast(`${id} approved & issued.`); };
   const reject  = (id) => { setIssues(p => p.map(i => i.id===id ? {...i, status:"Rejected"} : i)); showToast(`${id} rejected.`, "warning"); };
 
-  // ── Shared helper: add row + trigger highlight + scroll ──────────────────
   const addAndHighlight = (newRow) => {
     setIssues(p => [newRow, ...p]);
     setTypeFilter("All Types");
@@ -199,17 +207,8 @@ export default function StockIssue() {
     highlightTimer.current = setTimeout(() => setHighlightId(null), 3000);
   };
 
-  // ── FIX: wrap handlers in useCallback so identity is stable across renders.
-  //    Read issuesRef.current (not the closed-over `issues`) to always get the
-  //    latest list when computing the next ID.
-  //    Most importantly: close the modal FIRST, THEN update state — this
-  //    prevents the modal from seeing a mid-flight state change that could
-  //    re-trigger an open cycle. ────────────────────────────────────────────
   const handleIssued = useCallback((payload) => {
-    // 1. Close modal immediately
     setIssueModalOpen(false);
-
-    // 2. Build and add the new row after modal is closed
     setTimeout(() => {
       const n = {
         id:          getNextId(issuesRef.current),
@@ -228,10 +227,7 @@ export default function StockIssue() {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handlePending = useCallback((payload) => {
-    // 1. Close modal immediately
     setIssueModalOpen(false);
-
-    // 2. Build and add the new row after modal is closed
     setTimeout(() => {
       const n = {
         id:          getNextId(issuesRef.current),
@@ -249,7 +245,6 @@ export default function StockIssue() {
     }, 0);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // ── handleClose only closes — no state mutation that could re-trigger open
   const handleModalClose = useCallback(() => {
     setIssueModalOpen(false);
   }, []);
@@ -278,7 +273,6 @@ export default function StockIssue() {
 
   return (
     <>
-      {/* ── Highlight keyframe injected once ── */}
       <style>{`
         @keyframes rowFlash {
           0%   { background-color: #dbeafe; }
@@ -290,81 +284,86 @@ export default function StockIssue() {
         }
       `}</style>
 
-      <Box sx={{ bgcolor:C.bg, minHeight:"100vh" }}>
-        <Box sx={{ p:"24px 28px" }}>
+      {/* ── Outer wrapper — matches Inventory Items exactly ── */}
+      <Box sx={{ background: "#f8f9fb", minHeight: "100vh", p: "28px 32px", boxSizing: "border-box" }}>
 
-          {/* ── Title row ── */}
-          <Box sx={{ display:"flex", alignItems:"center", justifyContent:"space-between", mb:2.5 }}>
-            <Box>
-              <Typography sx={{ fontWeight:800, fontSize:22, color:C.textPrimary, letterSpacing:-0.3 }}>
-                Stock Issue
-              </Typography>
-              <Typography sx={{ fontSize:13, color:C.textSecondary, mt:0.3 }}>
-                Outward movements — ward requisitions, OT requests, dispensing
-              </Typography>
-            </Box>
-            <Stack direction="row" spacing={1.5}>
-              <Button startIcon={<FileDownload sx={{ fontSize:16 }} />} variant="outlined" onClick={exportCSV}
-                sx={{ border:`1px solid ${C.border}`, color:C.textSecondary, textTransform:"none",
-                  fontWeight:600, fontSize:13, borderRadius:"8px", height:36, px:2, bgcolor:"#fff",
-                  "&:hover":{ borderColor:"#9CA3AF", bgcolor:"#F9FAFB" } }}>
-                Export
-              </Button>
-              <Button startIcon={<Add sx={{ fontSize:16 }} />} variant="contained"
-                onClick={() => setIssueModalOpen(true)}
-                sx={{ bgcolor:"#2563eb", textTransform:"none", fontWeight:700, fontSize:13, borderRadius:"8px", height:36, px:2.5 }}>
-                Issue Stock
-              </Button>
-            </Stack>
-          </Box>
-
-          {/* ── Stat Cards ── */}
-          <Stack direction="row" spacing={1.5} sx={{ mb:2.5 }}>
-            <StatCard label="Total Issues"     value={issues.length}  sub="+12 this month"                         color="#7C3AED" />
-            <StatCard label="Issued"           value={issued.length}  sub={`$${issuedVal.toFixed(0)} total value`} color="#2563EB" />
-            <StatCard label="Pending Approval" value={pending.length} sub="+3 this month"                          color="#16A34A" />
-            <StatCard label="Most Active Dept" value={mostActive}     sub="Highest issue volume"                   color="#D97706" />
-          </Stack>
-
-          {/* ── Filters ── */}
-          <Box sx={{ display:"flex", alignItems:"center", gap:1.5, mb:2 }}>
-            <FormControl size="small" sx={{ minWidth:148 }}>
-              <Select value={typeFilter} onChange={e => setTypeFilter(e.target.value)}
-                sx={{ fontSize:13, borderRadius:"8px", bgcolor:"#F9FAFB", "& .MuiOutlinedInput-notchedOutline":{ borderColor:C.border } }}>
-                <MenuItem value="All Types">All Types</MenuItem>
-                {ISSUE_TYPES.map(t => <MenuItem key={t} value={t}>{t}</MenuItem>)}
-              </Select>
-            </FormControl>
-            <FormControl size="small" sx={{ minWidth:148 }}>
-              <Select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}
-                sx={{ fontSize:13, borderRadius:"8px", bgcolor:"#F9FAFB", "& .MuiOutlinedInput-notchedOutline":{ borderColor:C.border } }}>
-                <MenuItem value="All Statuses">All Statuses</MenuItem>
-                <MenuItem value="Issued">Issued</MenuItem>
-                <MenuItem value="Pending">Pending</MenuItem>
-                <MenuItem value="Rejected">Rejected</MenuItem>
-              </Select>
-            </FormControl>
-            <Box sx={{ flex:1 }} />
-            <Typography sx={{ fontSize:13, color:C.textSecondary, fontWeight:500 }}>
-              {filtered.length} of {issues.length} records
+        {/* ── Title row ── */}
+        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: "20px" }}>
+          <Box>
+            <Typography sx={{ fontSize: 20, fontWeight: 700, color: "#111827" }}>
+              Stock Issue
+            </Typography>
+            <Typography sx={{ fontSize: 12, color: "#9ca3af", mt: "4px" }}>
+              Outward movements — ward requisitions, OT requests, dispensing
             </Typography>
           </Box>
+          <Stack direction="row" spacing={1.5}>
+            <Button startIcon={<FileDownload sx={{ fontSize:16 }} />} variant="outlined" onClick={exportCSV}
+              sx={{ border:`1px solid ${C.border}`, color:C.textSecondary, textTransform:"none",
+                fontWeight:600, fontSize:13, borderRadius:"8px", height:36, px:2, bgcolor:"#fff",
+                "&:hover":{ borderColor:"#9CA3AF", bgcolor:"#F9FAFB" } }}>
+              Export
+            </Button>
+            <Button startIcon={<Add sx={{ fontSize:16 }} />} variant="contained"
+              onClick={() => setIssueModalOpen(true)}
+              sx={{ background: "#2563eb", color: "#fff", borderRadius: "8px", px: "18px", py: "10px", fontSize: 13, fontWeight: 600, textTransform: "none", boxShadow: "0 2px 8px rgba(37,99,235,0.25)", "&:hover": { background: "#1d4ed8" } }}>
+              Issue Stock
+            </Button>
+          </Stack>
+        </Box>
 
-          {/* ── Table ── */}
-          <TableContainer component={Paper} elevation={0}
+        {/* ── Stat Cards (Goods Receipt style) ── */}
+        <Box sx={{ display: "flex", gap: "12px", mb: "20px" }}>
+          {stats.map((s) => (
+            <StatCard key={s.label} label={s.label} value={s.value} sub={s.sub} color={s.color} />
+          ))}
+        </Box>
+
+        {/* ── Filters ── */}
+        <Box sx={{ display: "flex", alignItems: "center", gap: "12px", mb: "20px" }}>
+          <FormControl size="small" sx={{ minWidth:148 }}>
+            <Select value={typeFilter} onChange={e => setTypeFilter(e.target.value)}
+              sx={{ fontSize: 13, borderRadius: "8px", background: "#fff", "& .MuiOutlinedInput-notchedOutline": { borderColor: "#e5e7eb" }, "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#d1d5db" } }}>
+              <MenuItem value="All Types">All Types</MenuItem>
+              {ISSUE_TYPES.map(t => <MenuItem key={t} value={t}>{t}</MenuItem>)}
+            </Select>
+          </FormControl>
+          <FormControl size="small" sx={{ minWidth:148 }}>
+            <Select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}
+              sx={{ fontSize: 13, borderRadius: "8px", background: "#fff", "& .MuiOutlinedInput-notchedOutline": { borderColor: "#e5e7eb" }, "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#d1d5db" } }}>
+              <MenuItem value="All Statuses">All Statuses</MenuItem>
+              <MenuItem value="Issued">Issued</MenuItem>
+              <MenuItem value="Pending">Pending</MenuItem>
+              <MenuItem value="Rejected">Rejected</MenuItem>
+            </Select>
+          </FormControl>
+          <Box sx={{ flex:1 }} />
+          <Typography sx={{ fontSize: 12, color: "#9ca3af" }}>
+            {filtered.length} of {issues.length} records
+          </Typography>
+        </Box>
+
+        {/* ── Table ── */}
+        <Paper elevation={0} sx={{ borderRadius: "14px", border: "1px solid #f0f0f0", boxShadow: "0 1px 4px rgba(0,0,0,0.04)", overflow: "hidden" }}>
+          <TableContainer
             sx={{
-              border:`1px solid ${C.border}`, borderRadius:"10px", overflow:"auto",
+              overflowX: "auto",
               "&::-webkit-scrollbar":{ height:4 },
+              "&::-webkit-scrollbar-track":{ background:"transparent" },
               "&::-webkit-scrollbar-thumb":{ background:"#d1d5db", borderRadius:4 },
-            }}>
+              "&::-webkit-scrollbar-thumb:hover":{ background:"#a1a1aa" },
+              scrollbarWidth:"thin",
+              scrollbarColor:"#d1d5db transparent",
+            }}
+          >
             <Table size="small" sx={{ minWidth:1020, tableLayout:"fixed" }}>
               <TableHead>
-                <TableRow sx={{ bgcolor:"#F9FAFB" }}>
+                <TableRow sx={{ background: "#f8f9fb" }}>
                   {HEADS.map(h => (
                     <TableCell key={h.label} sx={{
-                      width:h.width, fontWeight:700, fontSize:11, color:C.textSecondary,
-                      letterSpacing:0.5, py:1.4, px:1.5,
-                      borderBottom:`1px solid ${C.border}`,
+                      width:h.width, fontWeight:600, fontSize:11, color:"#9ca3af",
+                      letterSpacing:"0.05em", py:"12px", px:"16px",
+                      borderBottom:"1px solid #f3f4f6",
                       textTransform:"uppercase", whiteSpace:"nowrap",
                     }}>
                       {h.label}
@@ -388,42 +387,40 @@ export default function StockIssue() {
                       ref={el => { if (el) rowRefs.current[row.id] = el; }}
                       className={isHighlighted ? "row-highlight" : ""}
                       sx={{
-                        bgcolor: isHighlighted ? "transparent" : (idx % 2 === 0 ? "#fff" : "#FAFAFA"),
-                        "&:hover": { bgcolor: isHighlighted ? "transparent" : "#EFF6FF" },
+                        background: "#fff",
+                        "&:hover": { background: isHighlighted ? "transparent" : "#fafafa" },
                         transition: isHighlighted ? "none" : "background 0.15s",
+                        "& td": { borderBottom: idx < filtered.length - 1 ? "1px solid #f3f4f6" : "none", py: "14px", px: "16px" },
                         ...(isHighlighted && {
-                          "& td:first-of-type": {
-                            borderLeft: "3px solid #2563eb",
-                          },
+                          "& td:first-of-type": { borderLeft: "3px solid #2563eb" },
                         }),
                       }}
                     >
-                      <TableCell sx={{ px:1.5, py:1.1 }}>
+                      <TableCell>
                         <Typography sx={{ fontWeight:700, color:"#1D4ED8", fontSize:12 }}>{row.id}</Typography>
                       </TableCell>
-                      <TableCell sx={{ px:1.5, py:1.1 }}><TypeChip type={row.type} /></TableCell>
-                      <TableCell sx={{ px:1.5, py:1.1 }}>
+                      <TableCell><TypeChip type={row.type} /></TableCell>
+                      <TableCell>
                         <Chip label={row.from} size="small" sx={{ bgcolor:"#F5F3FF", color:"#6D28D9", border:"1px solid #DDD6FE", fontWeight:600, fontSize:11, height:22 }} />
                       </TableCell>
-                      <TableCell sx={{ px:1.5, py:1.1 }}><DeptChip dept={row.dept} /></TableCell>
-                      <TableCell sx={{ px:1.5, py:1.1 }}>
+                      <TableCell><DeptChip dept={row.dept} /></TableCell>
+                      <TableCell>
                         <Typography sx={{ color:C.textSecondary, fontSize:12 }}>{row.items}</Typography>
                       </TableCell>
-                      <TableCell sx={{ px:1.5, py:1.1 }}>
+                      <TableCell>
                         <Typography sx={{ fontWeight:700, color:C.textPrimary, fontSize:12 }}>${row.value.toFixed(2)}</Typography>
                       </TableCell>
-                      <TableCell sx={{ px:1.5, py:1.1 }}>
+                      <TableCell>
                         <Typography sx={{ color:C.textSecondary, fontSize:12, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
                           {row.requestedBy}
                         </Typography>
                       </TableCell>
-                      <TableCell sx={{ px:1.5, py:1.1 }}>
+                      <TableCell>
                         <Typography sx={{ color:C.textSecondary, fontSize:11, whiteSpace:"nowrap" }}>{row.date}</Typography>
                       </TableCell>
-                      <TableCell sx={{ px:1.5, py:1.1 }}><StatusChip status={row.status} /></TableCell>
+                      <TableCell><StatusChip status={row.status} /></TableCell>
 
-                      {/* ── ACTIONS ── */}
-                      <TableCell sx={{ px:1.5, py:1.1 }}>
+                      <TableCell>
                         <Stack direction="row" spacing={0.5} alignItems="center">
                           {row.status === "Pending" && (<>
                             <Tooltip title="Approve & Issue">
@@ -440,8 +437,8 @@ export default function StockIssue() {
                             </Tooltip>
                             <Tooltip title="View Details">
                               <IconButton size="small" onClick={() => { setViewRow(row); setViewOpen(true); }}
-                                sx={{ bgcolor:"#FEF2F2", color:"#DC2626", "&:hover":{ bgcolor:"#FEE2E2" }, width:26, height:26, borderRadius:"50%", border:"1px solid #FECACA" }}>
-                                <Box sx={{ width:8, height:8, borderRadius:"50%", bgcolor:"#DC2626" }} />
+                                sx={{ bgcolor:"#EFF6FF", color:"#1D4ED8", "&:hover":{ bgcolor:"#DBEAFE" }, width:26, height:26, borderRadius:"6px" }}>
+                                <Visibility sx={{ fontSize:13 }} />
                               </IconButton>
                             </Tooltip>
                           </>)}
@@ -471,10 +468,9 @@ export default function StockIssue() {
               </TableBody>
             </Table>
           </TableContainer>
-        </Box>
+        </Paper>
       </Box>
 
-      {/* ── Issue Stock Modal ── */}
       <IssueStockModal
         open={issueModalOpen}
         onClose={handleModalClose}
@@ -482,7 +478,6 @@ export default function StockIssue() {
         onPending={handlePending}
       />
 
-      {/* ── View Detail Dialog ── */}
       <ViewDialog open={viewOpen} onClose={() => setViewOpen(false)} row={viewRow} />
 
       <Snackbar open={toast.open} autoHideDuration={3000}

@@ -156,10 +156,34 @@ function NumberSpinInput({ value, onChange, placeholder, step = 1, min = 0 }) {
   );
 }
 
-function SectionTitle({ children }) {
+// ─── Section Card ─────────────────────────────────────────────────────────────
+function SectionCard({ title, children }) {
   return (
-    <div style={{ borderBottom: "1px solid #f3f4f6", paddingBottom: 12, marginBottom: 20 }}>
-      <h3 style={{ margin: 0, fontSize: 13, fontWeight: 700, color: "#111827", letterSpacing: "0.05em" }}>{children}</h3>
+    <div style={{
+      background: "#fff",
+      borderRadius: 14,
+      border: "1px solid #f0f0f0",
+      boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
+      overflow: "hidden",
+      marginBottom: 16,
+    }}>
+      {/* Card header strip */}
+      <div style={{
+        display: "flex",
+        alignItems: "center",
+        padding: "14px 28px",
+        borderBottom: "1px solid #f3f4f6",
+        background: "#fafafa",
+      }}>
+        <h3 style={{ margin: 0, fontSize: 13, fontWeight: 700, color: "#111827", letterSpacing: "0.05em" }}>
+          {title}
+        </h3>
+      </div>
+
+      {/* Card body */}
+      <div style={{ padding: "24px 28px" }}>
+        {children}
+      </div>
     </div>
   );
 }
@@ -207,31 +231,30 @@ export default function AddItem() {
   const { items: inventoryItems, addItem, updateItem } = useInventory();
   const [searchParams] = useSearchParams();
 
-  const editId   = searchParams.get("id");
-  const isEdit   = searchParams.get("edit") === "true" && editId;
+  const editId = searchParams.get("id");
+  const isEdit = searchParams.get("edit") === "true" && editId;
 
   const [itemType, setItemType] = useState("consumable");
   const [form, setForm]         = useState(EMPTY_FORM);
   const [errors, setErrors]     = useState({});
   const [saving, setSaving]     = useState(false);
 
-  // ── Pre-fill form when editing ──────────────────────────────────────────
   useEffect(() => {
     if (isEdit) {
       const existing = inventoryItems.find((i) => String(i.id) === String(editId));
       if (existing) {
         setForm({
           ...EMPTY_FORM,
-          itemName:      existing.name        || "",
-          ndc:           existing.ndc         || "",
-          category:      existing.category    || "",
-          subcategory:   existing.subcategory || "",
-          location:      existing.location    || "Central Store",
-          qtyInHand:     String(existing.qty  ?? ""),
-          parLevel:      String(existing.par  ?? ""),
-          unitCost:      String(existing.cost ?? ""),
-          lotNumber:     existing.lot         || "",
-          expireDate:    existing.expiryRaw
+          itemName:   existing.name        || "",
+          ndc:        existing.ndc         || "",
+          category:   existing.category    || "",
+          subcategory: existing.subcategory || "",
+          location:   existing.location    || "Central Store",
+          qtyInHand:  String(existing.qty  ?? ""),
+          parLevel:   String(existing.par  ?? ""),
+          unitCost:   String(existing.cost ?? ""),
+          lotNumber:  existing.lot         || "",
+          expireDate: existing.expiryRaw
             ? existing.expiryRaw.toISOString().split("T")[0]
             : "",
         });
@@ -258,34 +281,30 @@ export default function AddItem() {
   const handleSave = async () => {
     if (!validate()) return;
     setSaving(true);
-
-    // Simulate async save
     await new Promise((r) => setTimeout(r, 400));
-
     const payload = {
-      name:        form.itemName,
-      ndc:         form.ndc,
-      category:    form.category,
+      name:       form.itemName,
+      ndc:        form.ndc,
+      category:   form.category,
       subcategory: form.subcategory,
-      location:    form.location,
-      qty:         parseFloat(form.qtyInHand) || 0,
-      par:         parseFloat(form.parLevel)  || 0,
-      cost:        parseFloat(form.unitCost)  || 0,
-      lot:         form.lotNumber,
-      expireDate:  form.expireDate,
-      notes:       form.notes,
+      location:   form.location,
+      qty:        parseFloat(form.qtyInHand) || 0,
+      par:        parseFloat(form.parLevel)  || 0,
+      cost:       parseFloat(form.unitCost)  || 0,
+      lot:        form.lotNumber,
+      expireDate: form.expireDate,
+      notes:      form.notes,
     };
-
     if (isEdit) {
       updateItem(Number(editId), payload);
     } else {
       addItem(payload);
     }
-
     setSaving(false);
-    // ── Navigate to inventory items so the new row is immediately visible ──
     navigate("/admin/inventory/items");
   };
+
+  const isConsumable = itemType === "consumable" || isEdit;
 
   return (
     <div style={{ maxWidth: 860, margin: "0 auto" }}>
@@ -310,33 +329,23 @@ export default function AddItem() {
         </div>
       </div>
 
-      {/* ── Form Card ── */}
-      <div style={{ background: "#fff", borderRadius: 14, border: "1px solid #f0f0f0", boxShadow: "0 1px 4px rgba(0,0,0,0.04)", padding: "28px 32px", marginBottom: 16 }}>
-
-        {/* ITEM TYPE — only show when adding */}
-        {!isEdit && (
-          <div style={{ marginBottom: 28 }}>
-            <label style={{ fontSize: 13, fontWeight: 600, color: "#374151", marginBottom: 12, display: "block" }}>
-              ITEM TYPE <span style={{ color: "#ef4444" }}>*</span>
-            </label>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 }}>
-              <ItemTypeTab label="Consumable" description="Medicines, supplies" icon={LocalPharmacyIcon} isSelected={itemType === "consumable"} onClick={() => setItemType("consumable")} />
-              <ItemTypeTab label="Equipment"  description="Reusable equipment"  icon={DevicesIcon}       isSelected={itemType === "equipment"}  onClick={() => setItemType("equipment")} />
-              <ItemTypeTab label="Device"     description="Medical devices"      icon={MedicalServicesIcon} isSelected={itemType === "device"} onClick={() => setItemType("device")} />
-            </div>
+      {/* ── Item Type Card ── */}
+      {!isEdit && (
+        <SectionCard title="ITEM TYPE">
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 }}>
+            <ItemTypeTab label="Consumable" description="Medicines, supplies"  icon={LocalPharmacyIcon}   isSelected={itemType === "consumable"} onClick={() => setItemType("consumable")} />
+            <ItemTypeTab label="Equipment"  description="Reusable equipment"   icon={DevicesIcon}         isSelected={itemType === "equipment"}  onClick={() => setItemType("equipment")} />
+            <ItemTypeTab label="Device"     description="Medical devices"       icon={MedicalServicesIcon} isSelected={itemType === "device"}     onClick={() => setItemType("device")} />
           </div>
-        )}
+        </SectionCard>
+      )}
 
-        {/* ITEM DETAILS */}
-        <SectionTitle>ITEM DETAILS</SectionTitle>
+      {/* ── Item Details Card ── */}
+      <SectionCard title="ITEM DETAILS">
         <Row>
           <div>
             <Label required>Item Name</Label>
-            <TextInput
-              placeholder="E.g. Amoxicillin 500mg capsules"
-              value={form.itemName}
-              onChange={set("itemName")}
-            />
+            <TextInput placeholder="E.g. Amoxicillin 500mg capsules" value={form.itemName} onChange={set("itemName")} />
             {errors.itemName && <span style={{ fontSize: 11, color: "#ef4444" }}>Required</span>}
           </div>
           <div>
@@ -408,8 +417,7 @@ export default function AddItem() {
           <div /><div />
         </Row>
 
-        {/* Consumable-only fields */}
-        {(itemType === "consumable" || isEdit) && (
+        {isConsumable && (
           <Row cols={3}>
             <div>
               <Label>Item Status</Label>
@@ -432,143 +440,113 @@ export default function AddItem() {
             <div />
           </Row>
         )}
+      </SectionCard>
 
-        {/* STOCK & PRICING */}
-        {(itemType === "consumable" || isEdit) && (
-          <>
-            <SectionTitle>STOCK &amp; PRICING</SectionTitle>
-            <Row>
-              <div>
-                <Label required>QTY in Hand</Label>
-                <NumberSpinInput value={form.qtyInHand} onChange={set("qtyInHand")} placeholder="0" step={1} />
-              </div>
-              <div>
-                <Label>PAR Level</Label>
-                <NumberSpinInput value={form.parLevel} onChange={set("parLevel")} placeholder="0" step={1} />
-              </div>
-              <div>
-                <Label>Unit Cost ($)</Label>
-                <NumberSpinInput value={form.unitCost} onChange={set("unitCost")} placeholder="0.00" step={0.01} />
-              </div>
-            </Row>
-            <Row cols={2}>
-              <div>
-                <Label>Location</Label>
-                <SelectInput
-                  placeholder="Select"
-                  value={form.location}
-                  onChange={set("location")}
-                  options={["Central Store","ICU","Emergency Dept","Pharmacy","Surgery","Laboratory"]}
-                />
-              </div>
-              <div />
-            </Row>
-
-            <SectionTitle>LOT &amp; EXPIRY</SectionTitle>
-            <Row cols={2}>
-              <div>
-                <Label>LOT number</Label>
-                <TextInput placeholder="LOT2025A" value={form.lotNumber} onChange={set("lotNumber")} />
-              </div>
-              <div>
-                <Label>Expire Date</Label>
-                <DateInput value={form.expireDate} onChange={set("expireDate")} />
-              </div>
-            </Row>
-
+      {/* ── Equipment / Device Details Card ── */}
+      {(itemType === "equipment" || itemType === "device") && !isEdit && (
+        <SectionCard title={itemType === "equipment" ? "EQUIPMENT DETAILS" : "DEVICE DETAILS"}>
+          <Row cols={3}>
+            <div><Label>Model No.</Label><TextInput placeholder="e.g. BeneVision N15" value={form.modelNo} onChange={set("modelNo")} /></div>
+            <div><Label>Serial No.</Label><TextInput placeholder="e.g. MR2024-0012" value={form.serialNo} onChange={set("serialNo")} /></div>
             <div>
-              <Label>Notes</Label>
-              <textarea
-                value={form.notes}
-                onChange={set("notes")}
-                placeholder="Type here"
-                rows={3}
-                style={{ width: "100%", padding: "10px 12px", fontSize: 13, border: "1px solid #e5e7eb", borderRadius: 8, outline: "none", resize: "vertical", color: "#111827", backgroundColor: "#f9fafb", boxSizing: "border-box" }}
+              <Label>Condition</Label>
+              <SelectInput placeholder="Select" value={form.condition} onChange={set("condition")} options={["Good","Fair","Poor","Needs Repair"]} />
+            </div>
+          </Row>
+          <Row cols={2}>
+            <div><Label>Purchase Date</Label><DateInput value={form.purchaseDate} onChange={set("purchaseDate")} /></div>
+            <div><Label>Warranty Expiry</Label><DateInput value={form.warrantyExpiry} onChange={set("warrantyExpiry")} /></div>
+          </Row>
+          <Row cols={2}>
+            <div><Label>Next Service Due</Label><DateInput value={form.nextServiceDue} onChange={set("nextServiceDue")} /></div>
+            <div><Label>Calibration Due</Label><DateInput value={form.calibrationDue} onChange={set("calibrationDue")} /></div>
+          </Row>
+        </SectionCard>
+      )}
+
+      {/* ── Stock & Pricing Card ── */}
+      {(isConsumable || itemType === "equipment" || itemType === "device") && (
+        <SectionCard title="STOCK &amp; PRICING">
+          <Row>
+            <div>
+              <Label required>QTY in Hand</Label>
+              <NumberSpinInput value={form.qtyInHand} onChange={set("qtyInHand")} placeholder="0" step={1} />
+            </div>
+            <div>
+              <Label>{itemType === "consumable" || isEdit ? "PAR Level" : "Min. QTY Required"}</Label>
+              <NumberSpinInput value={form.parLevel} onChange={set("parLevel")} placeholder="0" step={1} />
+            </div>
+            <div>
+              <Label>Unit Cost ($)</Label>
+              <NumberSpinInput value={form.unitCost} onChange={set("unitCost")} placeholder="0.00" step={0.01} />
+            </div>
+          </Row>
+          <Row cols={2}>
+            <div>
+              <Label>Location</Label>
+              <SelectInput
+                placeholder="Select"
+                value={form.location}
+                onChange={set("location")}
+                options={["Central Store","ICU","Emergency Dept","Pharmacy","Surgery","Laboratory"]}
               />
             </div>
-          </>
-        )}
+            <div />
+          </Row>
+        </SectionCard>
+      )}
 
-        {/* Equipment details */}
-        {itemType === "equipment" && !isEdit && (
-          <>
-            <SectionTitle>EQUIPMENT DETAILS</SectionTitle>
-            <Row cols={3}>
-              <div><Label>Model No.</Label><TextInput placeholder="e.g. BeneVision N15" value={form.modelNo} onChange={set("modelNo")} /></div>
-              <div><Label>Serial No.</Label><TextInput placeholder="e.g. MR2024-0012" value={form.serialNo} onChange={set("serialNo")} /></div>
-              <div>
-                <Label>Condition</Label>
-                <SelectInput placeholder="Select" value={form.condition} onChange={set("condition")} options={["Good","Fair","Poor","Needs Repair"]} />
-              </div>
-            </Row>
-            <Row cols={2}>
-              <div><Label>Purchase Date</Label><DateInput value={form.purchaseDate} onChange={set("purchaseDate")} /></div>
-              <div><Label>Warranty Expiry</Label><DateInput value={form.warrantyExpiry} onChange={set("warrantyExpiry")} /></div>
-            </Row>
-            <Row cols={2}>
-              <div><Label>Next Service Due</Label><DateInput value={form.nextServiceDue} onChange={set("nextServiceDue")} /></div>
-              <div><Label>Calibration Due</Label><DateInput value={form.calibrationDue} onChange={set("calibrationDue")} /></div>
-            </Row>
-            <SectionTitle>STOCK &amp; PRICING</SectionTitle>
-            <Row cols={2}>
-              <div><Label>Quantity (Units)</Label><NumberSpinInput value={form.qtyInHand} onChange={set("qtyInHand")} placeholder="0" step={1} /></div>
-              <div><Label>Min. QTY Required</Label><NumberSpinInput value={form.parLevel} onChange={set("parLevel")} placeholder="0" step={1} /></div>
-            </Row>
-            <Row cols={2}>
-              <div><Label>Unit Cost ($)</Label><NumberSpinInput value={form.unitCost} onChange={set("unitCost")} placeholder="0.00" step={0.01} /></div>
-              <div>
-                <Label>Location</Label>
-                <SelectInput placeholder="Select" value={form.location} onChange={set("location")} options={["Central Store","ICU","Emergency Dept","Pharmacy","Surgery","Laboratory"]} />
-              </div>
-            </Row>
+      {/* ── Lot & Expiry Card (consumable only) ── */}
+      {isConsumable && (
+        <SectionCard title="LOT &amp; EXPIRY">
+          <Row cols={2}>
             <div>
-              <Label>Notes</Label>
-              <textarea value={form.notes} onChange={set("notes")} placeholder="Type here" rows={3}
-                style={{ width: "100%", padding: "10px 12px", fontSize: 13, border: "1px solid #e5e7eb", borderRadius: 8, outline: "none", resize: "vertical", color: "#111827", backgroundColor: "#f9fafb", boxSizing: "border-box" }} />
+              <Label>LOT Number</Label>
+              <TextInput placeholder="LOT2025A" value={form.lotNumber} onChange={set("lotNumber")} />
             </div>
-          </>
-        )}
+            <div>
+              <Label>Expire Date</Label>
+              <DateInput value={form.expireDate} onChange={set("expireDate")} />
+            </div>
+          </Row>
+          <div>
+            <Label>Notes</Label>
+            <textarea
+              value={form.notes}
+              onChange={set("notes")}
+              placeholder="Type here"
+              rows={3}
+              style={{
+                width: "100%", padding: "10px 12px", fontSize: 13,
+                border: "1px solid #e5e7eb", borderRadius: 8, outline: "none",
+                resize: "vertical", color: "#111827", backgroundColor: "#f9fafb",
+                boxSizing: "border-box",
+              }}
+            />
+          </div>
+        </SectionCard>
+      )}
 
-        {/* Device details */}
-        {itemType === "device" && !isEdit && (
-          <>
-            <SectionTitle>DEVICE DETAILS</SectionTitle>
-            <Row cols={3}>
-              <div><Label>Model No.</Label><TextInput placeholder="e.g. BeneVision N15" value={form.modelNo} onChange={set("modelNo")} /></div>
-              <div><Label>Serial No.</Label><TextInput placeholder="e.g. MR2024-0012" value={form.serialNo} onChange={set("serialNo")} /></div>
-              <div>
-                <Label>Condition</Label>
-                <SelectInput placeholder="Select" value={form.condition} onChange={set("condition")} options={["Good","Fair","Poor","Needs Repair"]} />
-              </div>
-            </Row>
-            <Row cols={2}>
-              <div><Label>Purchase Date</Label><DateInput value={form.purchaseDate} onChange={set("purchaseDate")} /></div>
-              <div><Label>Warranty Expiry</Label><DateInput value={form.warrantyExpiry} onChange={set("warrantyExpiry")} /></div>
-            </Row>
-            <Row cols={2}>
-              <div><Label>Next Service Due</Label><DateInput value={form.nextServiceDue} onChange={set("nextServiceDue")} /></div>
-              <div><Label>Calibration Due</Label><DateInput value={form.calibrationDue} onChange={set("calibrationDue")} /></div>
-            </Row>
-            <SectionTitle>STOCK &amp; PRICING</SectionTitle>
-            <Row cols={2}>
-              <div><Label>Quantity (Units)</Label><NumberSpinInput value={form.qtyInHand} onChange={set("qtyInHand")} placeholder="0" step={1} /></div>
-              <div><Label>Min. QTY Required</Label><NumberSpinInput value={form.parLevel} onChange={set("parLevel")} placeholder="0" step={1} /></div>
-            </Row>
-            <Row cols={2}>
-              <div><Label>Unit Cost ($)</Label><NumberSpinInput value={form.unitCost} onChange={set("unitCost")} placeholder="0.00" step={0.01} /></div>
-              <div>
-                <Label>Location</Label>
-                <SelectInput placeholder="Select" value={form.location} onChange={set("location")} options={["Central Store","ICU","Emergency Dept","Pharmacy","Surgery","Laboratory"]} />
-              </div>
-            </Row>
-            <div>
-              <Label>Notes</Label>
-              <textarea value={form.notes} onChange={set("notes")} placeholder="Type here" rows={3}
-                style={{ width: "100%", padding: "10px 12px", fontSize: 13, border: "1px solid #e5e7eb", borderRadius: 8, outline: "none", resize: "vertical", color: "#111827", backgroundColor: "#f9fafb", boxSizing: "border-box" }} />
-            </div>
-          </>
-        )}
-      </div>
+      {/* Notes for equipment/device */}
+      {(itemType === "equipment" || itemType === "device") && !isEdit && (
+        <SectionCard title="NOTES">
+          <div>
+            <Label>Notes</Label>
+            <textarea
+              value={form.notes}
+              onChange={set("notes")}
+              placeholder="Type here"
+              rows={3}
+              style={{
+                width: "100%", padding: "10px 12px", fontSize: 13,
+                border: "1px solid #e5e7eb", borderRadius: 8, outline: "none",
+                resize: "vertical", color: "#111827", backgroundColor: "#f9fafb",
+                boxSizing: "border-box",
+              }}
+            />
+          </div>
+        </SectionCard>
+      )}
 
       {/* ── Footer Buttons ── */}
       <div style={{ display: "flex", justifyContent: "flex-end", gap: 12, paddingBottom: 32 }}>

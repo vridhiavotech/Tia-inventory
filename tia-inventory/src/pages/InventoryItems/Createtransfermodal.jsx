@@ -36,7 +36,7 @@ const availableItems = [
   { label: "BD Vacutainer EDTA 10mL",         value: "vacutainer",  available: 600, lot: "BD-E01" },
 ];
 
-const LOCATIONS = ["Central Store","ICU","Emergency Dept","Pharmacy","Surgery","Laboratory","Ward A","Ward B","OPD","Maternity"];
+const LOCATIONS = ["Central Store","ICU","Emergency Dept","Pharmacy","Surgery","Laboratory"];
 
 const PRIORITY_CONFIG = {
   Routine:  { color: "#2563eb", bg: "#eff6ff", border: "#bfdbfe" },

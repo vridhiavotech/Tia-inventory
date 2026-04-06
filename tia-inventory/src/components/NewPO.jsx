@@ -1,9 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
   Dialog,
-  DialogTitle,
   DialogContent,
-  DialogActions,
   Box,
   Typography,
   TextField,
@@ -12,17 +10,120 @@ import {
   Select,
   MenuItem,
   IconButton,
-  Paper,
   Divider,
   InputAdornment,
+  Checkbox,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
-import EventIcon from '@mui/icons-material/Event';
+import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import SaveIcon from '@mui/icons-material/Save';
 import DraftsIcon from '@mui/icons-material/Drafts';
+import CalendarTodayOutlinedIcon from '@mui/icons-material/CalendarTodayOutlined';
 import dayjs from 'dayjs';
+
+// ── Shared style tokens (mirrors GRN) ──────────────────────────────────────
+
+const labelSx = {
+  fontSize: 11, fontWeight: 700, color: '#6b7280',
+  letterSpacing: '0.06em', textTransform: 'uppercase',
+  mb: 0.5, display: 'block',
+};
+
+const inputSx = {
+  '& .MuiOutlinedInput-root': {
+    fontSize: 13, borderRadius: '6px', bgcolor: '#fff',
+    '& fieldset': { borderColor: '#d1d5db' },
+    '&:hover fieldset': { borderColor: '#9ca3af' },
+    '&.Mui-focused fieldset': { borderColor: '#2563eb', borderWidth: '1.5px' },
+  },
+  '& .MuiInputBase-input': { py: '8px', px: '12px' },
+  '& .MuiInputBase-input::placeholder': { color: '#9ca3af', opacity: 1 },
+};
+
+const disabledInputSx = {
+  ...inputSx,
+  '& .MuiOutlinedInput-root': {
+    ...inputSx['& .MuiOutlinedInput-root'],
+    bgcolor: '#f9fafb',
+  },
+};
+
+const selectSx = {
+  fontSize: 13, borderRadius: '6px',
+  '& fieldset': { borderColor: '#d1d5db' },
+  '&:hover fieldset': { borderColor: '#9ca3af' },
+  '&.Mui-focused fieldset': { borderColor: '#2563eb', borderWidth: '1.5px' },
+  '& .MuiSelect-select': { py: '8px', px: '12px' },
+};
+
+const smallSelectSx = {
+  fontSize: 12, borderRadius: '6px',
+  '& fieldset': { borderColor: '#d1d5db' },
+  '&:hover fieldset': { borderColor: '#9ca3af' },
+  '&.Mui-focused fieldset': { borderColor: '#2563eb' },
+  '& .MuiSelect-select': { py: '6px', px: '8px', fontSize: 12 },
+};
+
+const rowFieldSx = (extraInput = {}) => ({
+  '& .MuiOutlinedInput-root': {
+    fontSize: 13, borderRadius: '6px', bgcolor: '#fff',
+    '& fieldset': { borderColor: '#d1d5db' },
+    '&.Mui-focused fieldset': { borderColor: '#2563eb' },
+  },
+  '& .MuiInputBase-input': { py: '6px', px: '8px', ...extraInput },
+  '& input[type=number]': { MozAppearance: 'textfield' },
+  '& input::-webkit-outer-spin-button': { WebkitAppearance: 'none', margin: 0 },
+  '& input::-webkit-inner-spin-button': { WebkitAppearance: 'none', margin: 0 },
+});
+
+const btnBase = {
+  fontSize: 13, fontWeight: 600, textTransform: 'none', borderRadius: '8px',
+  px: '20px', py: '9px', outline: 'none',
+  '&:focus': { outline: 'none' },
+};
+
+// ── Date field (matches GRN DateField) ────────────────────────────────────
+
+function DateField({ value, onChange }) {
+  const ref = useRef(null);
+  const openPicker = () => {
+    try { ref.current?.showPicker(); } catch { ref.current?.click(); }
+  };
+  return (
+    <Box
+      onClick={openPicker}
+      sx={{
+        display: 'flex', alignItems: 'center', border: '1px solid #d1d5db',
+        borderRadius: '6px', bgcolor: '#fff', px: 1, height: 34,
+        cursor: 'pointer', width: '100%',
+        '&:hover': { borderColor: '#9ca3af' },
+        '&:focus-within': { borderColor: '#2563eb', outline: '2px solid #dbeafe', outlineOffset: '-1px' },
+        transition: 'border-color 0.15s', boxSizing: 'border-box',
+      }}
+    >
+      <input
+        ref={ref}
+        type="date"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        style={{
+          border: 'none', outline: 'none', background: 'transparent',
+          fontSize: 12, color: value ? '#111827' : '#9ca3af',
+          flex: 1, cursor: 'pointer', minWidth: 0, WebkitAppearance: 'none',
+          width: '100%',
+        }}
+      />
+      <CalendarTodayOutlinedIcon
+        sx={{ fontSize: 13, color: '#9ca3af', flexShrink: 0 }}
+        onClick={(e) => { e.stopPropagation(); openPicker(); }}
+      />
+    </Box>
+  );
+}
+
+// ── Main component ─────────────────────────────────────────────────────────
 
 const NewPO = ({ open, onClose, onSave, onSaveAsDraft }) => {
   const [formData, setFormData] = useState({
@@ -41,10 +142,6 @@ const NewPO = ({ open, onClose, onSave, onSaveAsDraft }) => {
   });
 
   const [totalAmount, setTotalAmount] = useState(0);
-  const [showOrderDatePicker, setShowOrderDatePicker] = useState(false);
-  const [showDeliveryDatePicker, setShowDeliveryDatePicker] = useState(false);
-  const orderDateInputRef = useRef(null);
-  const deliveryDateInputRef = useRef(null);
 
   useEffect(() => {
     if (open) {
@@ -58,144 +155,62 @@ const NewPO = ({ open, onClose, onSave, onSaveAsDraft }) => {
   }, [open]);
 
   useEffect(() => {
-    const total = formData.lineItems.reduce((sum, item) => {
-      return sum + (item.quantity * item.unitCost);
-    }, 0);
+    const total = formData.lineItems.reduce((sum, item) => sum + (item.quantity * item.unitCost), 0);
     setTotalAmount(total);
   }, [formData.lineItems]);
 
-  const handleChange = (field) => (event) => {
-    setFormData({
-      ...formData,
-      [field]: event.target.value,
-    });
-  };
-
-  const handleOrderDateIconClick = () => {
-    if (orderDateInputRef.current) {
-      if (showOrderDatePicker) {
-        orderDateInputRef.current.blur();
-        setShowOrderDatePicker(false);
-      } else {
-        if (orderDateInputRef.current.showPicker) {
-          orderDateInputRef.current.showPicker();
-        } else {
-          orderDateInputRef.current.focus();
-        }
-        setShowOrderDatePicker(true);
-      }
-    }
-  };
-
-  const handleDeliveryDateIconClick = () => {
-    if (deliveryDateInputRef.current) {
-      if (showDeliveryDatePicker) {
-        deliveryDateInputRef.current.blur();
-        setShowDeliveryDatePicker(false);
-      } else {
-        if (deliveryDateInputRef.current.showPicker) {
-          deliveryDateInputRef.current.showPicker();
-        } else {
-          deliveryDateInputRef.current.focus();
-        }
-        setShowDeliveryDatePicker(true);
-      }
-    }
-  };
-
-  const handleOrderDateChange = (e) => {
-    setFormData({ ...formData, orderDate: e.target.value });
-    setShowOrderDatePicker(false);
-  };
-
-  const handleDeliveryDateChange = (e) => {
-    setFormData({ ...formData, requiredDelivery: e.target.value });
-    setShowDeliveryDatePicker(false);
-  };
+  const setField = (field, value) => setFormData(prev => ({ ...prev, [field]: value }));
+  const handleChange = (field) => (event) => setField(field, event.target.value);
 
   const handleLineItemChange = (id, field) => (event) => {
-    const value = field === 'quantity' || field === 'unitCost' 
-      ? parseFloat(event.target.value) || 0 
+    const value = field === 'quantity' || field === 'unitCost'
+      ? parseFloat(event.target.value) || 0
       : event.target.value;
-    
-    setFormData({
-      ...formData,
-      lineItems: formData.lineItems.map(item =>
-        item.id === id ? { ...item, [field]: value } : item
-      ),
-    });
+    setFormData(prev => ({
+      ...prev,
+      lineItems: prev.lineItems.map(item => item.id === id ? { ...item, [field]: value } : item),
+    }));
   };
 
   const addLineItem = () => {
     const newId = Math.max(...formData.lineItems.map(item => item.id), 0) + 1;
-    setFormData({
-      ...formData,
-      lineItems: [
-        ...formData.lineItems,
-        { id: newId, description: '', quantity: 1, unitCost: 0 },
-      ],
-    });
+    setFormData(prev => ({
+      ...prev,
+      lineItems: [...prev.lineItems, { id: newId, description: '', quantity: 1, unitCost: 0 }],
+    }));
   };
 
   const removeLineItem = (id) => {
     if (formData.lineItems.length > 1) {
-      setFormData({
-        ...formData,
-        lineItems: formData.lineItems.filter(item => item.id !== id),
-      });
+      setFormData(prev => ({ ...prev, lineItems: prev.lineItems.filter(item => item.id !== id) }));
     }
   };
 
   const validateForm = () => {
     const errors = [];
-    if (!formData.supplier) {
-      errors.push('Please select a supplier');
-    }
-    if (!formData.deliverTo) {
-      errors.push('Please select a delivery location');
-    }
-    if (!formData.requiredDelivery) {
-      errors.push('Please enter required delivery date');
-    }
+    if (!formData.supplier) errors.push('Please select a supplier');
+    if (!formData.deliverTo) errors.push('Please select a delivery location');
+    if (!formData.requiredDelivery) errors.push('Please enter required delivery date');
     return errors;
   };
 
   const handleSubmit = (isDraft = false) => {
     const errors = validateForm();
-    
-    if (!isDraft && errors.length > 0) {
-      alert(errors.join('\n'));
-      return;
-    }
+    if (!isDraft && errors.length > 0) { alert(errors.join('\n')); return; }
 
     const validLineItems = formData.lineItems.filter(item => item.description.trim() !== '');
-    
-    const poData = {
-      ...formData,
-      lineItems: validLineItems,
-      totalAmount: totalAmount,
-      status: isDraft ? 'Draft' : 'Pending',
-    };
-    
-    if (isDraft && onSaveAsDraft) {
-      onSaveAsDraft(poData);
-    } else if (onSave) {
-      onSave(poData);
-    }
-    
+    const poData = { ...formData, lineItems: validLineItems, totalAmount, status: isDraft ? 'Draft' : 'Pending' };
+
+    if (isDraft && onSaveAsDraft) onSaveAsDraft(poData);
+    else if (onSave) onSave(poData);
     handleClose();
   };
 
   const handleClose = () => {
     setFormData({
-      poNumber: '',
-      quotationRef: '',
-      supplier: '',
-      orderDate: dayjs().format('YYYY-MM-DD'),
-      requiredDelivery: '',
-      deliverTo: '',
-      priority: 'Normal',
-      notes: '',
+      poNumber: '', quotationRef: '', supplier: '',
+      orderDate: dayjs().format('YYYY-MM-DD'), requiredDelivery: '',
+      deliverTo: '', priority: 'Normal', notes: '',
       lineItems: [
         { id: 1, description: '', quantity: 1, unitCost: 0 },
         { id: 2, description: '', quantity: 1, unitCost: 0 },
@@ -222,516 +237,324 @@ const NewPO = ({ open, onClose, onSave, onSaveAsDraft }) => {
 
   const priorities = ['Normal', 'Urgent', 'Emergency'];
 
-  const inputStyles = {
-    width: '100%',
-    '& .MuiOutlinedInput-root': {
-      borderRadius: '8px',
-      width: '100%',
-      '&:hover fieldset': {
-        borderColor: '#2563eb',
-      },
-      '&.Mui-focused fieldset': {
-        borderColor: '#2563eb',
-      },
-    },
-    '& .MuiInputBase-input': {
-      fontSize: '0.8rem',
-      padding: '6px 10px',
-    },
-    '& .MuiInputLabel-root': {
-      fontSize: '0.75rem',
-      '&.Mui-focused': {
-        color: '#2563eb',
-      },
-    },
-  };
-
-  const selectStyles = {
-    width: '100%',
-    borderRadius: '8px',
-    '& .MuiSelect-select': {
-      fontSize: '0.8rem',
-      padding: '6px 10px',
-    },
-    '&:hover .MuiOutlinedInput-notchedOutline': {
-      borderColor: '#2563eb',
-    },
-    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-      borderColor: '#2563eb',
-    },
-  };
-
-  const dateInputStyles = {
-    width: '100%',
-    '& .MuiOutlinedInput-root': {
-      borderRadius: '8px',
-      width: '100%',
-      '&:hover fieldset': {
-        borderColor: '#2563eb',
-      },
-      '&.Mui-focused fieldset': {
-        borderColor: '#2563eb',
-      },
-    },
-    '& .MuiInputBase-input': {
-      fontSize: '0.8rem',
-      padding: '6px 10px',
-    },
-  };
-
   return (
-    <Dialog 
-      open={open} 
-      onClose={handleClose} 
-      maxWidth="sm" 
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      maxWidth="sm"
       fullWidth
-      sx={{
-        '& .MuiDialog-paper': {
-          width: '100%',
-          maxWidth: '550px',
-          margin: { xs: 1.5, sm: 2 },
-          borderRadius: 3,
-        }
+      PaperProps={{
+        sx: {
+          borderRadius: '14px',
+          boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
+          maxHeight: '92vh',
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
+        },
       }}
     >
-      <DialogTitle sx={{ 
-        fontSize: { xs: '0.9rem', sm: '0.95rem' },
-        py: { xs: 0.8, sm: 1 },
-        px: { xs: 1.5, sm: 2 },
-        fontWeight: 600,
-        color: '#1e293b',
-        borderBottom: '1px solid #e2e8f0',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        borderTopLeftRadius: 12,
-        borderTopRightRadius: 12,
-        minHeight: { xs: 44, sm: 48 },
+      {/* ── Header ── */}
+      <Box sx={{
+        px: '24px', pt: '20px', pb: '16px',
+        display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
+        borderBottom: '1px solid #f3f4f6', flexShrink: 0, bgcolor: '#fff',
       }}>
-        <span>Create Purchase Order</span>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <Box sx={{
+            width: 38, height: 38, borderRadius: '10px', background: '#eff6ff',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            <ShoppingCartOutlinedIcon sx={{ fontSize: 20, color: '#2563eb' }} />
+          </Box>
+          <Box>
+            <Typography sx={{ fontSize: 16, fontWeight: 700, color: '#111827' }}>
+              Create Purchase Order
+            </Typography>
+            <Typography sx={{ fontSize: 12, color: '#9ca3af', mt: '1px' }}>
+              Raise a new PO against an approved supplier
+            </Typography>
+          </Box>
+        </Box>
         <IconButton
-          onClick={handleClose}
           size="small"
+          onClick={handleClose}
+          disableRipple
           sx={{
-            color: '#64748b',
-            padding: 0.5,
-            '&:hover': {
-              backgroundColor: '#f1f5f9',
-            },
+            color: '#9ca3af', border: '1px solid #e5e7eb', borderRadius: '8px',
+            width: 30, height: 30, outline: 'none',
+            '&:hover': { background: '#f3f4f6', color: '#374151' },
+            '&:focus': { outline: 'none' },
           }}
         >
-          <CloseIcon sx={{ fontSize: '18px' }} />
+          <CloseIcon sx={{ fontSize: 15 }} />
         </IconButton>
-      </DialogTitle>
-      
-      <DialogContent 
-        dividers 
-        sx={{ 
-          p: { xs: 1.5, sm: 2 },
-          '& .MuiDialogContent-dividers': {
-            borderColor: '#e2e8f0',
-          },
-          // Scrollbar styling matching UserModal (Assign Hospitals/Locations)
-          '&::-webkit-scrollbar': {
-            width: '6px',
-          },
-          '&::-webkit-scrollbar-track': {
-            background: '#f1f5f9',
-            borderRadius: '3px',
-          },
-          '&::-webkit-scrollbar-thumb': {
-            background: '#cbd5e1',
-            borderRadius: '3px',
-            '&:hover': {
-              background: '#94a3b8',
-            },
-          },
-        }}
-      >
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <Paper 
-            elevation={0} 
-            sx={{ 
-              p: { xs: 1.2, sm: 1.5 }, 
-              border: '1px solid #e2e8f0', 
-              borderRadius: 2,
-              backgroundColor: '#f9fafc'
-            }}
-          > 
-            <Box sx={{ display: 'flex', gap: 1.5, mb: 1.5, width: '100%' }}>
-              <Box sx={{ flex: 1 }}>
-                <TextField
-                  label="PO Number"
-                  value={formData.poNumber}
-                  InputProps={{ readOnly: true }}
-                  fullWidth
-                  size="small"
-                  sx={inputStyles}
-                />
-              </Box>
-              <Box sx={{ flex: 1 }}>
-                <TextField
-                  label="Supplier Quotation Ref"
-                  placeholder="e.g. QTN-2026-001"
-                  value={formData.quotationRef}
-                  onChange={handleChange('quotationRef')}
-                  fullWidth
-                  size="small"
-                  sx={inputStyles}
-                />
-              </Box>
-            </Box>
+      </Box>
 
-            <Box sx={{ display: 'flex', gap: 1.5, mb: 1.5, width: '100%' }}>
-              <Box sx={{ flex: 1 }}>
-                <FormControl fullWidth size="small">
-                  <Select
-                    value={formData.supplier}
-                    onChange={handleChange('supplier')}
-                    displayEmpty
-                    sx={selectStyles}
-                  >
-                    <MenuItem value="" disabled sx={{ fontSize: '0.8rem' }}>Select supplier…</MenuItem>
-                    {suppliers.map(sup => (
-                      <MenuItem key={sup.value} value={sup.value} sx={{ fontSize: '0.8rem' }}>{sup.label}</MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Box>
-              <Box sx={{ flex: 1 }}>
-                <FormControl fullWidth size="small">
-                  <Select
-                    value={formData.deliverTo}
-                    onChange={handleChange('deliverTo')}
-                    displayEmpty
-                    sx={selectStyles}
-                  >
-                    <MenuItem value="" disabled sx={{ fontSize: '0.8rem' }}>Select location…</MenuItem>
-                    {locations.map(loc => (
-                      <MenuItem key={loc.value} value={loc.value} sx={{ fontSize: '0.8rem' }}>{loc.label}</MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Box>
-            </Box>
+      {/* ── Scrollable body ── */}
+      <DialogContent sx={{
+        px: '24px', py: '20px', overflowY: 'auto', flex: 1,
+        '&::-webkit-scrollbar': { width: 4 },
+        '&::-webkit-scrollbar-track': { background: 'transparent' },
+        '&::-webkit-scrollbar-thumb': { background: '#d1d5db', borderRadius: 4 },
+        '&::-webkit-scrollbar-thumb:hover': { background: '#a1a1aa' },
+        scrollbarWidth: 'thin', scrollbarColor: '#d1d5db transparent',
+      }}>
 
-            <Box sx={{ display: 'flex', gap: 1.5, mb: 1.5, width: '100%' }}>
-              <Box sx={{ flex: 1 }}>
-                <TextField
-                  id="order-date"
-                  type="date"
-                  label="Order Date"
-                  value={formData.orderDate}
-                  onChange={handleOrderDateChange}
-                  inputRef={orderDateInputRef}
-                  fullWidth
-                  size="small"
-                  InputLabelProps={{ shrink: true }}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton
-                          onClick={handleOrderDateIconClick}
-                          edge="end"
-                          size="small"
-                          disableFocusRipple
-                          disableRipple
-                          sx={{
-                            color: '#64748b',
-                            padding: '2px',
-                            '&:hover': {
-                              backgroundColor: '#f1f5f9',
-                              color: '#2563eb',
-                            },
-                            '&:focus': { outline: 'none' },
-                            '&.Mui-focusVisible': { outline: 'none' },
-                          }}
-                        >
-                          <EventIcon sx={{ fontSize: '14px' }} />
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }}
-                  sx={dateInputStyles}
-                />
-              </Box>
-              <Box sx={{ flex: 1 }}>
-                <TextField
-                  id="delivery-date"
-                  type="date"
-                  label="Required Delivery"
-                  value={formData.requiredDelivery}
-                  onChange={handleDeliveryDateChange}
-                  inputRef={deliveryDateInputRef}
-                  fullWidth
-                  size="small"
-                  InputLabelProps={{ shrink: true }}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton
-                          onClick={handleDeliveryDateIconClick}
-                          edge="end"
-                          size="small"
-                          disableFocusRipple
-                          disableRipple
-                          sx={{
-                            color: '#64748b',
-                            padding: '2px',
-                            '&:hover': {
-                              backgroundColor: '#f1f5f9',
-                              color: '#2563eb',
-                            },
-                            '&:focus': { outline: 'none' },
-                            '&.Mui-focusVisible': { outline: 'none' },
-                          }}
-                        >
-                          <EventIcon sx={{ fontSize: '14px' }} />
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }}
-                  sx={dateInputStyles}
-                />
-              </Box>
-            </Box>
-
-            <Box sx={{ width: '100%' }}>
-              <FormControl fullWidth size="small">
-                <Select
-                  value={formData.priority}
-                  onChange={handleChange('priority')}
-                  displayEmpty
-                  sx={selectStyles}
-                >
-                  <MenuItem value="" disabled sx={{ fontSize: '0.8rem' }}>Select Priority</MenuItem>
-                  {priorities.map(priority => (
-                    <MenuItem key={priority} value={priority} sx={{ fontSize: '0.8rem' }}>{priority}</MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Box>
-          </Paper>
-
-          <Divider sx={{ my: 1 }} />
-
+        {/* Row 1 — PO Number + Quotation Ref */}
+        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', mb: '16px' }}>
           <Box>
-            <Typography 
-              variant="subtitle2" 
-              sx={{ 
-                mb: 1.2, 
-                fontWeight: 600, 
-                color: '#1e293b',
-                fontSize: '0.8rem',
-              }}
-            >
-              Line Items
-            </Typography>
-            
-            <Box sx={{ 
-              display: 'grid', 
-              gridTemplateColumns: { xs: '1fr', sm: '2fr 70px 70px 28px' },
-              gap: 1, 
-              mb: 1,
-              px: 0.5
-            }}>
-              <Typography sx={{ fontSize: '0.65rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>
-                Item Description
-              </Typography>
-              <Typography sx={{ fontSize: '0.65rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', textAlign: 'right' }}>
-                Qty
-              </Typography>
-              <Typography sx={{ fontSize: '0.65rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', textAlign: 'right' }}>
-                Unit Cost
-              </Typography>
-              <Typography></Typography>
-            </Box>
-
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-              {formData.lineItems.map((item) => (
-                <Box 
-                  key={item.id} 
-                  sx={{ 
-                    display: 'grid', 
-                    gridTemplateColumns: { xs: '1fr', sm: '2fr 70px 70px 28px' },
-                    gap: 1,
-                    alignItems: 'center'
-                  }}
-                >
-                  <TextField
-                    placeholder="Item description…"
-                    value={item.description}
-                    onChange={handleLineItemChange(item.id, 'description')}
-                    size="small"
-                    fullWidth
-                    sx={inputStyles}
-                  />
-                  <TextField
-                    type="number"
-                    value={item.quantity}
-                    onChange={handleLineItemChange(item.id, 'quantity')}
-                    size="small"
-                    fullWidth
-                    inputProps={{ min: 1 }}
-                    sx={{
-                      ...inputStyles,
-                      '& .MuiInputBase-input': {
-                        fontSize: '0.75rem',
-                        padding: '4px 6px',
-                        textAlign: 'right',
-                      }
-                    }}
-                  />
-                  <TextField
-                    type="number"
-                    placeholder="$0.00"
-                    value={item.unitCost}
-                    onChange={handleLineItemChange(item.id, 'unitCost')}
-                    size="small"
-                    fullWidth
-                    inputProps={{ min: 0, step: 0.01 }}
-                    sx={{
-                      ...inputStyles,
-                      '& .MuiInputBase-input': {
-                        fontSize: '0.75rem',
-                        padding: '4px 6px',
-                        textAlign: 'right',
-                      }
-                    }}
-                  />
-                  <IconButton 
-                    size="small" 
-                    onClick={() => removeLineItem(item.id)}
-                    disabled={formData.lineItems.length === 1}
-                    sx={{ 
-                      color: '#dc3545',
-                      padding: '1px',
-                      '&:hover': {
-                        backgroundColor: '#ffe6e6',
-                      }
-                    }}
-                  >
-                    <DeleteIcon sx={{ fontSize: '14px' }} />
-                  </IconButton>
-                </Box>
-              ))}
-            </Box>
-
-            <Button 
-              startIcon={<AddIcon />} 
-              onClick={addLineItem}
-              sx={{
-                mt: 1.5,
-                borderRadius: '6px',
-                textTransform: 'none',
-                color: '#2563eb',
-                fontSize: '0.75rem',
-                fontWeight: 500,
-                '&:hover': {
-                  backgroundColor: '#eff6ff',
-                }
-              }}
-            >
-              Add Line
-            </Button>
-
-            <Box sx={{ 
-              display: 'flex', 
-              justifyContent: 'flex-end', 
-              alignItems: 'center',
-              mt: 1.5,
-              pt: 1,
-              borderTop: '1px solid #e2e8f0'
-            }}>
-              <Typography sx={{ fontSize: '0.8rem', fontWeight: 600, color: '#1e293b', mr: 1 }}>
-                Total:
-              </Typography>
-              <Typography sx={{ fontSize: '0.95rem', fontWeight: 700, color: '#2563eb' }}>
-                ${totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              </Typography>
-            </Box>
-          </Box>
-
-          <Box>
+            <Typography sx={labelSx}>PO Number</Typography>
             <TextField
-              label="Notes"
-              placeholder="Special delivery instructions…"
-              value={formData.notes}
-              onChange={handleChange('notes')}
-              fullWidth
-              multiline
-              rows={2}
-              size="small"
-              sx={inputStyles}
+              fullWidth size="small" value={formData.poNumber} disabled
+              sx={disabledInputSx} inputProps={{ style: { color: '#9ca3af' } }}
+            />
+          </Box>
+          <Box>
+            <Typography sx={labelSx}>Supplier Quotation Ref</Typography>
+            <TextField
+              fullWidth size="small"
+              placeholder="e.g. QTN-2026-001"
+              value={formData.quotationRef}
+              onChange={handleChange('quotationRef')}
+              sx={inputSx}
             />
           </Box>
         </Box>
+
+        {/* Row 2 — Supplier + Deliver To */}
+        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', mb: '16px' }}>
+          <Box>
+            <Typography sx={labelSx}>Supplier <span style={{ color: '#ef4444' }}>*</span></Typography>
+            <Select
+              fullWidth displayEmpty size="small"
+              value={formData.supplier}
+              onChange={handleChange('supplier')}
+              sx={selectSx}
+              renderValue={(v) =>
+                v
+                  ? suppliers.find(s => s.value === v)?.label
+                  : <span style={{ color: '#9ca3af', fontSize: 13 }}>Select supplier…</span>
+              }
+            >
+              {suppliers.map(sup => (
+                <MenuItem key={sup.value} value={sup.value} sx={{ fontSize: 13 }}>{sup.label}</MenuItem>
+              ))}
+            </Select>
+          </Box>
+          <Box>
+            <Typography sx={labelSx}>Deliver To <span style={{ color: '#ef4444' }}>*</span></Typography>
+            <Select
+              fullWidth displayEmpty size="small"
+              value={formData.deliverTo}
+              onChange={handleChange('deliverTo')}
+              sx={selectSx}
+              renderValue={(v) =>
+                v
+                  ? locations.find(l => l.value === v)?.label
+                  : <span style={{ color: '#9ca3af', fontSize: 13 }}>Select location…</span>
+              }
+            >
+              {locations.map(loc => (
+                <MenuItem key={loc.value} value={loc.value} sx={{ fontSize: 13 }}>{loc.label}</MenuItem>
+              ))}
+            </Select>
+          </Box>
+        </Box>
+
+        {/* Row 3 — Order Date + Required Delivery */}
+        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', mb: '16px' }}>
+          <Box>
+            <Typography sx={labelSx}>Order Date</Typography>
+            <DateField value={formData.orderDate} onChange={(v) => setField('orderDate', v)} />
+          </Box>
+          <Box>
+            <Typography sx={labelSx}>Required Delivery <span style={{ color: '#ef4444' }}>*</span></Typography>
+            <DateField value={formData.requiredDelivery} onChange={(v) => setField('requiredDelivery', v)} />
+          </Box>
+        </Box>
+
+        {/* Row 4 — Priority */}
+        <Box sx={{ mb: '20px' }}>
+          <Typography sx={labelSx}>Priority</Typography>
+          <Select
+            fullWidth size="small"
+            value={formData.priority}
+            onChange={handleChange('priority')}
+            sx={selectSx}
+          >
+            {priorities.map(p => (
+              <MenuItem key={p} value={p} sx={{ fontSize: 13 }}>{p}</MenuItem>
+            ))}
+          </Select>
+        </Box>
+
+        <Divider sx={{ mb: '20px' }} />
+
+        {/* ── Line Items ── */}
+        <Box sx={{ mb: '16px' }}>
+          <Typography sx={{
+            fontSize: 12, fontWeight: 700, color: '#2563eb',
+            letterSpacing: '0.05em', textTransform: 'uppercase', mb: '12px',
+          }}>
+            Line Items
+          </Typography>
+
+          {/* Column headers */}
+          <Box sx={{
+            display: 'grid',
+            gridTemplateColumns: 'minmax(0,3fr) 58px 80px 28px',
+            gap: '6px', mb: '6px', px: '10px',
+          }}>
+            {['ITEM DESCRIPTION', 'QTY', 'UNIT COST', ''].map((h) => (
+              <Typography key={h} sx={{
+                fontSize: 10, fontWeight: 700, color: '#9ca3af',
+                letterSpacing: '0.04em', textTransform: 'uppercase',
+                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+              }}>
+                {h}
+              </Typography>
+            ))}
+          </Box>
+
+          {/* Line rows */}
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            {formData.lineItems.map((item) => (
+              <Box
+                key={item.id}
+                sx={{
+                  display: 'grid',
+                  gridTemplateColumns: 'minmax(0,3fr) 58px 80px 28px',
+                  gap: '6px', alignItems: 'center',
+                  p: '10px', borderRadius: '8px',
+                  border: '1px solid #e5e7eb', bgcolor: '#fff',
+                  '&:hover': { borderColor: '#bfdbfe', bgcolor: '#f8faff' },
+                  transition: 'all 0.15s',
+                }}
+              >
+                <TextField
+                  size="small"
+                  placeholder="Item description…"
+                  value={item.description}
+                  onChange={handleLineItemChange(item.id, 'description')}
+                  fullWidth
+                  sx={rowFieldSx()}
+                />
+                <TextField
+                  size="small"
+                  type="number"
+                  value={item.quantity}
+                  onChange={handleLineItemChange(item.id, 'quantity')}
+                  inputProps={{ min: 1 }}
+                  sx={rowFieldSx({ textAlign: 'center' })}
+                />
+                <TextField
+                  size="small"
+                  type="number"
+                  placeholder="0.00"
+                  value={item.unitCost}
+                  onChange={handleLineItemChange(item.id, 'unitCost')}
+                  inputProps={{ min: 0, step: 0.01 }}
+                  sx={rowFieldSx({ textAlign: 'right' })}
+                />
+                <IconButton
+                  size="small"
+                  onClick={() => removeLineItem(item.id)}
+                  disabled={formData.lineItems.length === 1}
+                  sx={{
+                    color: '#ef4444', border: '1px solid #fca5a5',
+                    borderRadius: '6px', width: 28, height: 28, bgcolor: '#fff',
+                    outline: 'none', flexShrink: 0,
+                    '&:hover': { bgcolor: '#fef2f2' },
+                    '&:focus': { outline: 'none' },
+                    '&.Mui-disabled': { borderColor: '#e5e7eb', color: '#d1d5db' },
+                  }}
+                >
+                  <CloseIcon sx={{ fontSize: 14 }} />
+                </IconButton>
+              </Box>
+            ))}
+          </Box>
+
+          {/* Add Line */}
+          <Button
+            onClick={addLineItem}
+            fullWidth
+            disableRipple
+            sx={{
+              mt: '10px', border: '1.5px dashed #bfdbfe', borderRadius: '8px', py: '8px',
+              fontSize: 12, fontWeight: 600, color: '#2563eb', textTransform: 'none',
+              background: 'transparent', outline: 'none',
+              '&:hover': { background: '#eff6ff', borderColor: '#93c5fd' },
+              '&:focus': { outline: 'none' },
+            }}
+          >
+            <AddIcon sx={{ fontSize: 14, mr: 0.5 }} /> Add Line
+          </Button>
+
+          {/* Total */}
+          <Box sx={{
+            display: 'flex', justifyContent: 'flex-end', alignItems: 'center',
+            mt: '12px', pt: '12px', borderTop: '1px dashed #e5e7eb',
+          }}>
+            <Typography sx={{ fontSize: 13, color: '#6b7280', mr: 1 }}>
+              Total Amount:
+            </Typography>
+            <Typography sx={{ fontSize: 20, fontWeight: 800, color: '#111827' }}>
+              ${totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </Typography>
+          </Box>
+        </Box>
+
+        <Divider sx={{ mb: '16px' }} />
+
+        {/* Notes */}
+        <Box>
+          <Typography sx={labelSx}>Notes</Typography>
+          <TextField
+            fullWidth multiline rows={2} size="small"
+            value={formData.notes}
+            onChange={handleChange('notes')}
+            placeholder="Special delivery instructions…"
+            sx={{ ...inputSx, '& .MuiInputBase-input': { py: '8px', px: '12px', fontSize: 13 } }}
+          />
+        </Box>
       </DialogContent>
-      
-      <DialogActions sx={{ 
-        p: { xs: 1.5, sm: 2 }, 
-        gap: 1, 
-        borderTop: '1px solid #e2e8f0',
-        borderBottomLeftRadius: 12,
-        borderBottomRightRadius: 12,
-        flexWrap: 'wrap',
+
+      {/* ── Footer ── */}
+      <Box sx={{
+        px: '24px', py: '16px', borderTop: '1px solid #f3f4f6',
+        display: 'flex', alignItems: 'center', justifyContent: 'flex-end',
+        gap: '10px', bgcolor: '#fff', flexShrink: 0,
       }}>
-        <Button 
+        <Button
           onClick={handleClose}
-          sx={{
-            color: '#64748b',
-            textTransform: 'none',
-            fontWeight: 500,
-            fontSize: '0.8rem',
-            py: 0.5,
-            px: 1.5,
-            '&:hover': {
-              backgroundColor: '#f1f5f9',
-            },
-          }}
+          disableRipple
+          sx={{ ...btnBase, color: '#374151', border: '1px solid #e5e7eb', bgcolor: '#fff', '&:hover': { bgcolor: '#f9fafb' } }}
         >
           Cancel
         </Button>
-        <Button 
-          onClick={() => handleSubmit(true)} 
-          variant="outlined"
-          startIcon={<DraftsIcon />}
-          sx={{
-            color: '#64748b',
-            borderColor: '#e2e8f0',
-            textTransform: 'none',
-            fontWeight: 500,
-            fontSize: '0.8rem',
-            py: 0.5,
-            px: 2,
-            '&:hover': {
-              borderColor: '#2563eb',
-              color: '#2563eb',
-              backgroundColor: '#f8fafc',
-            },
-          }}
+        <Button
+          startIcon={<DraftsIcon sx={{ fontSize: 15 }} />}
+          onClick={() => handleSubmit(true)}
+          disableRipple
+          sx={{ ...btnBase, color: '#374151', border: '1px solid #e5e7eb', bgcolor: '#fff', '&:hover': { bgcolor: '#f9fafb' } }}
         >
           Draft
         </Button>
-        <Button 
-          onClick={() => handleSubmit(false)} 
-          variant="contained"
-          startIcon={<SaveIcon />}
+        <Button
+          startIcon={<SaveIcon sx={{ fontSize: 15 }} />}
+          onClick={() => handleSubmit(false)}
+          disableRipple
           sx={{
-            backgroundColor: '#2563eb',
-            textTransform: 'none',
-            fontWeight: 500,
-            fontSize: '0.8rem',
-            py: 0.5,
-            px: 2,
-            '&:hover': {
-              backgroundColor: '#1d4ed8',
-            },
+            ...btnBase, fontWeight: 700, color: '#fff', bgcolor: '#2563eb',
+            boxShadow: '0 2px 8px rgba(37,99,235,0.3)',
+            '&:hover': { bgcolor: '#1d4ed8' },
           }}
         >
           Submit PO
         </Button>
-      </DialogActions>
+      </Box>
     </Dialog>
   );
 };

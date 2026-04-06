@@ -90,21 +90,16 @@ export default function GoodsReceipt() {
   );
 
   return (
-    <Box sx={{ bgcolor:"#F5F6FA", minHeight:"100vh" }}>
-      <Box sx={{ p:"24px 28px" }}>
+    <Box sx={{ background: "#f8f9fb", minHeight: "100vh" }}>
+      <Box sx={{ p: "28px 32px", boxSizing: "border-box" }}>
 
         {/* Header */}
         <Box sx={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", flexWrap:"wrap", gap:2, mb:3 }}>
           <Box>
-            <Typography sx={{ fontSize:22, fontWeight:800, color:"#111827", letterSpacing:-0.3 }}>Goods Receipt (GRN)</Typography>
-            <Box sx={{ display:"flex", alignItems:"center", gap:0.5, mt:0.4 }}>
-              {["Purchase Order","Receive","Inspect","Confirm","Close"].map((step, i, arr) => (
-                <Box key={step} sx={{ display:"flex", alignItems:"center", gap:0.5 }}>
-                  <Typography sx={{ fontSize:12, color:i===1?"#6366f1":"#9ca3af", fontWeight:i===1?600:400 }}>{step}</Typography>
-                  {i < arr.length-1 && <Typography sx={{ fontSize:12, color:"#d1d5db" }}>→</Typography>}
-                </Box>
-              ))}
-            </Box>
+            <Typography sx={{ margin: 0, fontSize: 20, fontWeight: 700, color: "#111827" }}>Goods Receipt (GRN)</Typography>
+            <Typography sx={{ fontSize: 12, color: "#9ca3af", mt: "4px" }}>
+              {receipts.length} receipts · Purchase Order → Receive → Inspect → Confirm → Close
+            </Typography>
           </Box>
           <Button startIcon={<AddIcon sx={{ fontSize:16 }} />} onClick={() => setNewGRNOpen(true)} disableRipple
             sx={{ fontSize:13, fontWeight:700, color:"#fff", textTransform:"none", bgcolor:"#2563eb",
@@ -116,21 +111,21 @@ export default function GoodsReceipt() {
         </Box>
 
         {/* Stat Cards */}
-        <Box sx={{ display:"flex", gap:2, mb:3 }}>
+        <Box sx={{ display: "flex", gap: "12px", mb: "20px" }}>
           {stats.map((s) => (
-            <Box key={s.label} sx={{ flex:1, bgcolor:"#fff", border:"1px solid #E5E7EB", borderLeft:`3px solid ${s.color}`, borderRadius:"8px", px:2, py:1.5, minWidth:0 }}>
-              <Typography sx={{ fontSize:10, fontWeight:700, color:"#6B7280", letterSpacing:0.7, textTransform:"uppercase", mb:0.4 }}>{s.label}</Typography>
-              <Typography sx={{ fontSize:22, fontWeight:800, color:"#111827", lineHeight:1.2 }}>{s.value}</Typography>
-              <Typography sx={{ fontSize:11, fontWeight:600, color:s.color, mt:0.3 }}>{s.sub}</Typography>
+            <Box key={s.label} sx={{ flex: 1, bgcolor: "#fff", border: "1px solid #e5e7eb", borderLeft: `3px solid ${s.color}`, borderRadius: "10px", px: 2, py: 1.5, minWidth: 0 }}>
+              <Typography sx={{ fontSize: 11, fontWeight: 600, color: "#9ca3af", letterSpacing: "0.05em", textTransform: "uppercase", mb: 0.5 }}>{s.label}</Typography>
+              <Typography sx={{ fontSize: 22, fontWeight: 700, color: "#111827", lineHeight: 1.2 }}>{s.value}</Typography>
+              <Typography sx={{ fontSize: 11, fontWeight: 600, color: s.color, mt: 0.3 }}>{s.sub}</Typography>
             </Box>
           ))}
         </Box>
 
         {/* Filters */}
-        <Box sx={{ display:"flex", gap:1.5, alignItems:"center", mb:2, flexWrap:"wrap" }}>
-          <Box sx={{ display:"flex", alignItems:"center", gap:1, border:"1px solid #e5e7eb", borderRadius:"8px", px:1.5, py:0.75, bgcolor:"#fff", width:240 }}>
-            <SearchIcon sx={{ fontSize:16, color:"#9ca3af" }} />
-            <InputBase sx={{ fontSize:13, color:"#374151", flex:1 }} placeholder="Search GRN ID or Supplier..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+        <Box sx={{ display: "flex", gap: "12px", alignItems: "center", mb: "20px", flexWrap: "wrap" }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1, border: "1px solid #e5e7eb", borderRadius: "8px", px: 1.5, py: 0.75, bgcolor: "#fff", width: 260 }}>
+            <SearchIcon sx={{ fontSize: 16, color: "#9ca3af" }} />
+            <InputBase sx={{ fontSize: 13, color: "#374151", flex: 1 }} placeholder="Search GRN ID or Supplier..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
           </Box>
           <DropdownButton value={conditionFilter} setValue={setConditionFilter} anchor={conditionAnchor} setAnchor={setConditionAnchor} options={["All Conditions","Good","Short Delivery","Damaged"]} />
           <DropdownButton value={statusFilter}    setValue={setStatusFilter}    anchor={statusAnchor}    setAnchor={setStatusAnchor}    options={["All Statuses","Completed","Discrepancy","Pending"]} />
@@ -142,7 +137,7 @@ export default function GoodsReceipt() {
             "&::-webkit-scrollbar":{ height:4 }, "&::-webkit-scrollbar-thumb":{ background:"#d1d5db", borderRadius:4 } }}>
           <Table sx={{ minWidth:1100, tableLayout:"fixed" }}>
             <TableHead>
-              <TableRow sx={{ bgcolor:"#F9FAFB" }}>
+              <TableRow sx={{ background: "#f8f9fb" }}>
                 {[
                   { label:"Request #",   width:130 },
                   { label:"Supplier",    width:170 },
@@ -158,7 +153,7 @@ export default function GoodsReceipt() {
                 ].map((h) => (
                   <TableCell key={h.label}
                     align={["Items","Total Value","Action"].includes(h.label)?"center":"left"}
-                    sx={{ width:h.width, fontSize:11, fontWeight:700, color:"#6b7280", py:1.4, borderBottom:"1px solid #E5E7EB", whiteSpace:"nowrap", textTransform:"uppercase", letterSpacing:0.5 }}>
+                    sx={{ width: h.width, fontSize: 11, fontWeight: 600, color: "#9ca3af", py: "12px", px: "16px", borderBottom: "1px solid #f3f4f6", whiteSpace: "nowrap", letterSpacing: "0.05em" }}>
                     {h.label}
                   </TableCell>
                 ))}
@@ -170,11 +165,11 @@ export default function GoodsReceipt() {
                   const ss = getStatusStyle(receipt.status);
                   const cs = getConditionStyle(receipt.condition);
                   return (
-                    <TableRow key={receipt.id} sx={{ bgcolor:idx%2===0?"#fff":"#FAFAFA", "&:hover":{ bgcolor:"#F5F8FF" }, transition:"background 0.15s" }}>
-                      <TableCell sx={{ py:1.2, fontSize:13, fontWeight:700, color:"#6366f1" }}>{receipt.id}</TableCell>
+                    <TableRow key={receipt.id} sx={{ background: "#fff", "&:hover": { background: "#fafafa" }, transition: "background 0.15s" }}>
+                      <TableCell sx={{ py: "14px", px: "16px", fontSize: 13, fontWeight: 700, color: "#7c3aed" }}>{receipt.id}</TableCell>
                       <TableCell sx={{ py:1.2 }}><Typography sx={{ fontSize:13, fontWeight:500, color:"#111827" }}>{receipt.supplier}</Typography></TableCell>
                       <TableCell sx={{ py:1.2, fontSize:13, color:"#6b7280" }}>{receipt.linkedPO||"–"}</TableCell>
-                      <TableCell sx={{ py:1.2 }}><Chip label={receipt.location} size="small" sx={{ height:22, fontSize:11, bgcolor:"#f3f4f6", color:"#374151", fontWeight:500 }} /></TableCell>
+                      <TableCell sx={{ py:1.2 }}><Chip label={receipt.location} size="small" sx={{ height: 22, fontSize: 11, fontWeight: 600, color: "#7c3aed", background: "#f5f3ff", border: "1px solid #ede9fe", borderRadius: "6px", "& .MuiChip-label": { px: "8px" } }} /></TableCell>
                       <TableCell align="center" sx={{ py:1.2, fontSize:13, color:"#374151" }}>{receipt.items}</TableCell>
                       <TableCell align="center" sx={{ py:1.2, fontSize:13, fontWeight:700, color:"#111827" }}>{receipt.totalValue}</TableCell>
                       <TableCell sx={{ py:1.2, fontSize:13, color:"#6b7280" }}>{receipt.receivedBy}</TableCell>
