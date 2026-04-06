@@ -581,7 +581,7 @@ const Manufacturers = () => {
                 <Typography sx={{ fontSize: '0.7rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                   {card.title}
                 </Typography>
-                <Typography sx={{ fontSize: '1.3rem', fontWeight: 700, color: card.color, mt: 0.5 }}>
+                <Typography sx={{ fontSize: '1.3rem', fontWeight: 700, color: "black", mt: 0.5 }}>
                   {card.value}
                 </Typography>
                 <Typography sx={{ fontSize: '0.65rem', color: '#64748b', mt: 0.5 }}>
