@@ -9,10 +9,20 @@ import {
   Snackbar,
   Alert,
   Typography,
+  Card,
+  CardContent,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 
+// Add this color object right after your imports or at the top of the component
+const C = {
+  bg: "#F8FAFC",
+  border: "#E5E7EB",
+  textPrimary: "#111827",
+  textSecondary: "#6B7280",
+  primary: "#1976D2",
+};
 
 const inputStyles = {
   "& .MuiOutlinedInput-root": {
@@ -58,11 +68,17 @@ const SystemSettings = () => {
   // --- State ---
   const [facilityName, setFacilityName] = useState(initialFacilityName);
   const [npiNumber, setNpiNumber] = useState(initialNpiNumber);
-  const [deaRegistration, setDeaRegistration] = useState(initialDeaRegistration);
+  const [deaRegistration, setDeaRegistration] = useState(
+    initialDeaRegistration,
+  );
   const [stateLicense, setStateLicense] = useState(initialStateLicense);
 
-  const [lowStockThreshold, setLowStockThreshold] = useState(initialLowStockThreshold);
-  const [expiryWarningDays, setExpiryWarningDays] = useState(initialExpiryWarningDays);
+  const [lowStockThreshold, setLowStockThreshold] = useState(
+    initialLowStockThreshold,
+  );
+  const [expiryWarningDays, setExpiryWarningDays] = useState(
+    initialExpiryWarningDays,
+  );
   const [autoReorder, setAutoReorder] = useState(initialAutoReorder);
   const [alertEmail, setAlertEmail] = useState(initialAlertEmail);
 
@@ -70,14 +86,11 @@ const SystemSettings = () => {
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
-  
   useEffect(() => {
-   
     const scrollableParent = document.querySelector(
-      ".MuiBox-root[style*='overflow-y: auto']" 
+      ".MuiBox-root[style*='overflow-y: auto']",
     );
 
-    
     const findScrollableParent = (element) => {
       while (element) {
         const style = window.getComputedStyle(element);
@@ -89,12 +102,13 @@ const SystemSettings = () => {
       return null;
     };
 
-    const container = findScrollableParent(document.querySelector(".MuiBox-root")?.parentElement);
+    const container = findScrollableParent(
+      document.querySelector(".MuiBox-root")?.parentElement,
+    );
     if (container) {
       container.style.overflowY = "hidden";
     }
 
-    
     return () => {
       if (container) {
         container.style.overflowY = "auto";
@@ -102,7 +116,6 @@ const SystemSettings = () => {
     };
   }, []);
 
-  
   const handleSave = () => {
     const settings = {
       facilityName,
@@ -139,231 +152,271 @@ const SystemSettings = () => {
   return (
     <Box
       sx={{
-        p: 3,
-        bgcolor: "#f5f7fb",
+        background: "#f8fafc",
         minHeight: "100vh",
-        marginLeft: "auto",
-        marginTop: -3,
+        padding: "26px 24px",
         overflow: "auto",
-        scrollbarWidth: "none", 
+        scrollbarWidth: "none",
         "&::-webkit-scrollbar": {
-          display: "none", 
+          display: "none",
         },
       }}
     >
-      {/* Header */}
-      <Typography variant="h5" fontWeight={600}>
-        System Settings
-      </Typography>
-      <Typography sx={{ fontSize: "13px", color: "#6b7280", mb: 3 }}>
-        Global configuration
-      </Typography>
-
-      {/* FACILITY INFO CARD */}
-      <Paper
-        elevation={0}
-        sx={{
-          borderRadius: 2,
-          border: "1px solid #e5e7eb",
-          mb: 3,
-          overflow: "hidden",
-        }}
-      >
-        <Box
+      <Box>
+        <Typography
           sx={{
-            px: 2.5,
-            py: 1.5,
-            bgcolor: "#f9fafb",
-            borderBottom: "1px solid #e5e7eb",
+            fontWeight: 700,
+            fontSize: 22,
+            color: C.textPrimary,
+            letterSpacing: -0.3,
           }}
         >
-          <Typography sx={{ fontSize: "13px", fontWeight: 600 }}>
-            FACILITY INFO
-          </Typography>
-        </Box>
+          System Settings
+        </Typography>
 
-        <Box sx={{ p: 2.5 }}>
-          <Grid container spacing={2.5}>
-            <Grid item xs={12} md={4}>
-              <Box>
-                <Typography sx={labelStyle}>Facility Name</Typography>
-                <TextField
-                  fullWidth
-                  value={facilityName}
-                  onChange={(e) => setFacilityName(e.target.value)}
-                  size="small"
-                  sx={inputStyles}
-                />
-              </Box>
-            </Grid>
-
-            <Grid item xs={12} md={4}>
-              <Box>
-                <Typography sx={labelStyle}>NPI Number</Typography>
-                <TextField
-                  fullWidth
-                  value={npiNumber}
-                  onChange={(e) => setNpiNumber(e.target.value)}
-                  size="small"
-                  sx={inputStyles}
-                />
-              </Box>
-            </Grid>
-
-            <Grid item xs={12} md={4}>
-              <Box>
-                <Typography sx={labelStyle}>Dea Registration</Typography>
-                <TextField
-                  fullWidth
-                  value={deaRegistration}
-                  onChange={(e) => setDeaRegistration(e.target.value)}
-                  size="small"
-                  sx={inputStyles}
-                />
-              </Box>
-            </Grid>
-
-            <Grid item xs={12} md={4}>
-              <Box>
-                <Typography sx={labelStyle}>State License</Typography>
-                <TextField
-                  fullWidth
-                  value={stateLicense}
-                  onChange={(e) => setStateLicense(e.target.value)}
-                  size="small"
-                  sx={inputStyles}
-                />
-              </Box>
-            </Grid>
-          </Grid>
-        </Box>
-      </Paper>
-
-      {/* ALERT THRESHOLDS CARD */}
-      <Paper
-        elevation={0}
-        sx={{
-          borderRadius: 2,
-          border: "1px solid #e5e7eb",
-          mb: 3,
-          overflow: "hidden",
-        }}
-      >
-        <Box
+        <Typography
           sx={{
-            px: 2.5,
-            py: 1.5,
-            bgcolor: "#f9fafb",
-            borderBottom: "1px solid #e5e7eb",
+            fontSize: 13,
+            color: C.textSecondary,
+            mt: 0.3,
+            mb: 3,
           }}
         >
-          <Typography sx={{ fontSize: "13px", fontWeight: 600 }}>
-            ALERT THRESHOLDS
-          </Typography>
-        </Box>
-
-        <Box sx={{ p: 2.5 }}>
-          <Grid container spacing={2.5}>
-            <Grid item xs={12} md={4}>
-              <Box>
-                <Typography sx={labelStyle}>Low Stock Threshold (%)</Typography>
-                <TextField
-                  type="number"
-                  fullWidth
-                  value={lowStockThreshold}
-                  onChange={(e) => setLowStockThreshold(e.target.value)}
-                  size="small"
-                  sx={inputStyles}
-                />
-              </Box>
-            </Grid>
-
-            <Grid item xs={12} md={4}>
-              <Box>
-                <Typography sx={labelStyle}>Expiry Warning (Days)</Typography>
-                <TextField
-                  type="number"
-                  fullWidth
-                  value={expiryWarningDays}
-                  onChange={(e) => setExpiryWarningDays(e.target.value)}
-                  size="small"
-                  sx={inputStyles}
-                />
-              </Box>
-            </Grid>
-
-            <Grid item xs={12} md={4}>
-              <Box>
-                <Typography sx={labelStyle}>Auto-Reorder at par</Typography>
-                <TextField
-                  select
-                  fullWidth
-                  value={autoReorder}
-                  onChange={(e) => setAutoReorder(e.target.value)}
-                  size="small"
-                  sx={inputStyles}
-                >
-                  <MenuItem value="Yes — Create draft PO"sx={{ fontSize: '0.75rem' }}>
-                    Yes — Create draft PO
-                  </MenuItem>
-                  <MenuItem value="Alert only" sx={{ fontSize: '0.75rem' }}>
-                    Alert only
-                  </MenuItem>
-                  <MenuItem value="No" sx={{ fontSize: '0.75rem' }}>
-                    No
-                  </MenuItem>
-                </TextField>
-              </Box>
-            </Grid>
-
-            <Grid item xs={12} md={4}>
-              <Box>
-                <Typography sx={labelStyle}>Alert Email</Typography>
-                <TextField
-                  fullWidth
-                  value={alertEmail}
-                  onChange={(e) => setAlertEmail(e.target.value)}
-                  size="small"
-                  sx={inputStyles}
-                />
-              </Box>
-            </Grid>
-          </Grid>
-        </Box>
-      </Paper>
-
-      {/* Buttons */}
-      <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1.5 }}>
-        <Button
-          variant="outlined"
-          onClick={handleCancel}
-          sx={{
-            textTransform: "none",
-            fontSize: "13px",
-            px: 2.5,
-            borderRadius: "8px",
-            color: "#374151",
-            borderColor: "#d1d5db",
-          }}
-        >
-          Cancel
-        </Button>
-
-        <Button
-          variant="contained"
-          onClick={handleSave}
-          sx={{
-            textTransform: "none",
-            fontSize: "13px",
-            px: 2.5,
-            borderRadius: "8px",
-            bgcolor: "#4284f8",
-            "&:hover": { bgcolor: "#0b5bf9" },
-          }}
-        >
-          Save
-        </Button>
+          Global configuration
+        </Typography>
       </Box>
+
+      {/* MAIN OUTER CARD - Light grey/white card wrapper */}
+      <Card
+        sx={{
+          width: "100%",
+          borderRadius: { xs: 2, sm: 3 },
+          overflow: "hidden",
+          boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
+          border: "1px solid #e2e8f0",
+          mb: 3,
+        }}
+      >
+        <CardContent
+          sx={{
+            p: { xs: 2, sm: 3, md: 4 },
+            "&:last-child": { pb: { xs: 2, sm: 3, md: 4 } },
+          }}
+        >
+          {/* FACILITY INFO CARD */}
+          <Paper
+            elevation={0}
+            sx={{
+              borderRadius: 2,
+              border: "1px solid #e5e7eb",
+              mb: 3,
+              overflow: "hidden",
+            }}
+          >
+            <Box
+              sx={{
+                px: 2.5,
+                py: 1.5,
+                bgcolor: "#f9fafb",
+                borderBottom: "1px solid #e5e7eb",
+              }}
+            >
+              <Typography sx={{ fontSize: "13px", fontWeight: 600 }}>
+                FACILITY INFO
+              </Typography>
+            </Box>
+
+            <Box sx={{ p: 2.5 }}>
+              <Grid container spacing={2.5}>
+                <Grid item xs={12} md={4}>
+                  <Box>
+                    <Typography sx={labelStyle}>Facility Name</Typography>
+                    <TextField
+                      fullWidth
+                      value={facilityName}
+                      onChange={(e) => setFacilityName(e.target.value)}
+                      size="small"
+                      sx={inputStyles}
+                    />
+                  </Box>
+                </Grid>
+
+                <Grid item xs={12} md={4}>
+                  <Box>
+                    <Typography sx={labelStyle}>NPI Number</Typography>
+                    <TextField
+                      fullWidth
+                      value={npiNumber}
+                      onChange={(e) => setNpiNumber(e.target.value)}
+                      size="small"
+                      sx={inputStyles}
+                    />
+                  </Box>
+                </Grid>
+
+                <Grid item xs={12} md={4}>
+                  <Box>
+                    <Typography sx={labelStyle}>Dea Registration</Typography>
+                    <TextField
+                      fullWidth
+                      value={deaRegistration}
+                      onChange={(e) => setDeaRegistration(e.target.value)}
+                      size="small"
+                      sx={inputStyles}
+                    />
+                  </Box>
+                </Grid>
+
+                <Grid item xs={12} md={4}>
+                  <Box>
+                    <Typography sx={labelStyle}>State License</Typography>
+                    <TextField
+                      fullWidth
+                      value={stateLicense}
+                      onChange={(e) => setStateLicense(e.target.value)}
+                      size="small"
+                      sx={inputStyles}
+                    />
+                  </Box>
+                </Grid>
+              </Grid>
+            </Box>
+          </Paper>
+
+          {/* ALERT THRESHOLDS CARD */}
+          <Paper
+            elevation={0}
+            sx={{
+              borderRadius: 2,
+              border: "1px solid #e5e7eb",
+              mb: 3,
+              overflow: "hidden",
+            }}
+          >
+            <Box
+              sx={{
+                px: 2.5,
+                py: 1.5,
+                bgcolor: "#f9fafb",
+                borderBottom: "1px solid #e5e7eb",
+              }}
+            >
+              <Typography sx={{ fontSize: "13px", fontWeight: 600 }}>
+                ALERT THRESHOLDS
+              </Typography>
+            </Box>
+
+            <Box sx={{ p: 2.5 }}>
+              <Grid container spacing={2.5}>
+                <Grid item xs={12} md={4}>
+                  <Box>
+                    <Typography sx={labelStyle}>
+                      Low Stock Threshold (%)
+                    </Typography>
+                    <TextField
+                      type="number"
+                      fullWidth
+                      value={lowStockThreshold}
+                      onChange={(e) => setLowStockThreshold(e.target.value)}
+                      size="small"
+                      sx={inputStyles}
+                    />
+                  </Box>
+                </Grid>
+
+                <Grid item xs={12} md={4}>
+                  <Box>
+                    <Typography sx={labelStyle}>
+                      Expiry Warning (Days)
+                    </Typography>
+                    <TextField
+                      type="number"
+                      fullWidth
+                      value={expiryWarningDays}
+                      onChange={(e) => setExpiryWarningDays(e.target.value)}
+                      size="small"
+                      sx={inputStyles}
+                    />
+                  </Box>
+                </Grid>
+
+                <Grid item xs={12} md={4}>
+                  <Box>
+                    <Typography sx={labelStyle}>Auto-Reorder at par</Typography>
+                    <TextField
+                      select
+                      fullWidth
+                      value={autoReorder}
+                      onChange={(e) => setAutoReorder(e.target.value)}
+                      size="small"
+                      sx={inputStyles}
+                    >
+                      <MenuItem
+                        value="Yes — Create draft PO"
+                        sx={{ fontSize: "0.75rem" }}
+                      >
+                        Yes — Create draft PO
+                      </MenuItem>
+                      <MenuItem value="Alert only" sx={{ fontSize: "0.75rem" }}>
+                        Alert only
+                      </MenuItem>
+                      <MenuItem value="No" sx={{ fontSize: "0.75rem" }}>
+                        No
+                      </MenuItem>
+                    </TextField>
+                  </Box>
+                </Grid>
+
+                <Grid item xs={12} md={4}>
+                  <Box>
+                    <Typography sx={labelStyle}>Alert Email</Typography>
+                    <TextField
+                      fullWidth
+                      value={alertEmail}
+                      onChange={(e) => setAlertEmail(e.target.value)}
+                      size="small"
+                      sx={inputStyles}
+                    />
+                  </Box>
+                </Grid>
+              </Grid>
+            </Box>
+          </Paper>
+
+          {/* Buttons */}
+          <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1.5 }}>
+            <Button
+              variant="outlined"
+              onClick={handleCancel}
+              sx={{
+                textTransform: "none",
+                fontSize: "13px",
+                px: 2.5,
+                borderRadius: "8px",
+                color: "#374151",
+                borderColor: "#d1d5db",
+              }}
+            >
+              Cancel
+            </Button>
+
+            <Button
+              variant="contained"
+              onClick={handleSave}
+              sx={{
+                textTransform: "none",
+                fontSize: "13px",
+                px: 2.5,
+                borderRadius: "8px",
+                bgcolor: "#4284f8",
+                "&:hover": { bgcolor: "#0b5bf9" },
+              }}
+            >
+              Save
+            </Button>
+          </Box>
+        </CardContent>
+      </Card>
 
       {/* Snackbar */}
       <Snackbar

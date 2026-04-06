@@ -1,6 +1,16 @@
 import { useState } from "react";
+import { Typography, Box } from "@mui/material";
 
 // ─── Exact data matching screenshots ─────────────────────────────────────────
+// Add this color object right after your imports or at the top of the component
+const C = {
+  bg:            "#F8FAFC",
+  border:        "#E5E7EB",
+  textPrimary:   "#111827",
+  textSecondary: "#6B7280",
+  primary:       "#1976D2",
+};
+
 
 const initialCategories = [
   {
@@ -513,7 +523,7 @@ function CategoryModal({
           width: "100%",
           maxWidth: 460,
           boxShadow: "0 24px 64px rgba(0,0,0,0.2)",
-       
+
           maxHeight: "85vh",
           display: "flex",
           flexDirection: "column",
@@ -607,7 +617,7 @@ function CategoryModal({
                         ? "2px solid #2563eb"
                         : "1.5px solid #e2e8f0",
                     background: type === opt.val ? "#f0fdfa" : "#fff",
-                   
+
                     textAlign: "left",
                   }}
                 >
@@ -806,7 +816,7 @@ function CategoryModal({
               background: "#fff",
               cursor: "pointer",
               fontSize: 13,
-            
+
               fontWeight: 600,
               color: "#374151",
             }}
@@ -822,7 +832,7 @@ function CategoryModal({
               background: "#2563eb",
               cursor: "pointer",
               fontSize: 13,
-            
+
               fontWeight: 700,
               color: "#fff",
               boxShadow: "0 2px 8px rgba(14,116,144,0.25)",
@@ -1022,7 +1032,6 @@ export default function Categories() {
   return (
     <div
       style={{
-  
         background: "#f8fafc",
         minHeight: "100vh",
         padding: "26px 24px",
@@ -1058,23 +1067,28 @@ export default function Categories() {
           marginBottom: 22,
         }}
       >
-        <div>
-          <h1
-            style={{
-              margin: 0,
-              fontSize: 24,
-              fontWeight: 800,
-              color: "#0f172a",
+        <Box>
+          <Typography
+            sx={{
+              fontWeight: 700,
+              fontSize: 22,
+              color: C.textPrimary,
+              letterSpacing: -0.3,
             }}
           >
-            Categories &amp; Subcategories
-          </h1>
-          <div style={{ fontSize: 13, color: "#94a3b8", marginTop: 4 }}>
-            <b style={{ color: "#374151" }}>{cats.length} categories</b>
-            {" · "}
-            <b style={{ color: "#374151" }}>{totalSubs} subcategories</b>
-          </div>
-        </div>
+            Categories & Subcategories
+          </Typography>
+
+          <Typography
+            sx={{
+              fontSize: 13,
+              color: C.textSecondary,
+              mt: 0.3,
+            }}
+          >
+            {cats.length} categories {" · "} {totalSubs} subcategories
+          </Typography>
+        </Box>
         <div style={{ display: "flex", gap: 10 }}>
           <button
             onClick={() =>
@@ -1089,7 +1103,7 @@ export default function Categories() {
               fontSize: 13,
               fontWeight: 600,
               color: "#374151",
-          
+
               boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
             }}
           >
@@ -1108,7 +1122,7 @@ export default function Categories() {
               fontSize: 13,
               fontWeight: 700,
               color: "#fff",
-            
+
               boxShadow: "0 2px 8px rgba(14,116,144,0.28)",
             }}
           >
@@ -1194,7 +1208,7 @@ export default function Categories() {
                     fontSize: 11.5,
                     fontWeight: 600,
                     color: "#374151",
-                  
+
                     whiteSpace: "nowrap",
                   }}
                 >

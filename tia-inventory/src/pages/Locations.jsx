@@ -4,7 +4,7 @@ import {
   Table, TableBody, TableCell, TableContainer,
   TableHead, TableRow, Paper, Snackbar, Alert,
   Tooltip, Stack, Dialog, DialogContent, TextField,
-  MenuItem, Select, Grid,
+  MenuItem, Select, Grid, Card, CardContent,
 } from "@mui/material";
 import { Add, Edit, Delete, Close, LocationOn } from "@mui/icons-material";
 import AddLocationModal from "./Admin/AddLocationModal";
@@ -240,13 +240,13 @@ export default function Locations() {
   };
 
   return (
-    <Box sx={{ bgcolor:C.bg, minHeight:"100vh" }}>
-      <Box sx={{ p:"24px 28px" }}>
+    <Box sx={{ background: "#f8fafc", minHeight: "100vh", padding: "26px 24px" }}>
+      <Box sx={{ maxWidth: '1400px', mx: 'auto' }}>
 
         {/* ── Title row ── */}
         <Box sx={{ display:"flex", alignItems:"center", justifyContent:"space-between", mb:2.5 }}>
           <Box>
-            <Typography sx={{ fontWeight:800, fontSize:22, color:C.textPrimary, letterSpacing:-0.3 }}>
+            <Typography sx={{ fontWeight:700, fontSize:22, color:C.textPrimary, letterSpacing:-0.3 }}>
               Locations
             </Typography>
             <Typography sx={{ fontSize:13, color:C.textSecondary, mt:0.3 }}>
@@ -256,153 +256,168 @@ export default function Locations() {
           <Button startIcon={<Add sx={{ fontSize:16 }} />} variant="contained"
             onClick={() => setModalOpen(true)}
             sx={{
-              bgcolor:C.primary, textTransform:"none", fontWeight:700, fontSize:13,
+              bgcolor:"#2563eb", textTransform:"none", fontWeight:700, fontSize:13,
               borderRadius:"8px", height:36, px:2.5,
-              boxShadow:"0 1px 4px rgba(25,118,210,0.35)",
-              "&:hover":{ bgcolor:"#1256A0" },
+              boxShadow:"0 1px 4px #2563eb",
+              "&:hover":{ bgcolor:"#2563eb" },
             }}>
             Add Location
           </Button>
         </Box>
 
-        {/* ── Table ── */}
-        <TableContainer component={Paper} elevation={0}
-          sx={{
-            border:`1px solid ${C.border}`, borderRadius:"10px", overflow:"auto",
-            "&::-webkit-scrollbar":{ height:4 },
-            "&::-webkit-scrollbar-thumb":{ background:"#d1d5db", borderRadius:4 },
+        {/* ── MAIN OUTER CARD ── */}
+        <Card sx={{ 
+          width: '100%',
+          borderRadius: { xs: 2, sm: 3 },
+          overflow: 'hidden',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+          border: '1px solid #e2e8f0',
+        }}>
+          <CardContent sx={{ 
+            p: { xs: 2, sm: 3, md: 4 },
+            '&:last-child': { pb: { xs: 2, sm: 3, md: 4 } },
           }}>
-          <Table size="small" sx={{ minWidth:900 }}>
-            <TableHead>
-              <TableRow>
-                <TH width={100}>Code</TH>
-                <TH width={220}>Name</TH>
-                <TH width={120}>Type</TH>
-                <TH width={160}>In-Charge</TH>
-                <TH width={90}>Phone</TH>
-                <TH width={200}>Address</TH>
-                <TH width={70}>Users</TH>
-                <TH width={90}>Status</TH>
-                <TH width={80}>Actions</TH>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {locations.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={9} align="center" sx={{ py:5, fontSize:13, color:C.textSecondary }}>
-                    No locations found.
-                  </TableCell>
-                </TableRow>
-              )}
-              {locations.map((loc, idx) => (
-                <TableRow key={loc.id}
-                  sx={{ bgcolor: idx%2===0 ? "#fff" : "#FAFAFA", "&:hover":{ bgcolor:"#EFF6FF" }, transition:"background 0.15s" }}>
+            <TableContainer component={Paper} elevation={0}
+              sx={{
+                border:`1px solid ${C.border}`, borderRadius:"10px", overflow:"hidden",
+                "&::-webkit-scrollbar":{ height:4 },
+                "&::-webkit-scrollbar-thumb":{ background:"#d1d5db", borderRadius:4 },
+              }}>
+              <Table size="small"   sx={{
+    width: "100%",
+    tableLayout: "fixed", // important
+  }} >
+                <TableHead>
+                  <TableRow>
+                    <TH >Code</TH>
+                    <TH >Name</TH>
+                    <TH >Type</TH>
+                    <TH >In-Charge</TH>
+                    <TH >Phone</TH>
+                    <TH >Address</TH>
+                    <TH >Users</TH>
+                    <TH >Status</TH>
+                    <TH >Actions</TH>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {locations.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={9} align="center" sx={{ py:5, fontSize:13, color:C.textSecondary }}>
+                        No locations found.
+                      </TableCell>
+                    </TableRow>
+                  )}
+                  {locations.map((loc, idx) => (
+                    <TableRow key={loc.id}
+                      sx={{ bgcolor: idx%2===0 ? "#fff" : "#FAFAFA", "&:hover":{ bgcolor:"#EFF6FF" }, transition:"background 0.15s" }}>
 
-                  {/* Code badge */}
-                  <TableCell sx={{ px:1.5, py:1.2 }}>
-                    <Chip label={loc.code} size="small" sx={{
-                      bgcolor:loc.codeBg, color:loc.codeColor, border:`1px solid ${loc.codeBorder}`,
-                      fontWeight:700, fontSize:11, height:22,
-                    }} />
-                  </TableCell>
+                      {/* Code badge */}
+                      <TableCell sx={{ px:1.5, py:1.2 }}>
+                        <Chip label={loc.code} size="small" sx={{
+                          bgcolor:loc.codeBg, color:loc.codeColor, border:`1px solid ${loc.codeBorder}`,
+                          fontWeight:700, fontSize:11, height:22,
+                        }} />
+                      </TableCell>
 
-                  {/* Name + sub */}
-                  <TableCell sx={{ px:1.5, py:1.2 }}>
-                    <Typography sx={{ fontSize:13, fontWeight:700, color:C.textPrimary, lineHeight:1.3 }}>
-                      {loc.name}
-                    </Typography>
-                    {loc.sub && (
-                      <Typography sx={{ fontSize:11, color:C.textSecondary, mt:0.1 }}>
-                        {loc.sub}
-                      </Typography>
-                    )}
-                  </TableCell>
+                      {/* Name + sub */}
+                      <TableCell sx={{ px:1.5, py:1.2 }}>
+                        <Typography sx={{ fontSize:13, fontWeight:700, color:C.textPrimary, lineHeight:1.3 }}>
+                          {loc.name}
+                        </Typography>
+                        {loc.sub && (
+                          <Typography sx={{ fontSize:11, color:C.textSecondary, mt:0.1 }}>
+                            {loc.sub}
+                          </Typography>
+                        )}
+                      </TableCell>
 
-                  {/* Type */}
-                  <TableCell sx={{ px:1.5, py:1.2 }}>
-                    <Typography sx={{ fontSize:12, color:C.textSecondary }}>{loc.type}</Typography>
-                  </TableCell>
+                      {/* Type */}
+                      <TableCell sx={{ px:1.5, py:1.2 }}>
+                        <Typography sx={{ fontSize:12, color:C.textSecondary }}>{loc.type}</Typography>
+                      </TableCell>
 
-                  {/* In-Charge */}
-                  <TableCell sx={{ px:1.5, py:1.2 }}>
-                    <Typography sx={{ fontSize:12, color:C.textPrimary, fontWeight:500 }}>{loc.inCharge}</Typography>
-                  </TableCell>
+                      {/* In-Charge */}
+                      <TableCell sx={{ px:1.5, py:1.2 }}>
+                        <Typography sx={{ fontSize:12, color:C.textPrimary, fontWeight:500 }}>{loc.inCharge}</Typography>
+                      </TableCell>
 
-                  {/* Phone */}
-                  <TableCell sx={{ px:1.5, py:1.2 }}>
-                    <Typography sx={{ fontSize:12, color:C.textSecondary }}>{loc.phone}</Typography>
-                  </TableCell>
+                      {/* Phone */}
+                      <TableCell sx={{ px:1.5, py:1.2 }}>
+                        <Typography sx={{ fontSize:12, color:C.textSecondary }}>{loc.phone}</Typography>
+                      </TableCell>
 
-                  {/* Address */}
-                  <TableCell sx={{ px:1.5, py:1.2 }}>
-                    <Typography sx={{ fontSize:12, color:C.textSecondary }}>{loc.address}</Typography>
-                  </TableCell>
+                      {/* Address */}
+                      <TableCell sx={{ px:1.5, py:1.2 }}>
+                        <Typography sx={{ fontSize:12, color:C.textSecondary }}>{loc.address}</Typography>
+                      </TableCell>
 
-                  {/* Users */}
-                  <TableCell sx={{ px:1.5, py:1.2 }}>
-                    <Typography sx={{ fontSize:12, color:C.textSecondary, fontWeight:600 }}>{loc.users}</Typography>
-                  </TableCell>
+                      {/* Users */}
+                      <TableCell sx={{ px:1.5, py:1.2 }}>
+                        <Typography sx={{ fontSize:12, color:C.textSecondary, fontWeight:600 }}>{loc.users}</Typography>
+                      </TableCell>
 
-                  {/* Status */}
-                  <TableCell sx={{ px:1.5, py:1.2 }}>
-                    <Chip label="Active" size="small" sx={{
-                      bgcolor:"#F0FDF4", color:"#16A34A", border:"1px solid #BBF7D0",
-                      fontWeight:700, fontSize:11, height:22,
-                    }} />
-                  </TableCell>
+                      {/* Status */}
+                      <TableCell sx={{ px:1.5, py:1.2 }}>
+                        <Chip label="Active" size="small" sx={{
+                          bgcolor:"#F0FDF4", color:"#16A34A", border:"1px solid #BBF7D0",
+                          fontWeight:700, fontSize:11, height:22,
+                        }} />
+                      </TableCell>
 
-                  {/* Actions */}
-                  <TableCell sx={{ px:1.5, py:1.2 }}>
-                    <Stack direction="row" spacing={0.5}>
-                      <Tooltip title="Edit">
-                        <IconButton size="small" onClick={() => { setEditLoc(loc); setEditOpen(true); }} sx={{
-                          bgcolor:"#EFF6FF", color:"#1D4ED8",
-                          "&:hover":{ bgcolor:"#DBEAFE" }, width:26, height:26, borderRadius:"6px",
-                        }}>
-                          <Edit sx={{ fontSize:13 }} />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip title="Remove">
-                        <IconButton size="small" onClick={() => handleDelete(loc.id)} sx={{
-                          bgcolor:"#FEF2F2", color:"#DC2626",
-                          "&:hover":{ bgcolor:"#FEE2E2" }, width:26, height:26, borderRadius:"6px",
-                        }}>
-                          <Delete sx={{ fontSize:13 }} />
-                        </IconButton>
-                      </Tooltip>
-                    </Stack>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+                      {/* Actions */}
+                      <TableCell sx={{ px:1.5, py:1.2 }}>
+                        <Stack direction="row" spacing={0.5}>
+                          <Tooltip title="Edit">
+                            <IconButton size="small" onClick={() => { setEditLoc(loc); setEditOpen(true); }} sx={{
+                              bgcolor:"#EFF6FF", color:"#1D4ED8",
+                              "&:hover":{ bgcolor:"#DBEAFE" }, width:26, height:26, borderRadius:"6px",
+                            }}>
+                              <Edit sx={{ fontSize:13 }} />
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip title="Remove">
+                            <IconButton size="small" onClick={() => handleDelete(loc.id)} sx={{
+                              bgcolor:"#FEF2F2", color:"#DC2626",
+                              "&:hover":{ bgcolor:"#FEE2E2" }, width:26, height:26, borderRadius:"6px",
+                            }}>
+                              <Delete sx={{ fontSize:13 }} />
+                            </IconButton>
+                          </Tooltip>
+                        </Stack>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </CardContent>
+        </Card>
 
+        {/* ── Edit Modal ── */}
+        <EditLocationDialog
+          open={editOpen}
+          onClose={() => setEditOpen(false)}
+          loc={editLoc}
+          onSave={handleEditSave}
+        />
+
+        {/* ── Add Modal ── */}
+        <AddLocationModal
+          open={modalOpen}
+          onClose={() => setModalOpen(false)}
+          onSave={handleSave}
+        />
+
+        <Snackbar open={toast.open} autoHideDuration={3000}
+          onClose={() => setToast(t => ({...t, open:false}))}
+          anchorOrigin={{ vertical:"bottom", horizontal:"right" }}>
+          <Alert severity={toast.severity} sx={{ borderRadius:"10px", fontWeight:600, fontSize:13 }}
+            onClose={() => setToast(t => ({...t, open:false}))}>
+            {toast.msg}
+          </Alert>
+        </Snackbar>
       </Box>
-
-      {/* ── Edit Modal ── */}
-      <EditLocationDialog
-        open={editOpen}
-        onClose={() => setEditOpen(false)}
-        loc={editLoc}
-        onSave={handleEditSave}
-      />
-
-      {/* ── Add Modal ── */}
-      <AddLocationModal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        onSave={handleSave}
-      />
-
-      <Snackbar open={toast.open} autoHideDuration={3000}
-        onClose={() => setToast(t => ({...t, open:false}))}
-        anchorOrigin={{ vertical:"bottom", horizontal:"right" }}>
-        <Alert severity={toast.severity} sx={{ borderRadius:"10px", fontWeight:600, fontSize:13 }}
-          onClose={() => setToast(t => ({...t, open:false}))}>
-          {toast.msg}
-        </Alert>
-      </Snackbar>
     </Box>
   );
 }

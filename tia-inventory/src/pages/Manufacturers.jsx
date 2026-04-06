@@ -34,6 +34,15 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ManufacturerModal from '../components/ManufacturerModal';
 
+// Add this color object right after your imports or at the top of the component
+const C = {
+  bg:            "#F8FAFC",
+  border:        "#E5E7EB",
+  textPrimary:   "#111827",
+  textSecondary: "#6B7280",
+  primary:       "#1976D2",
+};
+
 const initialManufacturers = [
   {
     id: "m1",
@@ -505,7 +514,7 @@ const Manufacturers = () => {
   };
 
   return (
-    <Box sx={{ width: '100%', px: 0, overflow: 'hidden' }}>
+    <Box sx={{ width: '100%', px: 0, overflow: 'hidden', background: "#f8fafc", minHeight: "100vh", padding: "26px 24px" }}>
       <Box sx={{ 
         display: 'flex', 
         justifyContent: 'space-between', 
@@ -514,22 +523,28 @@ const Manufacturers = () => {
         gap: { xs: 1.5, sm: 0 },
         mb: { xs: 2, sm: 3 },
       }}>
-        <Box>
-          <Typography sx={{ 
-            fontWeight: 600, 
-            color: '#1a1a2e', 
-            mb: 0.5,
-            fontSize: { xs: '20px', sm: '22px', md: '24px' }
-          }}>
-            Manufacturer Master
-          </Typography>
-          <Typography sx={{ 
-            color: '#6c757d',
-            fontSize: { xs: '12px', sm: '13px', md: '14px' }
-          }}>
-            {manufacturers.filter(m => m.status === "Active").length} active manufacturers registered
-          </Typography>
-        </Box>
+      <Box>
+  <Typography
+    sx={{
+      fontWeight: 700,
+      fontSize: 22,
+      color: C.textPrimary,
+      letterSpacing: -0.3,
+    }}
+  >
+    Manufacturer Master
+  </Typography>
+
+  <Typography
+    sx={{
+      fontSize: 13,
+      color: C.textSecondary,
+      mt: 0.3,
+    }}
+  >
+    {manufacturers.filter(m => m.status === "Active").length} active manufacturers registered
+  </Typography>
+</Box>
         <Button 
           variant="contained" 
           startIcon={<AddIcon />} 
@@ -537,12 +552,12 @@ const Manufacturers = () => {
           sx={{
             borderRadius: '8px',
             textTransform: 'none',
-            background: 'linear-gradient(135deg, #6366f1, #818cf8)',
+            background: '#2563eb',
             fontSize: { xs: '12px', sm: '13px', md: '14px' },
             fontWeight: 500,
             padding: { xs: '6px 16px', sm: '7px 20px', md: '8px 24px' },
             '&:hover': {
-              background: 'linear-gradient(135deg, #4f46e5, #6366f1)',
+              background: "#2563eb"
             }
           }}
         >
@@ -578,15 +593,17 @@ const Manufacturers = () => {
         ))}
       </Box>
 
+      {/* MAIN OUTER CARD - Light grey/white card wrapper */}
       <Card sx={{ 
         width: '100%',
-        borderRadius: { xs: 1, sm: 2 },
+        borderRadius: { xs: 2, sm: 3 },
         overflow: 'hidden',
         boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+        border: '1px solid #e2e8f0',
       }}>
         <CardContent sx={{ 
-          p: { xs: 1, sm: 2, md: 3 },
-          '&:last-child': { pb: { xs: 2, sm: 3 } },
+          p: { xs: 2, sm: 3, md: 4 },
+          '&:last-child': { pb: { xs: 2, sm: 3, md: 4 } },
         }}>
           {isMobile ? (
             <Box>
@@ -640,7 +657,7 @@ const Manufacturers = () => {
                   width: '100%',
                   overflowX: 'auto',
                   border: '1px solid #e2e8f0',
-                  borderRadius: 1,
+                  borderRadius: 2,
                   '&::-webkit-scrollbar': {
                     height: '6px',
                     width: '6px',
@@ -678,8 +695,8 @@ const Manufacturers = () => {
                             backgroundColor: '#f8fafc',
                             whiteSpace: 'nowrap',
                             fontSize: '0.8rem',
-                            py: 1,
-                            px: isTablet ? 1 : 1.5,
+                            py: 1.5,
+                            px: isTablet ? 1.5 : 2,
                             color: '#475569',
                           }}
                         >
@@ -701,8 +718,8 @@ const Manufacturers = () => {
                                 align={column.align || 'left'}
                                 sx={{ 
                                   whiteSpace: 'nowrap',
-                                  py: 1,
-                                  px: isTablet ? 1 : 1.5,
+                                  py: 1.5,
+                                  px: isTablet ? 1.5 : 2,
                                   borderBottom: '1px solid #f1f5f9',
                                 }}
                               >
@@ -720,7 +737,7 @@ const Manufacturers = () => {
                 display: 'flex', 
                 justifyContent: 'space-between', 
                 alignItems: 'center',
-                mt: 2,
+                mt: 2.5,
                 flexWrap: 'wrap',
                 gap: 2,
               }}>

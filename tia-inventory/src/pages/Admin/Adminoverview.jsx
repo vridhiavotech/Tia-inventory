@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Box, Typography, Button, Chip, IconButton,
-  Snackbar, Alert, Tooltip, Stack, Avatar, Divider,
+  Snackbar, Alert, Tooltip, Stack, Avatar, Divider, Card, CardContent,
 } from "@mui/material";
 import {
   PersonAdd, AddLocation, Block, CheckCircle,
@@ -93,7 +93,7 @@ function StatCard({ label, value, sub, color, icon: Icon }) {
   );
 }
 
-// ── Location Card ─────────────────────────────────────────────────────────
+// ── Location Card (with left border color line) ─────────────────────────────────────────
 function LocationCard({ loc }) {
   const navigate = useNavigate();
   const c = LOC_COLORS[loc.code] || DEFAULT_LOC_COLOR;
@@ -101,7 +101,7 @@ function LocationCard({ loc }) {
     <Box sx={{
       bgcolor:"#fff",
       border:`1px solid ${C.border}`,
-      borderTop:`2.5px solid ${c.accent}`,
+      borderLeft:`3px solid ${c.accent}`,
       borderRadius:"8px",
       p:2, display:"flex", flexDirection:"column", gap:0.8,
     }}>
@@ -286,13 +286,13 @@ export default function AdminOverview() {
   };
 
   return (
-    <Box sx={{ bgcolor:C.bg, minHeight:"100vh" }}>
-      <Box sx={{ p:"24px 28px" }}>
+    <Box sx={{ background: "#f8fafc", minHeight: "100vh", padding: "26px 24px" }}>
+      <Box sx={{ maxWidth: '1400px', mx: 'auto' }}>
 
         {/* ── Title row ── */}
         <Box sx={{ display:"flex", alignItems:"center", justifyContent:"space-between", mb:2.5 }}>
           <Box>
-            <Typography sx={{ fontWeight:800, fontSize:22, color:C.textPrimary, letterSpacing:-0.3 }}>
+            <Typography sx={{ fontWeight:700, fontSize:22, color:C.textPrimary, letterSpacing:-0.3 }}>
               Admin Overview
             </Typography>
             <Typography sx={{ fontSize:13, color:C.textSecondary, mt:0.3 }}>
@@ -317,92 +317,105 @@ export default function AdminOverview() {
               variant="contained"
               onClick={() => setAddLocOpen(true)}
               sx={{
-                bgcolor:C.primary, textTransform:"none", fontWeight:700,
+                bgcolor:"#2563eb", textTransform:"none", fontWeight:700,
                 fontSize:13, borderRadius:"8px", height:36, px:2.5,
-                boxShadow:"0 1px 4px rgba(25,118,210,0.35)",
-                "&:hover":{ bgcolor:C.primaryDark, boxShadow:"0 2px 8px rgba(25,118,210,0.4)" },
+                boxShadow:"0 1px 4px #2563eb",
+                "&:hover":{ bgcolor:"#2563eb", boxShadow:"0 2px 8px #2563eb" },
               }}>
               Add Location
             </Button>
           </Stack>
         </Box>
 
-        {/* ── Stat Cards — row 1 ── */}
-        <Stack direction="row" spacing={1.5} sx={{ mb:1.5 }}>
-          <StatCard label="Active Users"  value={activeCount}      sub={`${blockedCount} blocked`} color="#7C3AED" icon={People}       />
-          <StatCard label="Locations"     value={locations.length} sub="Active facilities"         color="#2563EB" icon={Business}      />
-          <StatCard label="Suppliers"     value={4}                sub="Approved vendors"          color="#16A34A" icon={LocalShipping} />
-          <StatCard label="Manufacturers" value={8}                sub="Registered brands"         color="#D97706" icon={Factory}       />
-        </Stack>
+        {/* ── MAIN OUTER CARD ── */}
+        <Card sx={{ 
+          width: '100%',
+          borderRadius: { xs: 2, sm: 3 },
+          overflow: 'hidden',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+          border: '1px solid #e2e8f0',
+        }}>
+          <CardContent sx={{ 
+            p: { xs: 2, sm: 3, md: 4 },
+            '&:last-child': { pb: { xs: 2, sm: 3, md: 4 } },
+          }}>
+            {/* ── Stat Cards — row 1 ── */}
+            <Stack direction="row" spacing={1.5} sx={{ mb:1.5 }}>
+              <StatCard label="Active Users"  value={activeCount}      sub={`${blockedCount} blocked`} color="#7C3AED" icon={People}       />
+              <StatCard label="Locations"     value={locations.length} sub="Active facilities"         color="#2563EB" icon={Business}      />
+              <StatCard label="Suppliers"     value={4}                sub="Approved vendors"          color="#16A34A" icon={LocalShipping} />
+              <StatCard label="Manufacturers" value={8}                sub="Registered brands"         color="#D97706" icon={Factory}       />
+            </Stack>
 
-        {/* ── Stat Cards — row 2 ── */}
-        <Stack direction="row" spacing={1.5} sx={{ mb:2.5 }}>
-          <StatCard label="Categories" value={6} sub=""                       color="#0284C7" icon={Category}    />
-          <StatCard label="Documents"  value={7} sub="1 expiring · 1 expired" color="#DC2626" icon={Description} />
-          <Box sx={{ flex:2 }} />
-        </Stack>
+            {/* ── Stat Cards — row 2 ── */}
+            <Stack direction="row" spacing={1.5} sx={{ mb:2.5 }}>
+              <StatCard label="Categories" value={6} sub=""                       color="#0284C7" icon={Category}    />
+              <StatCard label="Documents"  value={7} sub="1 expiring · 1 expired" color="#DC2626" icon={Description} />
+              <Box sx={{ flex:2 }} />
+            </Stack>
 
-        {/* ── Locations section ── */}
-        <Box sx={{ display:"flex", alignItems:"center", justifyContent:"space-between", mb:1.5 }}>
-          <Typography sx={{ fontWeight:800, fontSize:16, color:C.textPrimary, letterSpacing:-0.2 }}>
-            Locations
-          </Typography>
-          <Button size="small" endIcon={<ExpandMore sx={{ fontSize:14 }} />}
-            onClick={() => navigate("/admin/locations")}
-            sx={{ fontSize:12, fontWeight:600, color:C.textSecondary, textTransform:"none" }}>
-            View All
-          </Button>
-        </Box>
+            {/* ── Locations section ── */}
+            <Box sx={{ display:"flex", alignItems:"center", justifyContent:"space-between", mb:1.5 }}>
+              <Typography sx={{ fontWeight:800, fontSize:16, color:C.textPrimary, letterSpacing:-0.2 }}>
+                Locations
+              </Typography>
+              <Button size="small" endIcon={<ExpandMore sx={{ fontSize:14 }} />}
+                onClick={() => navigate("/admin/locations")}
+                sx={{ fontSize:12, fontWeight:600, color:C.textSecondary, textTransform:"none" }}>
+                View All
+              </Button>
+            </Box>
 
-        <Box sx={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:1.5, mb:3 }}>
-          {locations.map(loc => (
-            <LocationCard key={loc.id} loc={loc} />
-          ))}
-        </Box>
+            <Box sx={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:1.5, mb:3 }}>
+              {locations.map(loc => (
+                <LocationCard key={loc.id} loc={loc} />
+              ))}
+            </Box>
 
-        {/* ── Users section ── */}
-        <Box sx={{ display:"flex", alignItems:"center", justifyContent:"space-between", mb:1.5 }}>
-          <Typography sx={{ fontWeight:800, fontSize:16, color:C.textPrimary, letterSpacing:-0.2 }}>
-            Users
-          </Typography>
-          <Button size="small" endIcon={<ExpandMore sx={{ fontSize:14 }} />}
-            onClick={() => navigate("/admin/users")}
-            sx={{ fontSize:12, fontWeight:600, color:C.textSecondary, textTransform:"none" }}>
-            View All
-          </Button>
-        </Box>
+            {/* ── Users section ── */}
+            <Box sx={{ display:"flex", alignItems:"center", justifyContent:"space-between", mb:1.5 }}>
+              <Typography sx={{ fontWeight:800, fontSize:16, color:C.textPrimary, letterSpacing:-0.2 }}>
+                Users
+              </Typography>
+              <Button size="small" endIcon={<ExpandMore sx={{ fontSize:14 }} />}
+                onClick={() => navigate("/admin/users")}
+                sx={{ fontSize:12, fontWeight:600, color:C.textSecondary, textTransform:"none" }}>
+                View All
+              </Button>
+            </Box>
 
-        <Box sx={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:1.5 }}>
-          {users.map(user => (
-            <UserCard key={user.id} user={user} onToggle={toggleBlock} />
-          ))}
-        </Box>
+            <Box sx={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:1.5 }}>
+              {users.map(user => (
+                <UserCard key={user.id} user={user} onToggle={toggleBlock} />
+              ))}
+            </Box>
+          </CardContent>
+        </Card>
 
+        {/* ══ Modals ══ */}
+        <AddLocationModal
+          open={addLocOpen}
+          onClose={() => setAddLocOpen(false)}
+          onSave={handleSaveLocation}
+        />
+        <AddUserModal
+          open={addUserOpen}
+          onClose={() => setAddUserOpen(false)}
+          onSave={handleSaveUser}
+          locations={locations}
+        />
+
+        {/* ── Toast ── */}
+        <Snackbar open={toast.open} autoHideDuration={3000}
+          onClose={() => setToast(t => ({...t, open:false}))}
+          anchorOrigin={{ vertical:"bottom", horizontal:"right" }}>
+          <Alert severity={toast.severity}
+            sx={{ borderRadius:"10px", fontWeight:600, fontSize:13 }}
+            onClose={() => setToast(t => ({...t, open:false}))}>
+            {toast.msg}
+          </Alert>
+        </Snackbar>
       </Box>
-
-      {/* ══ Modals ══ */}
-      <AddLocationModal
-        open={addLocOpen}
-        onClose={() => setAddLocOpen(false)}
-        onSave={handleSaveLocation}
-      />
-      <AddUserModal
-        open={addUserOpen}
-        onClose={() => setAddUserOpen(false)}
-        onSave={handleSaveUser}
-        locations={locations}
-      />
-
-      {/* ── Toast ── */}
-      <Snackbar open={toast.open} autoHideDuration={3000}
-        onClose={() => setToast(t => ({...t, open:false}))}
-        anchorOrigin={{ vertical:"bottom", horizontal:"right" }}>
-        <Alert severity={toast.severity}
-          sx={{ borderRadius:"10px", fontWeight:600, fontSize:13 }}
-          onClose={() => setToast(t => ({...t, open:false}))}>
-          {toast.msg}
-        </Alert>
-      </Snackbar>
     </Box>
   );
 }

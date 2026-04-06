@@ -1,1018 +1,547 @@
-import React, { useState, useEffect } from "react";
-import {
-  Box,
-  Card,
-  CardHeader,
-  CardContent,
-  Button,
-  useMediaQuery,
-  useTheme,
-  TableContainer,
-  Paper,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  Typography,
-  Tooltip,
-  IconButton,
-  FormControl,
-  Select,
-  MenuItem,
-  TextField,
-  InputAdornment,
-  Grid,
-} from "@mui/material";
-import {
-  Search as SearchIcon,
-  Upload as UploadIcon,
-  Visibility as ViewIcon,
-  Edit as EditIcon,
-  Delete as DeleteIcon,
-  Description as DescriptionIcon,
-  Business as BusinessIcon,
-  ShoppingCart as ShoppingCartIcon,
-  Inventory as InventoryIcon,
-  Receipt as ReceiptIcon,
-  Warning as WarningIcon,
-} from "@mui/icons-material";
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import DocumentUploadModal from '../components/DocumentUploadModal';
+import { useState, useRef } from "react";
+import { Typography,Box } from "@mui/material";
 
-const StatusBadge = ({ status }) => {
-  const getStatusConfig = (status) => {
-    switch (status?.toLowerCase()) {
-      case 'active':
-        return { bg: '#e8f5e9', color: '#2e7d32', text: 'Active' };
-      case 'expiring soon':
-        return { bg: '#fff3e0', color: '#ed6c02', text: 'Expiring Soon' };
-      case 'expired':
-        return { bg: '#ffebee', color: '#d32f2f', text: 'Expired' };
-      case 'inactive':
-        return { bg: '#f5f5f5', color: '#757575', text: 'Inactive' };
-      default:
-        return { bg: '#f5f5f5', color: '#757575', text: status || 'Unknown' };
-    }
-  };
-
-  const config = getStatusConfig(status);
-  
-  return (
-    <Box
-      sx={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        px: 1,
-        py: 0.5,
-        borderRadius: 1,
-        bgcolor: config.bg,
-        color: config.color,
-        fontSize: '0.75rem',
-        fontWeight: 600,
-        whiteSpace: 'nowrap',
-      }}
-    >
-      {config.text}
-    </Box>
-  );
+// Add this color object right after your imports or at the top of the component
+const C = {
+  bg:            "#F8FAFC",
+  border:        "#E5E7EB",
+  textPrimary:   "#111827",
+  textSecondary: "#6B7280",
+  primary:       "#1976D2",
 };
 
-const initialDocuments = [
+// ─── Initial Documents ────────────────────────────────────────────────────────
+
+const initialDocs = [
   {
-    id: "doc1",
-    docNo: "DOC-2026-001",
-    title: "McKesson Master Supply Agreement",
-    description: "Annual supply contract — auto-renews",
-    type: "Contract",
-    linkedTo: {
-      type: "supplier",
-      name: "McKesson Medical-Surgical",
-      id: "SUP-001"
-    },
-    issuedDate: "2024-01-15",
-    expiryDate: "2026-12-31",
-    uploadedBy: "S. Anderson",
-    uploadDate: "Mar 10, 2026",
-    size: "1.2 MB",
-    status: "Active",
-    fileUrl: "#"
+    id: "doc-1",
+    name: "Medline PPE Certificate of Compliance",
+    size: "1.1 MB",
+    date: "Feb 14, 2026",
+    version: "v1.0",
+    type: "Certificate",
+    status: "active",
   },
   {
-    id: "doc2",
-    docNo: "DOC-2026-002",
-    title: "PO-2026-0004 Acknowledgement",
-    description: "Supplier confirmed receipt of PO",
-    type: "PO Acknowledgement",
-    linkedTo: {
-      type: "po",
-      name: "PO-2026-0004",
-      id: "PO-2026-0004"
-    },
-    issuedDate: "2026-03-19",
-    expiryDate: null,
-    uploadedBy: "S. Anderson",
-    uploadDate: "Mar 19, 2026",
+    id: "doc-2",
+    name: "Controlled Substances SOP — DEA Compliance",
+    size: "856 KB",
+    date: "Mar 1, 2026",
+    version: "Rev-5",
+    type: "SOP / Policy",
+    status: "active",
+  },
+  {
+    id: "doc-3",
+    name: "PO-2026-0002 — Medline Invoice",
+    size: "184 KB",
+    date: "Mar 20, 2026",
+    version: null,
+    type: "Invoice",
+    status: "active",
+  },
+  {
+    id: "doc-4",
+    name: "Surgical Kit Assembly — Standard BOM",
+    size: "48 KB",
+    date: "Mar 5, 2026",
+    version: "v2.1",
+    type: "Bill of Materials",
+    status: "active",
+  },
+  {
+    id: "doc-5",
+    name: "Epinephrine MSDS — Safety Data Sheet",
     size: "320 KB",
-    status: "Active",
-    fileUrl: "#"
+    date: "Feb 20, 2026",
+    version: null,
+    type: "MSDS",
+    status: "active",
   },
-  {
-    id: "doc3",
-    docNo: "DOC-2026-003",
-    title: "Medline Industries — ISO Certificate",
-    description: "ISO 9001:2015 certification",
-    type: "Quality Certificate",
-    linkedTo: {
-      type: "supplier",
-      name: "Medline Industries",
-      id: "SUP-002"
-    },
-    issuedDate: "2024-06-01",
-    expiryDate: "2026-05-31",
-    uploadedBy: "T. Williams",
-    uploadDate: "Mar 5, 2026",
-    size: "540 KB",
-    status: "Expiring Soon",
-    fileUrl: "#"
-  },
-  {
-    id: "doc4",
-    docNo: "DOC-2026-004",
-    title: "Amoxicillin 500mg — FDA Recall Notice",
-    description: "FDA Class II recall — Lot AM2024B",
-    type: "Regulatory Notice",
-    linkedTo: {
-      type: "item",
-      name: "Amoxicillin 500mg Capsules",
-      id: "ITEM-001"
-    },
-    issuedDate: "2026-03-10",
-    expiryDate: null,
-    uploadedBy: "S. Anderson",
-    uploadDate: "Mar 10, 2026",
-    size: "188 KB",
-    status: "Active",
-    fileUrl: "#"
-  },
-  {
-    id: "doc5",
-    docNo: "DOC-2026-005",
-    title: "Cardinal Health — MSDS Sodium Chloride",
-    description: "Material safety data sheet",
-    type: "MSDS / Safety Sheet",
-    linkedTo: {
-      type: "item",
-      name: "Sodium Chloride 0.9% IV 1L",
-      id: "ITEM-002"
-    },
-    issuedDate: "2023-08-01",
-    expiryDate: "2028-08-01",
-    uploadedBy: "P. Chen",
-    uploadDate: "Feb 20, 2026",
-    size: "210 KB",
-    status: "Active",
-    fileUrl: "#"
-  },
-  {
-    id: "doc6",
-    docNo: "DOC-2026-006",
-    title: "GRN-2026-0003 Delivery Note",
-    description: "Medline signed delivery note",
-    type: "Delivery Note",
-    linkedTo: {
-      type: "grn",
-      name: "GRN-2026-0003",
-      id: "GRN-2026-0003"
-    },
-    issuedDate: "2026-03-20",
-    expiryDate: null,
-    uploadedBy: "T. Williams",
-    uploadDate: "Mar 20, 2026",
-    size: "95 KB",
-    status: "Active",
-    fileUrl: "#"
-  },
-  {
-    id: "doc7",
-    docNo: "DOC-2026-007",
-    title: "Fisher Scientific — Lab Supply Agreement",
-    description: "Expired — renewal pending",
-    type: "Contract",
-    linkedTo: {
-      type: "supplier",
-      name: "Fisher Scientific",
-      id: "SUP-003"
-    },
-    issuedDate: "2025-01-01",
-    expiryDate: "2025-12-31",
-    uploadedBy: "S. Anderson",
-    uploadDate: "Jan 5, 2026",
-    size: "890 KB",
-    status: "Expired",
-    fileUrl: "#"
-  }
 ];
 
-const DocumentManagement = () => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const isTablet = useMediaQuery(theme.breakpoints.between('sm', 'lg'));
-  const isSmallTablet = useMediaQuery(theme.breakpoints.between('sm', 'md'));
-  const isLargeTablet = useMediaQuery(theme.breakpoints.between('md', 'lg'));
+const ALL_TYPES = [
+  "Certificate",
+  "SOP / Policy",
+  "Invoice",
+  "Bill of Materials",
+  "MSDS",
+  "Report",
+  "Other",
+];
 
-  const [documents, setDocuments] = useState(initialDocuments);
-  const [filteredDocs, setFilteredDocs] = useState(initialDocuments);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [typeFilter, setTypeFilter] = useState("");
-  const [linkedFilter, setLinkedFilter] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [selectedDoc, setSelectedDoc] = useState(null);
+const ALL_STATUSES = ["All", "Active", "Expiring Soon", "Expired"];
 
-  // Statistic
-  const stats = {
-    totalDocuments: documents.length,
-    active: documents.filter(d => d.status === "Active").length,
-    expiringSoon: documents.filter(d => d.status === "Expiring Soon").length,
-    expired: documents.filter(d => d.status === "Expired").length
+// ─── Type badge colors ────────────────────────────────────────────────────────
+
+const typeColor = (type) => {
+  const map = {
+    "Certificate":      { bg: "#fef3c7", color: "#92400e", border: "#fde68a" },
+    "SOP / Policy":     { bg: "#e0f2fe", color: "#0369a1", border: "#bae6fd" },
+    "Invoice":          { bg: "#dcfce7", color: "#166534", border: "#bbf7d0" },
+    "Bill of Materials":{ bg: "#dbeafe", color: "#1e40af", border: "#bfdbfe" },
+    "MSDS":             { bg: "#e0f2fe", color: "#0369a1", border: "#bae6fd" },
+    "Report":           { bg: "#f3e8ff", color: "#7c3aed", border: "#ddd6fe" },
+    "Other":            { bg: "#f3f4f6", color: "#374151", border: "#e5e7eb" },
+  };
+  return map[type] || { bg: "#f3f4f6", color: "#374151", border: "#e5e7eb" };
+};
+
+// ─── Upload Modal ─────────────────────────────────────────────────────────────
+
+function UploadModal({ onClose, onUpload }) {
+  const [name,    setName]    = useState("");
+  const [type,    setType]    = useState("Certificate");
+  const [version, setVersion] = useState("");
+  const [file,    setFile]    = useState(null);
+  const [dragging,setDragging]= useState(false);
+  const [error,   setError]   = useState("");
+  const inputRef = useRef();
+
+  const handleFile = (f) => {
+    if (!f) return;
+    setFile(f);
+    if (!name) setName(f.name.replace(/\.[^.]+$/, ""));
   };
 
-  const statCards = [
-    { 
-      title: "Total Documents", 
-      value: stats.totalDocuments, 
-      subtitle: "All records",
-      color: "#3b82f6",
-    },
-    { 
-      title: "Active", 
-      value: stats.active, 
-      subtitle: "Valid & current",
-      color: "#10b981",
-    },
-    { 
-      title: "Expiring Soon", 
-      value: stats.expiringSoon, 
-      subtitle: "Within 90 days",
-      color: "#f59e0b",
-    },
-    { 
-      title: "Expired", 
-      value: stats.expired, 
-      subtitle: "Renewal required",
-      color: "#ef4444",
-    },
-  ];
-
-  useEffect(() => {
-    let filtered = documents;
-
-    if (searchTerm) {
-      filtered = filtered.filter(doc =>
-        doc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        doc.docNo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        doc.description.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    if (typeFilter) {
-      filtered = filtered.filter(doc => doc.type === typeFilter);
-    }
-
-    if (linkedFilter) {
-      filtered = filtered.filter(doc => doc.linkedTo.type === linkedFilter);
-    }
-
-    if (statusFilter) {
-      filtered = filtered.filter(doc => doc.status === statusFilter);
-    }
-
-    setFilteredDocs(filtered);
-    setPage(0);
-  }, [searchTerm, typeFilter, linkedFilter, statusFilter, documents]);
-
-  const getLinkedIcon = (type) => {
-    switch (type) {
-      case "supplier": return <BusinessIcon sx={{ fontSize: '0.875rem', color: '#3b82f6' }} />;
-      case "po": return <ShoppingCartIcon sx={{ fontSize: '0.875rem', color: '#f59e0b' }} />;
-      case "grn": return <ReceiptIcon sx={{ fontSize: '0.875rem', color: '#10b981' }} />;
-      case "item": return <InventoryIcon sx={{ fontSize: '0.875rem', color: '#8b5cf6' }} />;
-      default: return <DescriptionIcon sx={{ fontSize: '0.875rem', color: '#64748b' }} />;
-    }
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setDragging(false);
+    const f = e.dataTransfer.files[0];
+    if (f) handleFile(f);
   };
 
-  const handleViewDoc = (doc) => {
-    alert(`Document Details:\n\nTitle: ${doc.title}\nType: ${doc.type}\nLinked To: ${doc.linkedTo.name}\nStatus: ${doc.status}\nSize: ${doc.size}`);
+  const handleSubmit = () => {
+    if (!name.trim()) { setError("Document name is required."); return; }
+    if (!file)        { setError("Please select a file to upload."); return; }
+    const sizeKB = file.size / 1024;
+    const sizeStr = sizeKB >= 1024
+      ? `${(sizeKB / 1024).toFixed(1)} MB`
+      : `${Math.round(sizeKB)} KB`;
+    onUpload({
+      id: `doc-${Date.now()}`,
+      name: name.trim(),
+      size: sizeStr,
+      date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+      version: version.trim() || null,
+      type,
+      status: "active",
+    });
+    onClose();
   };
 
-  const handleEditDoc = (doc) => {
-    setSelectedDoc(doc);
-    setModalOpen(true);
+  const inputSt = {
+    width: "100%", padding: "9px 12px", border: "1.5px solid #e2e8f0",
+    borderRadius: 8, fontSize: 13, 
+    boxSizing: "border-box", outline: "none", color: "#0f172a", background: "#f8fafc",
   };
-
-  const handleDeleteDoc = (docId) => {
-    if (window.confirm("Are you sure you want to delete this document?")) {
-      setDocuments(documents.filter(doc => doc.id !== docId));
-    }
-  };
-
-  const handleUploadDoc = () => {
-    setSelectedDoc(null);
-    setModalOpen(true);
-  };
-
-  const handleSaveDoc = (newDocument) => {
-    if (selectedDoc) {
-      setDocuments(documents.map(doc => doc.id === selectedDoc.id ? { ...doc, ...newDocument } : doc));
-    } else {
-      setDocuments([...documents, newDocument]);
-    }
-    setModalOpen(false);
-    setSelectedDoc(null);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
-  const MobileDocumentCard = ({ doc }) => {
-    return (
-      <Paper
-        elevation={0}
-        sx={{
-          p: 1.5,
-          mb: 1.5,
-          border: '1px solid #e2e8f0',
-          borderRadius: 2,
-          backgroundColor: '#ffffff',
-        }}
-      >
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
-          <Box>
-            <Typography sx={{ fontWeight: 600, fontSize: 13, color: '#008080' }}>
-              {doc.docNo}
-            </Typography>
-            <Typography sx={{ fontWeight: 600, fontSize: 13, color: '#1e293b', mt: 0.5 }}>
-              {doc.title}
-            </Typography>
-            <Typography sx={{ fontSize: 11, color: '#64748b', mt: 0.25 }}>
-              {doc.description}
-            </Typography>
-          </Box>
-          <StatusBadge status={doc.status} />
-        </Box>
-        
-        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, mb: 1 }}>
-          <Box>
-            <Typography sx={{ fontSize: 10, color: '#64748b', fontWeight: 600 }}>
-              TYPE
-            </Typography>
-            <Typography sx={{ fontSize: 12 }}>{doc.type}</Typography>
-          </Box>
-          <Box>
-            <Typography sx={{ fontSize: 10, color: '#64748b', fontWeight: 600 }}>
-              LINKED TO
-            </Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.5 }}>
-              {getLinkedIcon(doc.linkedTo.type)}
-              <Typography sx={{ fontSize: 12 }}>{doc.linkedTo.name}</Typography>
-            </Box>
-          </Box>
-        </Box>
-
-        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, mb: 1 }}>
-          <Box>
-            <Typography sx={{ fontSize: 10, color: '#64748b', fontWeight: 600 }}>
-              ISSUED DATE
-            </Typography>
-            <Typography sx={{ fontSize: 12 }}>{doc.issuedDate}</Typography>
-          </Box>
-          <Box>
-            <Typography sx={{ fontSize: 10, color: '#64748b', fontWeight: 600 }}>
-              EXPIRY DATE
-            </Typography>
-            <Typography sx={{ fontSize: 12, fontWeight: doc.status === 'Expired' ? 600 : 400, color: doc.status === 'Expired' ? '#ef4444' : doc.status === 'Expiring Soon' ? '#f59e0b' : 'inherit' }}>
-              {doc.expiryDate || '-'}
-            </Typography>
-          </Box>
-        </Box>
-
-        <Box sx={{ mb: 1 }}>
-          <Typography sx={{ fontSize: 10, color: '#64748b', fontWeight: 600, mb: 0.5 }}>
-            UPLOADED BY
-          </Typography>
-          <Typography sx={{ fontSize: 12 }}>
-            {doc.uploadedBy} ({doc.uploadDate})
-          </Typography>
-        </Box>
-
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 0.5, mt: 0.5 }}>
-          <Tooltip title="View/Download" arrow>
-            <IconButton size="small" onClick={() => handleViewDoc(doc)} sx={{ color: '#3b82f6', p: 0.5 }}>
-              <ViewIcon sx={{ fontSize: '0.875rem' }} />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Edit" arrow>
-            <IconButton size="small" onClick={() => handleEditDoc(doc)} sx={{ color: '#f59e0b', p: 0.5 }}>
-              <EditIcon sx={{ fontSize: '0.875rem' }} />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Delete" arrow>
-            <IconButton size="small" onClick={() => handleDeleteDoc(doc.id)} sx={{ color: '#ef4444', p: 0.5 }}>
-              <DeleteIcon sx={{ fontSize: '0.875rem' }} />
-            </IconButton>
-          </Tooltip>
-        </Box>
-      </Paper>
-    );
-  };
-
-  const getColumns = () => {
-    if (isSmallTablet) {
-      return [
-        { id: 'docNo', label: 'Doc No.', minWidth: 70, render: (row) => <Typography sx={{ fontSize: '0.75rem', fontWeight: 600, color: '#008080' }}>{row.docNo}</Typography> },
-        { id: 'title', label: 'Title', minWidth: 90, render: (row) => <Typography sx={{ fontSize: '0.75rem', fontWeight: 500, color: '#1e293b' }}>{row.title.length > 20 ? row.title.substring(0, 20) + '...' : row.title}</Typography> },
-        { id: 'type', label: 'Type', minWidth: 60, render: (row) => <Typography sx={{ fontSize: '0.75rem', color: '#3b82f6' }}>{row.type}</Typography> },
-        { 
-          id: 'linkedTo', 
-          label: 'Linked', 
-          minWidth: 70,
-          render: (row) => (
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-              {getLinkedIcon(row.linkedTo.type)}
-              <Typography sx={{ fontSize: '0.75rem', color: '#64748b' }}>
-                {row.linkedTo.name.length > 10 ? row.linkedTo.name.substring(0, 10) + '...' : row.linkedTo.name}
-              </Typography>
-            </Box>
-          )
-        },
-        {
-          id: 'status',
-          label: 'Status',
-          minWidth: 60,
-          render: (row) => <StatusBadge status={row.status} />,
-        },
-        {
-          id: 'actions',
-          label: 'Actions',
-          minWidth: 60,
-          align: 'right',
-          render: (row) => (
-            <Box sx={{ display: 'flex', gap: 0.25, justifyContent: 'flex-end' }}>
-              <Tooltip title="View" arrow>
-                <IconButton size="small" onClick={() => handleViewDoc(row)} sx={{ color: '#3b82f6', p: 0.25 }}>
-                  <ViewIcon sx={{ fontSize: '0.875rem' }} />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title="Edit" arrow>
-                <IconButton size="small" onClick={() => handleEditDoc(row)} sx={{ color: '#f59e0b', p: 0.25 }}>
-                  <EditIcon sx={{ fontSize: '0.875rem' }} />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title="Delete" arrow>
-                <IconButton size="small" onClick={() => handleDeleteDoc(row.id)} sx={{ color: '#ef4444', p: 0.25 }}>
-                  <DeleteIcon sx={{ fontSize: '0.875rem' }} />
-                </IconButton>
-              </Tooltip>
-            </Box>
-          ),
-        },
-      ];
-    } else if (isLargeTablet) {
-      return [
-        { id: 'docNo', label: 'Doc No.', minWidth: 80, render: (row) => <Typography sx={{ fontSize: '0.8rem', fontWeight: 600, color: '#008080' }}>{row.docNo}</Typography> },
-        { id: 'title', label: 'Title', minWidth: 100, render: (row) => <Typography sx={{ fontSize: '0.8rem', fontWeight: 500, color: '#1e293b' }}>{row.title.length > 25 ? row.title.substring(0, 25) + '...' : row.title}</Typography> },
-        { id: 'type', label: 'Type', minWidth: 80, render: (row) => <Typography sx={{ fontSize: '0.8rem', color: '#3b82f6' }}>{row.type}</Typography> },
-        { 
-          id: 'linkedTo', 
-          label: 'Linked To', 
-          minWidth: 90,
-          render: (row) => (
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-              {getLinkedIcon(row.linkedTo.type)}
-              <Typography sx={{ fontSize: '0.8rem', color: '#64748b' }}>
-                {row.linkedTo.name.length > 15 ? row.linkedTo.name.substring(0, 15) + '...' : row.linkedTo.name}
-              </Typography>
-            </Box>
-          )
-        },
-        { id: 'issuedDate', label: 'Issued', minWidth: 70, render: (row) => <Typography sx={{ fontSize: '0.8rem', color: '#64748b' }}>{row.issuedDate}</Typography> },
-        { id: 'expiryDate', label: 'Expiry', minWidth: 70, render: (row) => (
-          <Typography sx={{ fontSize: '0.8rem', fontWeight: row.status === 'Expired' ? 600 : 400, color: row.status === 'Expired' ? '#ef4444' : row.status === 'Expiring Soon' ? '#f59e0b' : '#64748b' }}>
-            {row.expiryDate || '-'}
-          </Typography>
-        )},
-        {
-          id: 'status',
-          label: 'Status',
-          minWidth: 70,
-          render: (row) => <StatusBadge status={row.status} />,
-        },
-        {
-          id: 'actions',
-          label: 'Actions',
-          minWidth: 70,
-          align: 'right',
-          render: (row) => (
-            <Box sx={{ display: 'flex', gap: 0.25, justifyContent: 'flex-end' }}>
-              <Tooltip title="View" arrow>
-                <IconButton size="small" onClick={() => handleViewDoc(row)} sx={{ color: '#3b82f6', p: 0.25 }}>
-                  <ViewIcon sx={{ fontSize: '0.875rem' }} />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title="Edit" arrow>
-                <IconButton size="small" onClick={() => handleEditDoc(row)} sx={{ color: '#f59e0b', p: 0.25 }}>
-                  <EditIcon sx={{ fontSize: '0.875rem' }} />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title="Delete" arrow>
-                <IconButton size="small" onClick={() => handleDeleteDoc(row.id)} sx={{ color: '#ef4444', p: 0.25 }}>
-                  <DeleteIcon sx={{ fontSize: '0.875rem' }} />
-                </IconButton>
-              </Tooltip>
-            </Box>
-          ),
-        },
-      ];
-    } else {
-      return [
-        { id: 'docNo', label: 'Document No.', minWidth: 100, render: (row) => <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: '#008080' }}>{row.docNo}</Typography> },
-        { id: 'title', label: 'Title', minWidth: 130, render: (row) => <Typography sx={{ fontSize: '0.85rem', fontWeight: 500, color: '#1e293b' }}>{row.title}</Typography> },
-        { id: 'type', label: 'Type', minWidth: 100, render: (row) => <Typography sx={{ fontSize: '0.85rem', color: '#3b82f6' }}>{row.type}</Typography> },
-        { id: 'linkedTo', label: 'Linked To', minWidth: 130, render: (row) => (
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-            {getLinkedIcon(row.linkedTo.type)}
-            <Typography sx={{ fontSize: '0.85rem', color: '#64748b' }}>{row.linkedTo.name}</Typography>
-          </Box>
-        )},
-        { id: 'issuedDate', label: 'Issued Date', minWidth: 90, render: (row) => <Typography sx={{ fontSize: '0.85rem', color: '#64748b' }}>{row.issuedDate}</Typography> },
-        { id: 'expiryDate', label: 'Expiry Date', minWidth: 90, render: (row) => (
-          <Typography sx={{ fontSize: '0.85rem', fontWeight: row.status === 'Expired' ? 600 : 400, color: row.status === 'Expired' ? '#ef4444' : row.status === 'Expiring Soon' ? '#f59e0b' : '#64748b' }}>
-            {row.expiryDate || '-'}
-          </Typography>
-        )},
-        { id: 'uploadedBy', label: 'Uploaded By', minWidth: 90, render: (row) => <Typography sx={{ fontSize: '0.85rem', color: '#64748b' }}>{row.uploadedBy}</Typography> },
-        { id: 'size', label: 'Size', minWidth: 70, render: (row) => <Typography sx={{ fontSize: '0.85rem', color: '#64748b' }}>{row.size}</Typography> },
-        {
-          id: 'status',
-          label: 'Status',
-          minWidth: 90,
-          render: (row) => <StatusBadge status={row.status} />,
-        },
-        {
-          id: 'actions',
-          label: 'Actions',
-          minWidth: 90,
-          align: 'right',
-          render: (row) => (
-            <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'flex-end' }}>
-              <Tooltip title="View/Download" arrow>
-                <IconButton size="small" onClick={() => handleViewDoc(row)} sx={{ color: '#3b82f6' }}>
-                  <ViewIcon sx={{ fontSize: '0.875rem' }} />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title="Edit" arrow>
-                <IconButton size="small" onClick={() => handleEditDoc(row)} sx={{ color: '#f59e0b' }}>
-                  <EditIcon sx={{ fontSize: '0.875rem' }} />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title="Delete" arrow>
-                <IconButton size="small" onClick={() => handleDeleteDoc(row.id)} sx={{ color: '#ef4444' }}>
-                  <DeleteIcon sx={{ fontSize: '0.875rem' }} />
-                </IconButton>
-              </Tooltip>
-            </Box>
-          ),
-        },
-      ];
-    }
+  const selectSt = {
+    ...inputSt,
+    appearance: "none", WebkitAppearance: "none",
+    backgroundImage: `url("data:image/svg+xml,%3Csvg width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' strokeWidth='2.5' strokeLinecap='round' strokeLinejoin='round' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E")`,
+    backgroundRepeat: "no-repeat", backgroundPosition: "right 12px center", paddingRight: 34, cursor: "pointer",
   };
 
   return (
-    <Box sx={{ width: '100%', px: 0, overflow: 'hidden' }}>
+    <div style={{ position: "fixed", inset: 0, background: "rgba(15,23,42,0.5)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
+      <div style={{ background: "#fff", borderRadius: 16, width: "100%", maxWidth: 480, boxShadow: "0 24px 64px rgba(0,0,0,0.2)",  }}>
 
-      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: 'repeat(4, 1fr)' }, gap: 2, mb: 3 }}>
-        {statCards.map((card, index) => (
-          <Card
-            key={index}
-            sx={{
-              backgroundColor: '#ffffff',
-              borderLeft: `4px solid ${card.color}`,
-              borderRadius: 3,
-              boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
-            }}
-          >
-            <CardContent sx={{ p: 1.5, '&:last-child': { pb: 1.5 } }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <Box>
-                  <Typography sx={{ fontSize: '0.7rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                    {card.title}
-                  </Typography>
-                  <Typography sx={{ fontSize: '1.3rem', fontWeight: 700, color: card.color, mt: 0.5 }}>
-                    {card.value}
-                  </Typography>
-                  <Typography sx={{ fontSize: '0.65rem', color: '#64748b', mt: 0.5 }}>
-                    {card.subtitle}
-                  </Typography>
-                </Box>
-                <Box sx={{ opacity: 0.7 }}>
-                  {card.icon}
-                </Box>
-              </Box>
-            </CardContent>
-          </Card>
-        ))}
-      </Box>
+        {/* Header */}
+        <div style={{ padding: "18px 22px 14px", borderBottom: "1px solid #f1f5f9", display: "flex", alignItems: "center", gap: 12 }}>
+          <div style={{ width: 38, height: 38, borderRadius: 10, background: "#eff6ff", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+          </div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 15.5, fontWeight: 800, color: "#0f172a" }}>Upload Document</div>
+            <div style={{ fontSize: 11.5, color: "#94a3b8", marginTop: 1 }}>Add a new document to the library</div>
+          </div>
+          <button onClick={onClose} style={{ border: "2px solid #cbd5e1", borderRadius: 8, width: 34, height: 34, display: "flex", alignItems: "center", justifyContent: "center", background: "#f1f5f9", cursor: "pointer", flexShrink: 0, padding: 0 }}>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1e293b" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ display: "block" }}>
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
 
-      <Card sx={{ 
-        width: '100%',
-        borderRadius: { xs: 1, sm: 2 },
-        overflow: 'hidden',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
-      }}>
-        <CardHeader
-          title="Document Management"
-          action={
-            <Button
-              variant="contained"
-              startIcon={<UploadIcon />}
-              onClick={handleUploadDoc}
-              size={isMobile ? 'small' : 'medium'}
-              disableFocusRipple
-              disableRipple
-              sx={{
-                background: '#2563eb',
-                textTransform: 'none',
-                fontWeight: 500,
-                fontSize: { xs: '0.75rem', sm: '0.85rem' },
-                padding: { xs: '4px 10px', sm: '6px 16px' },
-                whiteSpace: 'nowrap',
-                '&:focus': { outline: 'none' },
-                '&.Mui-focusVisible': { outline: 'none' },
-                '&:hover': {
-                  background: '#1d4ed8',
-                },
-              }}
-            >
-              {isMobile ? 'Upload' : 'Upload Document'}
-            </Button>
-          }
-          sx={{
-            '& .MuiCardHeader-title': {
-              fontSize: { xs: 16, sm: 18 },
-              fontWeight: 600,
-              color: '#1e293b',
-            },
-            '& .MuiCardHeader-action': {
-              margin: 0,
-              alignSelf: 'center',
-            },
-            px: { xs: 1.5, sm: 2, md: 3 },
-            py: { xs: 1, sm: 1.5, md: 2 },
-            borderBottom: '1px solid #e2e8f0',
-          }}
-        />
-        
-        <CardContent sx={{ 
-          p: { xs: 1, sm: 2, md: 3 },
-          '&:last-child': { pb: { xs: 2, sm: 3 } },
-        }}>
-          <Box sx={{ mb: 2 }}>
-            <Grid container spacing={1.5}>
-              <Grid item xs={12} sm={6} md={3}>
-                <TextField
-                  fullWidth
-                  size="small"
-                  placeholder="Search documents..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <SearchIcon sx={{ fontSize: '0.9rem' }} />
-                      </InputAdornment>
-                    ),
-                  }}
-                  sx={{ 
-                    '& .MuiInputBase-root': { fontSize: '0.8rem' },
-                    '& .MuiOutlinedInput-root': {
-                      '& fieldset': {
-                        borderColor: '#e2e8f0',
-                      },
-                      '&:hover fieldset': {
-                        borderColor: '#cbd5e1',
-                      },
-                    },
-                  }}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6} md={3}>
-                <FormControl fullWidth size="small">
-                  <Select
-                    value={typeFilter}
-                    onChange={(e) => setTypeFilter(e.target.value)}
-                    displayEmpty
-                    sx={{ 
-                      fontSize: '0.8rem',
-                      minWidth: '200px',
-                      width: '100%',
-                      '& .MuiOutlinedInput-notchedOutline': {
-                        borderColor: '#e2e8f0',
-                      },
-                      '&:hover .MuiOutlinedInput-notchedOutline': {
-                        borderColor: '#cbd5e1',
-                      },
-                    }}
-                  >
-                    <MenuItem value="" sx={{ fontSize: '0.8rem' }}>All Types</MenuItem>
-                    <MenuItem value="Contract" sx={{ fontSize: '0.8rem' }}>Contract</MenuItem>
-                    <MenuItem value="PO Acknowledgement" sx={{ fontSize: '0.8rem' }}>PO Acknowledgement</MenuItem>
-                    <MenuItem value="Quality Certificate" sx={{ fontSize: '0.8rem' }}>Quality Certificate</MenuItem>
-                    <MenuItem value="Regulatory Notice" sx={{ fontSize: '0.8rem' }}>Regulatory Notice</MenuItem>
-                    <MenuItem value="MSDS / Safety Sheet" sx={{ fontSize: '0.8rem' }}>MSDS / Safety Sheet</MenuItem>
-                    <MenuItem value="Delivery Note" sx={{ fontSize: '0.8rem' }}>Delivery Note</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item xs={12} sm={6} md={3}>
-                <FormControl fullWidth size="small">
-                  <Select
-                    value={linkedFilter}
-                    onChange={(e) => setLinkedFilter(e.target.value)}
-                    displayEmpty
-                    sx={{ 
-                      fontSize: '0.8rem',
-                      minWidth: '200px',
-                      width: '100%',
-                      '& .MuiOutlinedInput-notchedOutline': {
-                        borderColor: '#e2e8f0',
-                      },
-                      '&:hover .MuiOutlinedInput-notchedOutline': {
-                        borderColor: '#cbd5e1',
-                      },
-                    }}
-                  >
-                    <MenuItem value="" sx={{ fontSize: '0.8rem' }}>All Linked Records</MenuItem>
-                    <MenuItem value="supplier" sx={{ fontSize: '0.8rem' }}>Suppliers</MenuItem>
-                    <MenuItem value="po" sx={{ fontSize: '0.8rem' }}>Purchase Orders</MenuItem>
-                    <MenuItem value="grn" sx={{ fontSize: '0.8rem' }}>GRN</MenuItem>
-                    <MenuItem value="item" sx={{ fontSize: '0.8rem' }}>Items</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item xs={12} sm={6} md={3}>
-                <FormControl fullWidth size="small">
-                  <Select
-                    value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value)}
-                    displayEmpty
-                    sx={{ 
-                      fontSize: '0.8rem',
-                      minWidth: '200px',
-                      width: '100%',
-                      '& .MuiOutlinedInput-notchedOutline': {
-                        borderColor: '#e2e8f0',
-                      },
-                      '&:hover .MuiOutlinedInput-notchedOutline': {
-                        borderColor: '#cbd5e1',
-                      },
-                    }}
-                  >
-                    <MenuItem value="" sx={{ fontSize: '0.8rem' }}>All Statuses</MenuItem>
-                    <MenuItem value="Active" sx={{ fontSize: '0.8rem' }}>Active</MenuItem>
-                    <MenuItem value="Expiring Soon" sx={{ fontSize: '0.8rem' }}>Expiring Soon</MenuItem>
-                    <MenuItem value="Expired" sx={{ fontSize: '0.8rem' }}>Expired</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-            </Grid>
-          </Box>
+        {/* Body */}
+        <div style={{ padding: "18px 22px", display: "flex", flexDirection: "column", gap: 14 }}>
 
-          {isMobile ? (
-            <Box>
-              {filteredDocs
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((doc) => (
-                  <MobileDocumentCard key={doc.id} doc={doc} />
-                ))}
-              
-              <Box sx={{ 
-                display: 'flex', 
-                justifyContent: 'space-between', 
-                alignItems: 'center',
-                mt: 2,
-                px: 1,
-              }}>
-                <Typography sx={{ fontSize: 12, color: '#64748b' }}>
-                  {filteredDocs.length} total
-                </Typography>
-                <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-                  <Button
-                    size="small"
-                    variant="outlined"
-                    disabled={page === 0}
-                    onClick={() => setPage(page - 1)}
-                    sx={{ minWidth: 'auto', px: 1.5, fontSize: '0.75rem' }}
-                  >
-                    Prev
-                  </Button>
-                  <Typography sx={{ fontSize: 13 }}>
-                    {page + 1} / {Math.ceil(filteredDocs.length / rowsPerPage)}
-                  </Typography>
-                  <Button
-                    size="small"
-                    variant="outlined"
-                    disabled={page >= Math.ceil(filteredDocs.length / rowsPerPage) - 1}
-                    onClick={() => setPage(page + 1)}
-                    sx={{ minWidth: 'auto', px: 1.5, fontSize: '0.75rem' }}
-                  >
-                    Next
-                  </Button>
-                </Box>
-              </Box>
-            </Box>
-          ) : (
-            <>
-              <TableContainer 
-                component={Paper} 
-                elevation={0}
-                sx={{ 
-                  width: '100%',
-                  overflowX: 'auto',
-                  border: '1px solid #e2e8f0',
-                  borderRadius: 1,
-                  '&::-webkit-scrollbar': {
-                    height: '6px',
-                    width: '6px',
-                  },
-                  '&::-webkit-scrollbar-track': {
-                    background: '#f1f5f9',
-                    borderRadius: '3px',
-                  },
-                  '&::-webkit-scrollbar-thumb': {
-                    background: '#cbd5e1',
-                    borderRadius: '3px',
-                    '&:hover': {
-                      background: '#94a3b8',
-                    },
-                  },
-                }}
-              >
-                <Table 
-                  size="small"
-                  sx={{ 
-                    tableLayout: 'auto',
-                    width: '100%',
-                    minWidth: isSmallTablet ? 500 : (isLargeTablet ? 650 : 1000),
-                  }}
-                >
-                  <TableHead>
-                    <TableRow>
-                      {getColumns().map((column) => (
-                        <TableCell
-                          key={column.id}
-                          align={column.align || 'left'}
-                          sx={{ 
-                            minWidth: column.minWidth,
-                            fontWeight: 600,
-                            backgroundColor: '#f8fafc',
-                            whiteSpace: 'nowrap',
-                            fontSize: '0.85rem',
-                            py: 1,
-                            px: isTablet ? 1 : 1.5,
-                            color: '#475569',
-                          }}
-                        >
-                          {column.label}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {filteredDocs
-                      .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                      .map((row) => (
-                        <TableRow hover key={row.id} sx={{ '&:hover': { backgroundColor: '#f8fafc' } }}>
-                          {getColumns().map((column) => {
-                            const value = column.render(row);
-                            return (
-                              <TableCell 
-                                key={column.id} 
-                                align={column.align || 'left'}
-                                sx={{ 
-                                  whiteSpace: 'nowrap',
-                                  py: 1,
-                                  px: isTablet ? 1 : 1.5,
-                                  borderBottom: '1px solid #f1f5f9',
-                                }}
-                              >
-                                {value}
-                              </TableCell>
-                            );
-                          })}
-                        </TableRow>
-                      ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-              
-              <Box sx={{ 
-                display: 'flex', 
-                justifyContent: 'space-between', 
-                alignItems: 'center',
-                mt: 2,
-                flexWrap: 'wrap',
-                gap: 2,
-              }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Typography sx={{ fontSize: '0.8rem', color: '#64748b' }}>
-                    Rows per page:
-                  </Typography>
-                  <FormControl size="small" sx={{ minWidth: 70 }}>
-                    <Select
-                      value={rowsPerPage}
-                      onChange={handleChangeRowsPerPage}
-                      disableFocusRipple
-                      disableRipple
-                      sx={{
-                        fontSize: '0.8rem',
-                        height: 32,
-                        width: '100%',
-                        '& .MuiOutlinedInput-notchedOutline': {
-                          border: 'none',
-                        },
-                        '& .MuiSelect-select': {
-                          py: 0.5,
-                          px: 1,
-                          backgroundColor: '#f8fafc',
-                          borderRadius: 1,
-                        },
-                      }}
-                    >
-                      <MenuItem value={5} sx={{ fontSize: '0.8rem' }}>5</MenuItem>
-                      <MenuItem value={10} sx={{ fontSize: '0.8rem' }}>10</MenuItem>
-                      <MenuItem value={25} sx={{ fontSize: '0.8rem' }}>25</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Box>
+          {/* Drop zone */}
+          <div
+            onClick={() => inputRef.current.click()}
+            onDragOver={e => { e.preventDefault(); setDragging(true); }}
+            onDragLeave={() => setDragging(false)}
+            onDrop={handleDrop}
+            style={{
+              border: `2px dashed ${dragging ? "#2563eb" : file ? "#22c55e" : "#cbd5e1"}`,
+              borderRadius: 10, padding: "22px 16px", textAlign: "center",
+              background: dragging ? "#eff6ff" : file ? "#f0fdf4" : "#f8fafc",
+              cursor: "pointer", transition: "all 0.15s",
+            }}>
+            <input ref={inputRef} type="file" style={{ display: "none" }} onChange={e => handleFile(e.target.files[0])} />
+            {file ? (
+              <>
+                <div style={{ fontSize: 22, marginBottom: 4 }}>📄</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: "#166534" }}>{file.name}</div>
+                <div style={{ fontSize: 11.5, color: "#94a3b8", marginTop: 2 }}>{(file.size / 1024).toFixed(0)} KB · Click to change</div>
+              </>
+            ) : (
+              <>
+                <div style={{ fontSize: 22, marginBottom: 4 }}>☁️</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: "#374151" }}>Drop file here or <span style={{ color: "#2563eb" }}>browse</span></div>
+                <div style={{ fontSize: 11.5, color: "#94a3b8", marginTop: 2 }}>PDF, DOCX, XLSX, PNG — max 50MB</div>
+              </>
+            )}
+          </div>
 
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                  <Typography sx={{ fontSize: '0.8rem', color: '#64748b' }}>
-                    {page * rowsPerPage + 1}-{Math.min((page + 1) * rowsPerPage, filteredDocs.length)} of {filteredDocs.length}
-                  </Typography>
-                  <Box sx={{ display: 'flex', gap: 0.5 }}>
-                    <IconButton
-                      size="small"
-                      onClick={() => setPage(page - 1)}
-                      disabled={page === 0}
-                      sx={{
-                        color: page === 0 ? '#cbd5e1' : '#2563eb',
-                        p: 0.5,
-                        '&:hover': {
-                          backgroundColor: page === 0 ? 'transparent' : '#eff6ff',
-                        },
-                      }}
-                    >
-                      <ChevronLeftIcon sx={{ fontSize: '1.2rem' }} />
-                    </IconButton>
-                    <IconButton
-                      size="small"
-                      onClick={() => setPage(page + 1)}
-                      disabled={page >= Math.ceil(filteredDocs.length / rowsPerPage) - 1}
-                      sx={{
-                        color: page >= Math.ceil(filteredDocs.length / rowsPerPage) - 1 ? '#cbd5e1' : '#2563eb',
-                        p: 0.5,
-                        '&:hover': {
-                          backgroundColor: page >= Math.ceil(filteredDocs.length / rowsPerPage) - 1 ? 'transparent' : '#eff6ff',
-                        },
-                      }}
-                    >
-                      <ChevronRightIcon sx={{ fontSize: '1.2rem' }} />
-                    </IconButton>
-                  </Box>
-                </Box>
-              </Box>
-            </>
-          )}
-        </CardContent>
-      </Card>
+          {/* Name */}
+          <div>
+            <label style={{ display: "block", fontSize: 11, fontWeight: 700, color: "#64748b", letterSpacing: "0.07em", textTransform: "uppercase", marginBottom: 6 }}>Document Name *</label>
+            <input value={name} onChange={e => { setName(e.target.value); setError(""); }}
+              placeholder="e.g. Medline PPE Certificate"
+              style={{ ...inputSt, borderColor: error && !name ? "#fca5a5" : "#e2e8f0" }} />
+          </div>
 
-      <DocumentUploadModal
-        open={modalOpen}
-        onClose={() => {
-          setModalOpen(false);
-          setSelectedDoc(null);
-        }}
-        onSave={handleSaveDoc}
-        document={selectedDoc}
-      />
-    </Box>
+          {/* Type + Version */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+            <div>
+              <label style={{ display: "block", fontSize: 11, fontWeight: 700, color: "#64748b", letterSpacing: "0.07em", textTransform: "uppercase", marginBottom: 6 }}>Document Type</label>
+              <select value={type} onChange={e => setType(e.target.value)} style={selectSt}>
+                {ALL_TYPES.map(t => <option key={t}>{t}</option>)}
+              </select>
+            </div>
+            <div>
+              <label style={{ display: "block", fontSize: 11, fontWeight: 700, color: "#64748b", letterSpacing: "0.07em", textTransform: "uppercase", marginBottom: 6 }}>Version</label>
+              <input value={version} onChange={e => setVersion(e.target.value)} placeholder="e.g. v1.0" style={inputSt} />
+            </div>
+          </div>
+
+          {error && <div style={{ color: "#ef4444", fontSize: 12, background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 7, padding: "8px 12px" }}>{error}</div>}
+        </div>
+
+        {/* Footer */}
+        <div style={{ padding: "14px 22px", borderTop: "1px solid #f1f5f9", display: "flex", gap: 8, justifyContent: "flex-end" }}>
+          <button onClick={onClose} style={{ padding: "8px 20px", border: "1.5px solid #e2e8f0", borderRadius: 8, background: "#fff", cursor: "pointer", fontSize: 13,fontWeight: 600, color: "#374151" }}>Cancel</button>
+          <button onClick={handleSubmit} style={{ padding: "8px 22px", border: "none", borderRadius: 8, background: "#2563eb", cursor: "pointer", fontSize: 13,  fontWeight: 700, color: "#fff", boxShadow: "0 2px 8px rgba(37,99,235,0.25)" }}>Upload</button>
+        </div>
+      </div>
+    </div>
   );
-};
+}
 
-export default DocumentManagement;
+// ─── Delete Confirm Modal ─────────────────────────────────────────────────────
+
+function DeleteModal({ doc, onClose, onConfirm }) {
+  return (
+    <div style={{ position: "fixed", inset: 0, background: "rgba(15,23,42,0.5)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
+      <div style={{ background: "#fff", borderRadius: 14, width: "100%", maxWidth: 400, boxShadow: "0 24px 64px rgba(0,0,0,0.18)", padding: 26 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14 }}>
+          <div style={{ width: 38, height: 38, borderRadius: "50%", background: "#fee2e2", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
+            </svg>
+          </div>
+          <div>
+            <div style={{ fontSize: 15, fontWeight: 800, color: "#0f172a" }}>Delete Document</div>
+            <div style={{ fontSize: 12, color: "#94a3b8" }}>This cannot be undone</div>
+          </div>
+        </div>
+        <div style={{ background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 8, padding: "10px 14px", marginBottom: 18, fontSize: 13, color: "#374151" }}>
+          Delete <strong>"{doc.name}"</strong>?
+        </div>
+        <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
+          <button onClick={onClose} style={{ padding: "8px 20px", border: "1.5px solid #e2e8f0", borderRadius: 8, background: "#fff", cursor: "pointer", fontSize: 13,  fontWeight: 600, color: "#374151" }}>Cancel</button>
+          <button onClick={() => onConfirm(doc.id)} style={{ padding: "8px 20px", border: "none", borderRadius: 8, background: "#ef4444", cursor: "pointer", fontSize: 13, fontWeight: 700, color: "#fff" }}>Delete</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Document Card ────────────────────────────────────────────────────────────
+
+function DocCard({ doc, onDelete }) {
+  const tc = typeColor(doc.type);
+  const meta = [doc.size, doc.date, doc.version].filter(Boolean).join(" · ");
+
+  return (
+    <div style={{
+      background: "#fff", borderRadius: 12, border: "1.5px solid #e2e8f0",
+      padding: "14px 16px", display: "flex", flexDirection: "column", gap: 10,
+      boxShadow: "0 1px 3px rgba(0,0,0,0.05)", position: "relative",
+      transition: "box-shadow 0.15s",
+      cursor: "pointer",
+    }}
+      onMouseEnter={e => e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.09)"}
+      onMouseLeave={e => e.currentTarget.style.boxShadow = "0 1px 3px rgba(0,0,0,0.05)"}
+    >
+      {/* Top row: icon + name */}
+      <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+        <div style={{ width: 34, height: 34, borderRadius: 8, background: "#eff6ff", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+          </svg>
+        </div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: 13, fontWeight: 700, color: "#0f172a", lineHeight: 1.35, wordBreak: "break-word" }}>{doc.name}</div>
+          <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 3 }}>{meta}</div>
+        </div>
+      </div>
+
+      {/* Bottom row: type badge + delete */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <span style={{
+          padding: "3px 10px", borderRadius: 6, fontSize: 11.5, fontWeight: 700,
+          background: tc.bg, color: tc.color, border: `1.5px solid ${tc.border}`,
+        }}>{doc.type}</span>
+
+        <button
+          onClick={e => { e.stopPropagation(); onDelete(doc); }}
+          title="Delete"
+          style={{ width: 28, height: 28, border: "1.5px solid #e2e8f0", borderRadius: 7, background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", padding: 0 }}
+          onMouseEnter={e => { e.currentTarget.style.background = "#fee2e2"; e.currentTarget.style.borderColor = "#fca5a5"; }}
+          onMouseLeave={e => { e.currentTarget.style.background = "#fff"; e.currentTarget.style.borderColor = "#e2e8f0"; }}
+        >
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ display: "block" }}>
+            <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─── Custom Dropdown ──────────────────────────────────────────────────────────
+
+function FilterDropdown({ value, options, onChange, minWidth = 120 }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef();
+
+  // close on outside click
+  useState(() => {
+    const h = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+    document.addEventListener("mousedown", h);
+    return () => document.removeEventListener("mousedown", h);
+  }, []);
+
+  return (
+    <div ref={ref} style={{ position: "relative", display: "inline-block" }}>
+      <button onClick={() => setOpen(p => !p)} style={{
+        display: "flex", alignItems: "center", gap: 6, padding: "7px 12px",
+        border: "1.5px solid #e2e8f0", borderRadius: 8, background: "#fff",
+        cursor: "pointer", fontSize: 13, 
+        color: "#374151", fontWeight: 500, whiteSpace: "nowrap", minWidth,
+        boxShadow: open ? "0 0 0 3px #dbeafe" : "none", transition: "box-shadow 0.15s",
+      }}>
+        <span style={{ flex: 1, textAlign: "left" }}>{value}</span>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+          style={{ transform: open ? "rotate(180deg)" : "none", transition: "transform 0.18s" }}>
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </button>
+      {open && (
+        <div style={{
+          position: "absolute", top: "calc(100% + 4px)", left: 0, minWidth: "100%",
+          background: "#fff", border: "1.5px solid #e2e8f0", borderRadius: 10,
+          boxShadow: "0 8px 24px rgba(0,0,0,0.10)", zIndex: 100, overflow: "hidden",
+        }}>
+          {options.map(opt => (
+            <div key={opt} onClick={() => { onChange(opt); setOpen(false); }}
+              style={{
+                padding: "9px 14px", cursor: "pointer", fontSize: 13,
+             
+                color: value === opt ? "#2563eb" : "#374151",
+                fontWeight: value === opt ? 700 : 400,
+                background: value === opt ? "#eff6ff" : "transparent",
+              }}
+              onMouseEnter={e => { if (value !== opt) e.currentTarget.style.background = "#f8fafc"; }}
+              onMouseLeave={e => { e.currentTarget.style.background = value === opt ? "#eff6ff" : "transparent"; }}
+            >{opt}</div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Toast ────────────────────────────────────────────────────────────────────
+
+function Toast({ msg, type }) {
+  return (
+    <div style={{
+      position: "fixed", top: 20, right: 22, zIndex: 2000,
+      background: type === "error" ? "#fee2e2" : "#dcfce7",
+      color: type === "error" ? "#991b1b" : "#166534",
+      border: `1.5px solid ${type === "error" ? "#fecaca" : "#bbf7d0"}`,
+      borderRadius: 10, padding: "10px 18px", fontSize: 13, fontWeight: 600,
+      boxShadow: "0 4px 20px rgba(0,0,0,0.1)", display: "flex", alignItems: "center", gap: 7,
+    }}>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+      {msg}
+    </div>
+  );
+}
+
+// ─── Main Page ────────────────────────────────────────────────────────────────
+
+export default function DocumentManagement() {
+  const [docs,        setDocs]        = useState(initialDocs);
+  const [typeFilter,  setTypeFilter]  = useState("All Types");
+  const [statFilter,  setStatFilter]  = useState("All");
+  const [showUpload,  setShowUpload]  = useState(false);
+  const [deleteTarget,setDeleteTarget]= useState(null);
+  const [toast,       setToast]       = useState(null);
+
+  const showToast = (msg, type = "success") => {
+    setToast({ msg, type });
+    setTimeout(() => setToast(null), 3000);
+  };
+
+  const handleUpload = (doc) => {
+    setDocs(prev => [doc, ...prev]);
+    showToast(`"${doc.name}" uploaded successfully.`);
+  };
+
+  const handleDelete = (id) => {
+    const doc = docs.find(d => d.id === id);
+    setDocs(prev => prev.filter(d => d.id !== id));
+    setDeleteTarget(null);
+    showToast(`"${doc?.name}" deleted.`);
+  };
+
+  const typeOptions = ["All Types", ...ALL_TYPES];
+
+  const filtered = docs.filter(d => {
+    const matchType = typeFilter === "All Types" || d.type === typeFilter;
+    const matchStat = statFilter === "All" || d.status === statFilter.toLowerCase().replace(" ", "-");
+    return matchType && matchStat;
+  });
+
+  const expiringSoon = 0;
+  const expired = 0;
+
+  return (
+    <div style={{  background: "#f8fafc", minHeight: "100vh", padding: "26px 24px" }}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap');
+        * { box-sizing: border-box; }
+      `}</style>
+
+      {toast       && <Toast msg={toast.msg} type={toast.type} />}
+      {showUpload  && <UploadModal onClose={() => setShowUpload(false)} onUpload={handleUpload} />}
+      {deleteTarget && <DeleteModal doc={deleteTarget} onClose={() => setDeleteTarget(null)} onConfirm={handleDelete} />}
+
+      {/* ── Header ── */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
+        {/* <div>
+          <h1 style={{ margin: 0, fontSize: 22, fontWeight: 700, color: "#0f172a"}}>Document Management</h1>
+          <div style={{ fontSize: 12.5, color: "#94a3b8", marginTop: 4 }}>
+            <span style={{ color: "#6c757d" }}>{docs.length} documents</span>
+            {" · "}
+            <span style={{ color: expiringSoon > 0 ? "#d97706" : "#6c757d" }}>{expiringSoon} expiring soon</span>
+            {" · "}
+            <span style={{ color: expired > 0 ? "#ef4444" : "#6c757d" }}>{expired} expired</span>
+          </div>
+        </div> */}
+
+        <Box>
+  <Typography
+    sx={{
+      fontWeight: 700,
+      fontSize: 22,
+      color: C.textPrimary,
+      letterSpacing: -0.3,
+    }}
+  >
+    Document Management
+  </Typography>
+
+  <Typography
+    sx={{
+      fontSize: 13,
+      color: C.textSecondary,
+      mt: 0.3,
+    }}
+  >
+    <Box component="span" sx={{ color: "#6c757d" }}>
+      {docs.length} documents
+    </Box>
+    {" · "}
+    <Box
+      component="span"
+      sx={{ color: expiringSoon > 0 ? "#d97706" : "#6c757d" }}
+    >
+      {expiringSoon} expiring soon
+    </Box>
+    {" · "}
+    <Box
+      component="span"
+      sx={{ color: expired > 0 ? "#ef4444" : "#6c757d" }}
+    >
+      {expired} expired
+    </Box>
+  </Typography>
+</Box>
+
+        {/* Filters + Upload */}
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          <FilterDropdown
+            value={typeFilter}
+            options={typeOptions}
+            onChange={setTypeFilter}
+            minWidth={130}
+          />
+          <FilterDropdown
+            value={statFilter}
+            options={ALL_STATUSES}
+            onChange={setStatFilter}
+            minWidth={80}
+          />
+          <button onClick={() => setShowUpload(true)} style={{
+            display: "flex", alignItems: "center", gap: 6,
+            padding: "8px 18px", border: "none", borderRadius: 9,
+            background: "#2563eb", cursor: "pointer", fontSize: 13,
+            fontWeight: 700, color: "#fff", 
+            boxShadow: "0 2px 8px rgba(37,99,235,0.28)",
+          }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            Upload Document
+          </button>
+        </div>
+      </div>
+
+      {/* ── Document Grid ── */}
+      <div style={{ marginTop: 20 }}>
+        {filtered.length === 0 ? (
+          <div style={{ textAlign: "center", padding: "60px 20px", color: "#94a3b8" }}>
+            <div style={{ fontSize: 36, marginBottom: 12 }}>📂</div>
+            <div style={{ fontSize: 15, fontWeight: 600, color: "#374151" }}>No documents found</div>
+            <div style={{ fontSize: 13, marginTop: 4 }}>
+              {typeFilter !== "All Types" || statFilter !== "All"
+                ? "Try adjusting your filters."
+                : 'Click "+ Upload Document" to add one.'}
+            </div>
+          </div>
+        ) : (
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
+            {filtered.map(doc => (
+              <DocCard key={doc.id} doc={doc} onDelete={setDeleteTarget} />
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Footer count */}
+      {filtered.length > 0 && (
+        <div style={{ marginTop: 16, fontSize: 12, color: "#94a3b8", textAlign: "right" }}>
+          Showing {filtered.length} of {docs.length} documents
+        </div>
+      )}
+    </div>
+  );
+}

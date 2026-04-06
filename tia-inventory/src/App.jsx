@@ -35,7 +35,7 @@ import Categories from "./pages/Categories";
 import SystemSettings from "./pages/SystemSettings"; 
 
 import Suppliers from "./pages/Suppliers";
-import Users from "./pages/UsersRoles";
+import UsersRoles from "./pages/UsersRoles";
 import Locations  from "./pages/Locations";
 
 
@@ -319,7 +319,7 @@ function App() {
             element={
               <PrivateRoute>
                 <DashboardLayout>
-                  <Users />
+                  <UsersRoles />
                 </DashboardLayout>
               </PrivateRoute>
             }
