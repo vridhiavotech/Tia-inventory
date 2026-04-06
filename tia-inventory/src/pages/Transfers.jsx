@@ -1,7 +1,15 @@
 import { useState, useEffect } from "react";
 import CreateTransferModal from "./InventoryItems/CreateTransferModal";
+import {
+  Box, Typography, Button, IconButton, Paper,
+  Table, TableHead, TableBody, TableRow, TableCell,
+  TableContainer, Chip as MuiChip, Snackbar, Alert, Modal,
+} from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import CheckOutlinedIcon from "@mui/icons-material/CheckOutlined";
+import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
+import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 
-// ─── localStorage helpers ─────────────────────────────────────────────────────
 const STORAGE_KEY = "tiatele_transfers";
 
 const loadTransfers = () => {
@@ -18,95 +26,55 @@ const saveTransfers = (data) => {
   } catch {}
 };
 
-// ─── Seed Data (only used when localStorage is empty) ─────────────────────────
+// ─── Seed Data ────────────────────────────────────────────────────────────────
 const seedTransfers = [
   {
     id: "TRF-2026-0003",
-    from: "CS-01",
-    fromLabel: "Central Store",
-    to: "ICU-01",
-    toLabel: "ICU",
-    items: [
-      { item: "Amoxicillin 500mg", qty: 20 },
-      { item: "NS 0.9% IV 1L", qty: 10 },
-    ],
+    from: "CS-01", fromLabel: "Central Store",
+    to: "ICU-01",  toLabel: "ICU",
+    items: [{ item: "Amoxicillin 500mg", qty: 20 }, { item: "NS 0.9% IV 1L", qty: 10 }],
     itemsLabel: "Amoxicillin 500mg ×20, NS 0.9% IV 1L ×10",
-    priority: "Urgent",
-    notes: "ICU running low",
-    by: "Sarah Anderson",
-    date: "Mar 19, 2026",
-    status: "Pending",
+    priority: "Urgent", notes: "ICU running low", by: "Sarah Anderson",
+    date: "Mar 19, 2026", status: "Pending",
   },
   {
     id: "TRF-2026-0002",
-    from: "CS-01",
-    fromLabel: "Central Store",
-    to: "PH-01",
-    toLabel: "Pharmacy",
+    from: "CS-01", fromLabel: "Central Store",
+    to: "PH-01",  toLabel: "Pharmacy",
     items: [{ item: "Morphine Sulfate 10mg/mL", qty: 5 }],
     itemsLabel: "Morphine Sulfate 10mg/mL ×5",
-    priority: "Normal",
-    notes: "Monthly resupply",
-    by: "P. Chen",
-    date: "Mar 17, 2026",
-    status: "Completed",
+    priority: "Normal", notes: "Monthly resupply", by: "P. Chen",
+    date: "Mar 17, 2026", status: "Completed",
   },
   {
     id: "TRF-2026-0001",
-    from: "CS-01",
-    fromLabel: "Central Store",
-    to: "OR-01",
-    toLabel: "OR / Surgery",
+    from: "CS-01", fromLabel: "Central Store",
+    to: "OR-01",  toLabel: "OR / Surgery",
     items: [{ item: "Lidocaine 1% 20mL", qty: 10 }],
     itemsLabel: "Lidocaine 1% 20mL ×10",
-    priority: "Normal",
-    notes: "OR prep",
-    by: "T. Williams",
-    date: "Mar 15, 2026",
-    status: "Completed",
+    priority: "Normal", notes: "OR prep", by: "T. Williams",
+    date: "Mar 15, 2026", status: "Completed",
   },
 ];
 
-// ─── Stat Card — matches Stock Issue style exactly ────────────────────────────
+// ─── Stat Card ────────────────────────────────────────────────────────────────
 function StatCard({ label, value, sub, color }) {
   return (
-    <div style={{
-      flex: 1,
-      background: "#fff",
-      border: "1px solid #e5e7eb",
-      borderLeft: `3px solid ${color}`,
-      borderRadius: 10,
-      padding: "12px 16px",
-      minWidth: 0,
-    }}>
-      <div style={{
-        fontSize: 11, fontWeight: 600, color: "#9ca3af",
-        letterSpacing: "0.05em", textTransform: "uppercase", marginBottom: 4,
-      }}>
+    <Box sx={{ flex: 1, bgcolor: "#fff", border: "1px solid #e5e7eb", borderLeft: `3px solid ${color}`, borderRadius: "10px", p: "12px 16px", minWidth: 0 }}>
+      <Typography sx={{ fontSize: 11, fontWeight: 600, color: "#9ca3af", letterSpacing: "0.05em", textTransform: "uppercase", mb: 0.5 }}>
         {label}
-      </div>
-      <div style={{ fontSize: 22, fontWeight: 700, color: "#111827", lineHeight: 1.2 }}>
+      </Typography>
+      <Typography sx={{ fontSize: 22, fontWeight: 700, color: "#111827", lineHeight: 1.2 }}>
         {value}
-      </div>
+      </Typography>
       {sub && (
-        <div style={{ fontSize: 11, fontWeight: 600, color: color, marginTop: 3 }}>
+        <Typography sx={{ fontSize: 11, fontWeight: 600, color, mt: 0.4 }}>
           {sub}
-        </div>
+        </Typography>
       )}
-    </div>
+    </Box>
   );
 }
-
-// ─── Icon helpers ─────────────────────────────────────────────────────────────
-const CheckIcon = ({ size = 10 }) => (
-  <span style={{ fontSize: size + 2, color: "#16a34a" }}>✅</span>
-);
-const CrossIcon = ({ size = 10 }) => (
-  <span style={{ fontSize: size + 2, color: "#ef4444" }}>❌</span>
-);
-const EyeIcon = ({ size = 10 }) => (
-  <span style={{ fontSize: size + 2, color: "#3b82f6" }}>👁️</span>
-);
 
 // ─── Badge helpers ────────────────────────────────────────────────────────────
 const locColor = (code) => {
@@ -140,15 +108,17 @@ const statusStyle = (s) => {
   return { bg: "#f3f4f6", color: "#374151", border: "#e5e7eb" };
 };
 
-const Chip = ({ label, style }) => (
-  <span style={{
-    display: "inline-block", padding: "3px 10px", borderRadius: 99,
-    fontSize: 12, fontWeight: 700,
-    border: `1.5px solid ${style.border}`,
-    background: style.bg, color: style.color, whiteSpace: "nowrap",
-  }}>
-    {label}
-  </span>
+const StyledChip = ({ label, style }) => (
+  <MuiChip
+    label={label}
+    size="small"
+    variant="outlined"
+    sx={{
+      bgcolor: style.bg, color: style.color, borderColor: style.border,
+      fontWeight: 700, fontSize: 12, height: 24, borderRadius: "99px",
+      borderWidth: "1.5px",
+    }}
+  />
 );
 
 // ─── View Transfer Modal ──────────────────────────────────────────────────────
@@ -157,68 +127,77 @@ function ViewTransferModal({ transfer, onClose }) {
   const lt = locColor(transfer.to);
   const ps = priorityStyle(transfer.priority);
   const ss = statusStyle(transfer.status);
+
   return (
-    <div style={{
-      position: "fixed", inset: 0, background: "rgba(15,23,42,0.55)",
-      zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 16,
-    }}>
-      <div style={{ background: "#fff", borderRadius: 18, width: "100%", maxWidth: 480, boxShadow: "0 32px 80px rgba(0,0,0,0.22)" }}>
-        <div style={{ padding: "20px 24px 16px", borderBottom: "1px solid #e2e8f0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <div>
-            <div style={{ fontSize: 16, fontWeight: 800, color: "#0f172a" }}>{transfer.id}</div>
-            <div style={{ fontSize: 12, color: "#94a3b8", marginTop: 2 }}>{transfer.date} · by {transfer.by}</div>
-          </div>
-          <button onClick={onClose} style={{ border: "2px solid #cbd5e1", borderRadius: 8, width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center", background: "#f8fafc", cursor: "pointer", flexShrink: 0 }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0f172a" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          </button>
-        </div>
-        <div style={{ padding: "20px 24px" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
-            <div>
-              <div style={{ fontSize: 10.5, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 6 }}>From</div>
-              <span style={{ background: lf.bg, color: lf.color, border: `1.5px solid ${lf.border}`, padding: "3px 10px", borderRadius: 6, fontSize: 12, fontWeight: 700 }}>{transfer.from}</span>
-              <div style={{ fontSize: 12, color: "#64748b", marginTop: 4 }}>{transfer.fromLabel}</div>
-            </div>
-            <div>
-              <div style={{ fontSize: 10.5, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 6 }}>To</div>
-              <span style={{ background: lt.bg, color: lt.color, border: `1.5px solid ${lt.border}`, padding: "3px 10px", borderRadius: 6, fontSize: 12, fontWeight: 700 }}>{transfer.to}</span>
-              <div style={{ fontSize: 12, color: "#64748b", marginTop: 4 }}>{transfer.toLabel}</div>
-            </div>
-          </div>
-          <div style={{ marginBottom: 14 }}>
-            <div style={{ fontSize: 10.5, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>Items</div>
-            {transfer.items.map((it, i) => (
-              <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "8px 12px", background: "#f8fafc", borderRadius: 8, marginBottom: 6, fontSize: 13 }}>
-                <span style={{ color: "#0f172a", fontWeight: 500 }}>{it.item}</span>
-                <span style={{ color: "#64748b", fontWeight: 700 }}>×{it.qty}</span>
-              </div>
-            ))}
-          </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-            <div>
-              <div style={{ fontSize: 10.5, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 6 }}>Priority</div>
-              <Chip label={transfer.priority} style={ps} />
-            </div>
-            <div>
-              <div style={{ fontSize: 10.5, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 6 }}>Status</div>
-              <Chip label={transfer.status} style={ss} />
-            </div>
-          </div>
-          {transfer.notes && transfer.notes !== "—" && (
-            <div style={{ marginTop: 14, padding: "10px 14px", background: "#f8fafc", borderRadius: 8, fontSize: 13, color: "#374151" }}>
-              <span style={{ fontWeight: 600, color: "#64748b" }}>Notes: </span>{transfer.notes}
-            </div>
-          )}
-        </div>
-        <div style={{ padding: "14px 24px", borderTop: "1px solid #e2e8f0", display: "flex", justifyContent: "flex-end" }}>
-          <button onClick={onClose} style={{ padding: "9px 22px", border: "1.5px solid #e2e8f0", borderRadius: 8, background: "#fff", cursor: "pointer", fontSize: 13, fontWeight: 600, color: "#374151" }}>
-            Close
-          </button>
-        </div>
-      </div>
-    </div>
+    <Modal open onClose={onClose}>
+      <Box sx={{ position: "fixed", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", p: 2 }}>
+        <Box sx={{ bgcolor: "#fff", borderRadius: "18px", width: "100%", maxWidth: 480, boxShadow: "0 32px 80px rgba(0,0,0,0.22)" }}>
+          {/* Header */}
+          <Box sx={{ p: "20px 24px 16px", borderBottom: "1px solid #e2e8f0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <Box>
+              <Typography sx={{ fontSize: 16, fontWeight: 800, color: "#0f172a" }}>{transfer.id}</Typography>
+              <Typography sx={{ fontSize: 12, color: "#94a3b8", mt: 0.25 }}>{transfer.date} · by {transfer.by}</Typography>
+            </Box>
+            <IconButton onClick={onClose} size="small" sx={{ border: "2px solid #cbd5e1", borderRadius: "8px", width: 36, height: 36, bgcolor: "#f8fafc", color: "#0f172a" }}>
+              <CloseOutlinedIcon fontSize="small" />
+            </IconButton>
+          </Box>
+
+          {/* Body */}
+          <Box sx={{ p: "20px 24px" }}>
+            <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2, mb: 2 }}>
+              {[
+                { heading: "From", code: transfer.from, label: transfer.fromLabel, lc: lf },
+                { heading: "To",   code: transfer.to,   label: transfer.toLabel,   lc: lt },
+              ].map(({ heading, code, label, lc }) => (
+                <Box key={heading}>
+                  <Typography sx={{ fontSize: 10.5, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.06em", mb: 0.75 }}>{heading}</Typography>
+                  <MuiChip label={code} size="small" variant="outlined" sx={{ bgcolor: lc.bg, color: lc.color, borderColor: lc.border, fontWeight: 700, fontSize: 12, height: 24, borderRadius: "6px", borderWidth: "1.5px" }} />
+                  <Typography sx={{ fontSize: 12, color: "#64748b", mt: 0.5 }}>{label}</Typography>
+                </Box>
+              ))}
+            </Box>
+
+            <Box sx={{ mb: 1.75 }}>
+              <Typography sx={{ fontSize: 10.5, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.06em", mb: 1 }}>Items</Typography>
+              {transfer.items.map((it, i) => (
+                <Box key={i} sx={{ display: "flex", justifyContent: "space-between", p: "8px 12px", bgcolor: "#f8fafc", borderRadius: "8px", mb: 0.75 }}>
+                  <Typography sx={{ fontSize: 13, color: "#0f172a", fontWeight: 500 }}>{it.item}</Typography>
+                  <Typography sx={{ fontSize: 13, color: "#64748b", fontWeight: 700 }}>×{it.qty}</Typography>
+                </Box>
+              ))}
+            </Box>
+
+            <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 1.5 }}>
+              <Box>
+                <Typography sx={{ fontSize: 10.5, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.06em", mb: 0.75 }}>Priority</Typography>
+                <StyledChip label={transfer.priority} style={ps} />
+              </Box>
+              <Box>
+                <Typography sx={{ fontSize: 10.5, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.06em", mb: 0.75 }}>Status</Typography>
+                <StyledChip label={transfer.status} style={ss} />
+              </Box>
+            </Box>
+
+            {transfer.notes && transfer.notes !== "—" && (
+              <Box sx={{ mt: 1.75, p: "10px 14px", bgcolor: "#f8fafc", borderRadius: "8px" }}>
+                <Typography sx={{ fontSize: 13, color: "#374151" }}>
+                  <Box component="span" sx={{ fontWeight: 600, color: "#64748b" }}>Notes: </Box>
+                  {transfer.notes}
+                </Typography>
+              </Box>
+            )}
+          </Box>
+
+          {/* Footer */}
+          <Box sx={{ p: "14px 24px", borderTop: "1px solid #e2e8f0", display: "flex", justifyContent: "flex-end" }}>
+            <Button onClick={onClose} variant="outlined" sx={{ textTransform: "none", fontSize: 13, fontWeight: 600, color: "#374151", borderColor: "#e2e8f0", borderRadius: "8px", "&:hover": { borderColor: "#cbd5e1", bgcolor: "#f8fafc" } }}>
+              Close
+            </Button>
+          </Box>
+        </Box>
+      </Box>
+    </Modal>
   );
 }
 
@@ -259,88 +238,52 @@ export default function Transfers() {
   const rejected  = transfers.filter((t) => t.status === "Rejected").length;
 
   return (
-    <div style={{ background: "#f8fafc", minHeight: "100vh", padding: "28px 28px" }}>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap');
-        * { box-sizing: border-box; }
-        .tbl-scroll::-webkit-scrollbar { height: 5px; }
-        .tbl-scroll::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 0 0 14px 14px; }
-        .tbl-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
-        .tbl-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-        .trow:hover td { background: #f8faff !important; }
-      `}</style>
-
+    <Box sx={{ bgcolor: "#f8fafc", minHeight: "100vh", p: "28px" }}>
       {/* Toast */}
-      {toast && (
-        <div style={{
-          position: "fixed", top: 20, right: 24, zIndex: 2000,
-          background: toast.type === "error" ? "#fee2e2" : "#dcfce7",
-          color: toast.type === "error" ? "#991b1b" : "#166534",
-          border: `1.5px solid ${toast.type === "error" ? "#fecaca" : "#bbf7d0"}`,
-          borderRadius: 10, padding: "12px 20px", fontSize: 13, fontWeight: 600,
-          boxShadow: "0 4px 20px rgba(0,0,0,0.12)", display: "flex", alignItems: "center", gap: 8,
-        }}>
-          {toast.type === "error" ? (
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="10" /><line x1="15" y1="9" x2="9" y2="15" /><line x1="9" y1="9" x2="15" y2="15" />
-            </svg>
-          ) : (
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
-          )}
-          {toast.msg}
-        </div>
-      )}
+      <Snackbar open={!!toast} anchorOrigin={{ vertical: "top", horizontal: "right" }} sx={{ mt: 1 }}>
+        <Alert
+          severity={toast?.type === "error" ? "error" : "success"}
+          variant="outlined"
+          sx={{ fontSize: 13, fontWeight: 600, borderRadius: "10px", bgcolor: toast?.type === "error" ? "#fee2e2" : "#dcfce7", borderColor: toast?.type === "error" ? "#fecaca" : "#bbf7d0", color: toast?.type === "error" ? "#991b1b" : "#166534", boxShadow: "0 4px 20px rgba(0,0,0,0.12)" }}
+        >
+          {toast?.msg}
+        </Alert>
+      </Snackbar>
 
-      <CreateTransferModal
-        open={showCreate}
-        onClose={() => setShowCreate(false)}
-        onSave={handleCreate}
-        prefillItem={null}
-      />
-      {viewItem && (
-        <ViewTransferModal transfer={viewItem} onClose={() => setViewItem(null)} />
-      )}
+      <CreateTransferModal open={showCreate} onClose={() => setShowCreate(false)} onSave={handleCreate} prefillItem={null} />
+      {viewItem && <ViewTransferModal transfer={viewItem} onClose={() => setViewItem(null)} />}
 
       {/* Header */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 26 }}>
-        <div>
-          <h1 style={{ margin: 0, fontSize: 20, fontWeight: 700, color: "#111827" }}>Stock Transfers</h1>
-          <div style={{ fontSize: 13, color: "#94a3b8", marginTop: 4 }}>
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 3.25 }}>
+        <Box>
+          <Typography sx={{ fontSize: 20, fontWeight: 700, color: "#111827" }}>Stock Transfers</Typography>
+          <Typography sx={{ fontSize: 13, color: "#94a3b8", mt: 0.5 }}>
             Inter-location stock movements —{" "}
-            <span style={{ color: "#d97706", fontWeight: 600 }}>{pending} pending approval</span>
-          </div>
-        </div>
-        <button
+            <Box component="span" sx={{ color: "#d97706", fontWeight: 600 }}>{pending} pending approval</Box>
+          </Typography>
+        </Box>
+        <Button
           onClick={() => setShowCreate(true)}
-          style={{
-            display: "flex", alignItems: "center", gap: 7,
-            padding: "10px 20px", border: "none", borderRadius: 10,
-            background: "#2563eb", cursor: "pointer",
-            fontSize: 13.5, fontWeight: 700, color: "#fff", letterSpacing: "0.01em",
-            outline: "none",
-          }}
+          variant="contained"
+          startIcon={<AddIcon sx={{ fontSize: "15px !important" }} />}
+          sx={{ textTransform: "none", fontSize: 13.5, fontWeight: 700, bgcolor: "#2563eb", borderRadius: "10px", px: 2.5, py: 1.25, letterSpacing: "0.01em", boxShadow: "none", "&:hover": { bgcolor: "#1d4ed8", boxShadow: "none" } }}
         >
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
-          </svg>
           New Transfer
-        </button>
-      </div>
+        </Button>
+      </Box>
 
-      {/* Stat Cards — Stock Issue style */}
-      <div style={{ display: "flex", gap: 12, marginBottom: 24 }}>
+      {/* Stat Cards */}
+      <Box sx={{ display: "flex", gap: 1.5, mb: 3 }}>
         <StatCard label="Total Transfers" value={total}     color="#f59e0b" sub="All transfers" />
         <StatCard label="Pending"         value={pending}   color="#8b5cf6" sub="Awaiting approval" />
         <StatCard label="Completed"       value={completed} color="#10b981" sub="Successfully moved" />
         <StatCard label="Rejected"        value={rejected}  color="#ef4444" sub="Needs review" />
-      </div>
+      </Box>
 
       {/* Table */}
-      <div style={{ background: "#fff", borderRadius: 14, border: "1.5px solid #e2e8f0", boxShadow: "0 1px 6px rgba(0,0,0,0.05)", overflow: "hidden" }}>
-        <div className="tbl-scroll" style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 900 }}>
+      <Paper elevation={0} sx={{ borderRadius: "14px", border: "1.5px solid #e2e8f0", boxShadow: "0 1px 6px rgba(0,0,0,0.05)", overflow: "hidden" }}>
+        <TableContainer sx={{ overflowX: "auto", WebkitOverflowScrolling: "touch", "&::-webkit-scrollbar": { height: 5 }, "&::-webkit-scrollbar-track": { bgcolor: "#f1f5f9" }, "&::-webkit-scrollbar-thumb": { bgcolor: "#cbd5e1", borderRadius: 99 }, "&::-webkit-scrollbar-thumb:hover": { bgcolor: "#94a3b8" } }}>
+          <Table sx={{ minWidth: 900, borderCollapse: "collapse" }}>
             <colgroup>
               <col style={{ minWidth: 120 }} /><col style={{ minWidth: 100 }} />
               <col style={{ minWidth: 100 }} /><col style={{ minWidth: 180 }} />
@@ -348,22 +291,22 @@ export default function Transfers() {
               <col style={{ minWidth: 110 }} /><col style={{ minWidth: 100 }} />
               <col style={{ minWidth: 90 }}  /><col style={{ minWidth: 110 }} />
             </colgroup>
-            <thead>
-              <tr style={{ background: "#f8fafc", borderBottom: "1.5px solid #e2e8f0" }}>
-                {["Transfer #","From","To","Items","Priority","Notes","By","Date","Status","Actions"].map((h) => (
-                  <th key={h} style={{ padding: "11px 8px", textAlign: "left", fontSize: 10.5, fontWeight: 700, color: "#94a3b8", letterSpacing: "0.06em", textTransform: "uppercase", whiteSpace: "nowrap" }}>
+            <TableHead>
+              <TableRow sx={{ bgcolor: "#f8fafc", borderBottom: "1.5px solid #e2e8f0" }}>
+                {["Transfer #", "From", "To", "Items", "Priority", "Notes", "By", "Date", "Status", "Actions"].map((h) => (
+                  <TableCell key={h} sx={{ py: "11px", px: "8px", fontSize: 10.5, fontWeight: 700, color: "#94a3b8", letterSpacing: "0.06em", textTransform: "uppercase", whiteSpace: "nowrap", borderBottom: "none" }}>
                     {h}
-                  </th>
+                  </TableCell>
                 ))}
-              </tr>
-            </thead>
-            <tbody>
+              </TableRow>
+            </TableHead>
+            <TableBody>
               {transfers.length === 0 ? (
-                <tr>
-                  <td colSpan={10} style={{ padding: 48, textAlign: "center", color: "#94a3b8", fontSize: 14 }}>
+                <TableRow>
+                  <TableCell colSpan={10} sx={{ py: 6, textAlign: "center", color: "#94a3b8", fontSize: 14, border: "none" }}>
                     No transfers found.
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ) : (
                 transfers.map((row, i) => {
                   const lf = locColor(row.from);
@@ -372,58 +315,71 @@ export default function Transfers() {
                   const ss = statusStyle(row.status);
                   const isPending = row.status === "Pending";
                   return (
-                    <tr key={row.id} className="trow" style={{ borderBottom: i < transfers.length - 1 ? "1px solid #f1f5f9" : "none" }}>
-                      <td style={{ padding: "12px 8px" }}>
-                        <button onClick={() => setViewItem(row)} style={{ background: "none", border: "none", cursor: "pointer", padding: 0, fontSize: 12, fontWeight: 700, color: "#0e7490" }}>
+                    <TableRow key={row.id} sx={{ borderBottom: i < transfers.length - 1 ? "1px solid #f1f5f9" : "none", "&:hover td": { bgcolor: "#f8faff" } }}>
+                      <TableCell sx={{ py: "12px", px: "8px", border: "none" }}>
+                        <Typography onClick={() => setViewItem(row)} sx={{ fontSize: 12, fontWeight: 700, color: "#0e7490", cursor: "pointer", "&:hover": { textDecoration: "underline" } }}>
                           {row.id}
-                        </button>
-                      </td>
-                      <td style={{ padding: "12px 8px" }}>
-                        <span style={{ background: lf.bg, color: lf.color, border: `1.5px solid ${lf.border}`, padding: "2px 7px", borderRadius: 6, fontSize: 11, fontWeight: 700, display: "inline-block", marginBottom: 3 }}>
-                          {row.from}
-                        </span>
-                        <div style={{ fontSize: 11, color: "#94a3b8", whiteSpace: "nowrap" }}>{row.fromLabel}</div>
-                      </td>
-                      <td style={{ padding: "12px 8px" }}>
-                        <span style={{ background: lt.bg, color: lt.color, border: `1.5px solid ${lt.border}`, padding: "2px 7px", borderRadius: 6, fontSize: 11, fontWeight: 700, display: "inline-block", marginBottom: 3 }}>
-                          {row.to}
-                        </span>
-                        <div style={{ fontSize: 11, color: "#94a3b8", whiteSpace: "nowrap" }}>{row.toLabel}</div>
-                      </td>
-                      <td style={{ padding: "12px 8px", fontSize: 11.5, color: "#374151", whiteSpace: "nowrap" }}>{row.itemsLabel}</td>
-                      <td style={{ padding: "12px 8px" }}><Chip label={row.priority} style={ps} /></td>
-                      <td style={{ padding: "12px 8px", fontSize: 11.5, color: "#64748b", whiteSpace: "nowrap" }}>{row.notes}</td>
-                      <td style={{ padding: "12px 8px", fontSize: 11.5, color: "#374151", whiteSpace: "nowrap" }}>{row.by}</td>
-                      <td style={{ padding: "12px 8px", fontSize: 11.5, color: "#94a3b8", whiteSpace: "nowrap" }}>{row.date}</td>
-                      <td style={{ padding: "12px 8px" }}><Chip label={row.status} style={ss} /></td>
-                      <td style={{ padding: "6px 8px" }}>
-                        <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
-                          <button title="Approve" disabled={!isPending} onClick={() => isPending && handleApprove(row.id)}
-                            style={{ width: 28, height: 28, border: "1.5px solid #d1d5db", borderRadius: 6, background: "#fff", cursor: isPending ? "pointer" : "not-allowed", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, opacity: isPending ? 1 : 0.3, boxShadow: "0 1px 2px rgba(0,0,0,0.05)" }}>
-                            <CheckIcon size={12} />
-                          </button>
-                          <button title="Reject" disabled={!isPending} onClick={() => isPending && handleReject(row.id)}
-                            style={{ width: 28, height: 28, border: "1.5px solid #d1d5db", borderRadius: 6, background: "#fff", cursor: isPending ? "pointer" : "not-allowed", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, opacity: isPending ? 1 : 0.3, boxShadow: "0 1px 2px rgba(0,0,0,0.05)" }}>
-                            <CrossIcon size={12} />
-                          </button>
-                          <button title="View details" onClick={() => setViewItem(row)}
-                            style={{ width: 28, height: 28, border: "1.5px solid #d1d5db", borderRadius: 6, background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, boxShadow: "0 1px 2px rgba(0,0,0,0.05)" }}>
-                            <EyeIcon size={12} />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
+                        </Typography>
+                      </TableCell>
+                      <TableCell sx={{ py: "12px", px: "8px", border: "none" }}>
+                        <MuiChip label={row.from} size="small" variant="outlined" sx={{ bgcolor: lf.bg, color: lf.color, borderColor: lf.border, fontWeight: 700, fontSize: 11, height: 22, borderRadius: "6px", borderWidth: "1.5px", mb: 0.4 }} />
+                        <Typography sx={{ fontSize: 11, color: "#94a3b8", whiteSpace: "nowrap" }}>{row.fromLabel}</Typography>
+                      </TableCell>
+                      <TableCell sx={{ py: "12px", px: "8px", border: "none" }}>
+                        <MuiChip label={row.to} size="small" variant="outlined" sx={{ bgcolor: lt.bg, color: lt.color, borderColor: lt.border, fontWeight: 700, fontSize: 11, height: 22, borderRadius: "6px", borderWidth: "1.5px", mb: 0.4 }} />
+                        <Typography sx={{ fontSize: 11, color: "#94a3b8", whiteSpace: "nowrap" }}>{row.toLabel}</Typography>
+                      </TableCell>
+                      <TableCell sx={{ py: "12px", px: "8px", fontSize: 11.5, color: "#374151", whiteSpace: "nowrap", border: "none" }}>{row.itemsLabel}</TableCell>
+                      <TableCell sx={{ py: "12px", px: "8px", border: "none" }}><StyledChip label={row.priority} style={ps} /></TableCell>
+                      <TableCell sx={{ py: "12px", px: "8px", fontSize: 11.5, color: "#64748b", whiteSpace: "nowrap", border: "none" }}>{row.notes}</TableCell>
+                      <TableCell sx={{ py: "12px", px: "8px", fontSize: 11.5, color: "#374151", whiteSpace: "nowrap", border: "none" }}>{row.by}</TableCell>
+                      <TableCell sx={{ py: "12px", px: "8px", fontSize: 11.5, color: "#94a3b8", whiteSpace: "nowrap", border: "none" }}>{row.date}</TableCell>
+                      <TableCell sx={{ py: "12px", px: "8px", border: "none" }}><StyledChip label={row.status} style={ss} /></TableCell>
+                      <TableCell sx={{ py: "6px", px: "8px", border: "none" }}>
+                        <Box sx={{ display: "flex", gap: 0.5, alignItems: "center" }}>
+                          {/* Approve */}
+                          <IconButton
+                            title="Approve"
+                            disabled={!isPending}
+                            onClick={() => isPending && handleApprove(row.id)}
+                            size="small"
+                            sx={{ width: 28, height: 28, border: "1.5px solid #d1d5db", borderRadius: "6px", bgcolor: "#fff", opacity: isPending ? 1 : 0.3, boxShadow: "0 1px 2px rgba(0,0,0,0.05)", "&:hover": { bgcolor: "#f0fdf4", borderColor: "#86efac" }, "&.Mui-disabled": { bgcolor: "#fff", opacity: 0.3 } }}
+                          >
+                            <CheckOutlinedIcon sx={{ fontSize: 14, color: "#16a34a" }} />
+                          </IconButton>
+                          {/* Reject */}
+                          <IconButton
+                            title="Reject"
+                            disabled={!isPending}
+                            onClick={() => isPending && handleReject(row.id)}
+                            size="small"
+                            sx={{ width: 28, height: 28, border: "1.5px solid #d1d5db", borderRadius: "6px", bgcolor: "#fff", opacity: isPending ? 1 : 0.3, boxShadow: "0 1px 2px rgba(0,0,0,0.05)", "&:hover": { bgcolor: "#fef2f2", borderColor: "#fca5a5" }, "&.Mui-disabled": { bgcolor: "#fff", opacity: 0.3 } }}
+                          >
+                            <CloseOutlinedIcon sx={{ fontSize: 14, color: "#ef4444" }} />
+                          </IconButton>
+                          {/* View */}
+                          <IconButton
+                            title="View details"
+                            onClick={() => setViewItem(row)}
+                            size="small"
+                            sx={{ width: 28, height: 28, border: "1.5px solid #d1d5db", borderRadius: "6px", bgcolor: "#fff", boxShadow: "0 1px 2px rgba(0,0,0,0.05)", "&:hover": { bgcolor: "#eff6ff", borderColor: "#93c5fd" } }}
+                          >
+                            <VisibilityOutlinedIcon sx={{ fontSize: 14, color: "#3b82f6" }} />
+                          </IconButton>
+                        </Box>
+                      </TableCell>
+                    </TableRow>
                   );
                 })
               )}
-            </tbody>
-          </table>
-        </div>
-        <div style={{ padding: "11px 16px", borderTop: "1px solid #f1f5f9", fontSize: 12, color: "#94a3b8", display: "flex", justifyContent: "space-between" }}>
-          <span>Showing {transfers.length} transfer{transfers.length !== 1 ? "s" : ""}</span>
-          <span>Stock Transfers • TiaTELE</span>
-        </div>
-      </div>
-    </div>
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <Box sx={{ p: "11px 16px", borderTop: "1px solid #f1f5f9", display: "flex", justifyContent: "space-between" }}>
+          <Typography sx={{ fontSize: 12, color: "#94a3b8" }}>Showing {transfers.length} transfer{transfers.length !== 1 ? "s" : ""}</Typography>
+          <Typography sx={{ fontSize: 12, color: "#94a3b8" }}>Stock Transfers • TiaTELE</Typography>
+        </Box>
+      </Paper>
+    </Box>
   );
 }
