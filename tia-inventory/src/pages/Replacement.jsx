@@ -95,51 +95,31 @@ function Dropdown({ options, value, onChange }) {
       <button
         onClick={() => setOpen((p) => !p)}
         style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 6,
-          padding: "7px 14px",
-          border: "1.5px solid #e2e8f0",
-          borderRadius: 8,
-          background: "#fff",
-          cursor: "pointer",
-          fontSize: 13,
-          color: "#374151",
-          fontWeight: 500,
-          whiteSpace: "nowrap",
-          outline: "none",
-          boxShadow: open ? "0 0 0 3px #e0f2fe" : "none",
-          transition: "box-shadow 0.15s",
+          display: "flex", alignItems: "center", gap: 6,
+          padding: "7px 14px", border: "1.5px solid #e2e8f0", borderRadius: 8,
+          background: "#fff", cursor: "pointer", fontSize: 13, color: "#374151",
+          fontWeight: 500, whiteSpace: "nowrap", outline: "none",
+          boxShadow: open ? "0 0 0 3px #e0f2fe" : "none", transition: "box-shadow 0.15s",
         }}
       >
         {value}
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.5, transform: open ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+          style={{ opacity: 0.5, transform: open ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>
           <polyline points="6 9 12 15 18 9" />
         </svg>
       </button>
       {open && (
-        <div
-          style={{
-            position: "absolute",
-            top: "calc(100% + 4px)",
-            left: 0,
-            minWidth: "100%",
-            background: "#fff",
-            border: "1.5px solid #e2e8f0",
-            borderRadius: 10,
-            boxShadow: "0 8px 24px rgba(0,0,0,0.10)",
-            zIndex: 100,
-            overflow: "hidden",
-          }}
-        >
+        <div style={{
+          position: "absolute", top: "calc(100% + 4px)", left: 0, minWidth: "100%",
+          background: "#fff", border: "1.5px solid #e2e8f0", borderRadius: 10,
+          boxShadow: "0 8px 24px rgba(0,0,0,0.10)", zIndex: 100, overflow: "hidden",
+        }}>
           {options.map((opt) => (
             <div
               key={opt}
               onClick={() => { onChange(opt); setOpen(false); }}
               style={{
-                padding: "9px 16px",
-                cursor: "pointer",
-                fontSize: 13,
+                padding: "9px 16px", cursor: "pointer", fontSize: 13,
                 color: value === opt ? "#2563eb" : "#374151",
                 fontWeight: value === opt ? 600 : 400,
                 background: value === opt ? "#f0f9ff" : "transparent",
@@ -178,19 +158,16 @@ const URGENCY_OPTIONS = [
 
 const inputStyle = {
   width: "100%", padding: "9px 12px", border: "1.5px solid #e2e8f0",
-  borderRadius: 8, fontSize: 13,
-  boxSizing: "border-box", outline: "none", color: "#0f172a",
-  background: "#f8fafc",
+  borderRadius: 8, fontSize: 13, boxSizing: "border-box", outline: "none",
+  color: "#0f172a", background: "#f8fafc",
 };
 
 const selectStyle = {
   ...inputStyle,
   appearance: "none", WebkitAppearance: "none",
   backgroundImage: `url("data:image/svg+xml,%3Csvg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' strokeWidth='2.5' strokeLinecap='round' strokeLinejoin='round' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E")`,
-  backgroundRepeat: "no-repeat",
-  backgroundPosition: "right 12px center",
-  paddingRight: 36,
-  cursor: "pointer",
+  backgroundRepeat: "no-repeat", backgroundPosition: "right 12px center",
+  paddingRight: 36, cursor: "pointer",
 };
 
 const autoInputStyle = { ...inputStyle, background: "#f1f5f9", color: "#94a3b8", cursor: "not-allowed" };
@@ -251,7 +228,9 @@ function RaiseReplacementModal({ onClose, onSubmit }) {
       urgency: urgencyToShort(form.urgency),
       disposed: form.disposed || "-",
       replaceQty: form.replaceQty,
-      substitute: form.useSubstitute && form.substitute ? `${form.substitute}${form.substituteNDC ? ` (${form.substituteNDC})` : ""}` : "Same item",
+      substitute: form.useSubstitute && form.substitute
+        ? `${form.substitute}${form.substituteNDC ? ` (${form.substituteNDC})` : ""}`
+        : "Same item",
       raisePO,
     });
   };
@@ -259,19 +238,17 @@ function RaiseReplacementModal({ onClose, onSubmit }) {
   return (
     <div style={{
       position: "fixed", inset: 0, background: "rgba(15,23,42,0.5)",
-      zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center",
-      padding: "16px",
+      zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: "16px",
     }}>
       <div style={{
         background: "#fff", borderRadius: 16, width: "100%", maxWidth: 560,
-        boxShadow: "0 24px 64px rgba(0,0,0,0.20)",
-        maxHeight: "90vh", display: "flex", flexDirection: "column",
+        boxShadow: "0 24px 64px rgba(0,0,0,0.20)", maxHeight: "90vh", display: "flex", flexDirection: "column",
       }}>
-        {/* Modal Header */}
         <div style={{ padding: "20px 24px 16px", borderBottom: "1px solid #e2e8f0", display: "flex", alignItems: "center", gap: 12 }}>
           <div style={{ width: 38, height: 38, borderRadius: 10, background: "#eff6ff", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+              <polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+              <polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>
             </svg>
           </div>
           <div style={{ flex: 1 }}>
@@ -285,9 +262,7 @@ function RaiseReplacementModal({ onClose, onSubmit }) {
           }}>×</button>
         </div>
 
-        {/* Scrollable Body */}
         <div className="modal-body" style={{ padding: "20px 24px", overflowY: "auto", flex: 1 }}>
-
           {sectionLabel("Item Being Replaced")}
 
           <div style={{ marginBottom: 14 }}>
@@ -329,18 +304,15 @@ function RaiseReplacementModal({ onClose, onSubmit }) {
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
             <div>
               {fieldLabel("QTY Disposed / Removed")}
-              <input type="number" value={form.disposed} onChange={(e) => set("disposed", e.target.value)}
-                placeholder="0" style={inputStyle} />
+              <input type="number" value={form.disposed} onChange={(e) => set("disposed", e.target.value)} placeholder="0" style={inputStyle} />
             </div>
             <div>
               {fieldLabel("QTY to Replace *")}
-              <input type="number" value={form.replaceQty} onChange={(e) => set("replaceQty", e.target.value)}
-                placeholder="0" style={inputStyle} />
+              <input type="number" value={form.replaceQty} onChange={(e) => set("replaceQty", e.target.value)} placeholder="0" style={inputStyle} />
             </div>
           </div>
 
           {divider()}
-
           {sectionLabel("Substitute Item (If Different)")}
 
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: form.useSubstitute ? 14 : 0 }}>
@@ -376,7 +348,6 @@ function RaiseReplacementModal({ onClose, onSubmit }) {
           )}
 
           {divider()}
-
           {sectionLabel("Procurement")}
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 14 }}>
@@ -388,33 +359,29 @@ function RaiseReplacementModal({ onClose, onSubmit }) {
             </div>
             <div>
               {fieldLabel("Est. Unit Cost")}
-              <input type="number" value={form.unitCost} onChange={(e) => set("unitCost", e.target.value)}
-                placeholder="0.00" style={inputStyle} />
+              <input type="number" value={form.unitCost} onChange={(e) => set("unitCost", e.target.value)} placeholder="0.00" style={inputStyle} />
             </div>
           </div>
 
           {fieldLabel("Clinical Notes / Justification")}
           <textarea value={form.notes} onChange={(e) => set("notes", e.target.value)}
             placeholder="Reason, approval obtained, protocol followed..."
-            rows={3}
-            style={{ ...inputStyle, resize: "vertical", lineHeight: 1.6 }} />
+            rows={3} style={{ ...inputStyle, resize: "vertical", lineHeight: 1.6 }} />
         </div>
 
-        {/* Footer */}
         <div style={{ padding: "16px 24px", borderTop: "1px solid #e2e8f0", display: "flex", gap: 10, justifyContent: "flex-end", alignItems: "center" }}>
           <button onClick={onClose} style={{
             padding: "9px 20px", border: "1.5px solid #e2e8f0", borderRadius: 8,
-            background: "#fff", cursor: "pointer", fontSize: 13,
-            fontWeight: 600, color: "#374151", outline: "none",
+            background: "#fff", cursor: "pointer", fontSize: 13, fontWeight: 600, color: "#374151", outline: "none",
           }}>Cancel</button>
           <button onClick={() => handleSave(false)} style={{
             padding: "9px 18px", border: "1.5px solid #e2e8f0", borderRadius: 8,
-            background: "#fff", cursor: "pointer", fontSize: 13,
-            fontWeight: 600, color: "#374151", outline: "none",
+            background: "#fff", cursor: "pointer", fontSize: 13, fontWeight: 600, color: "#374151", outline: "none",
             display: "flex", alignItems: "center", gap: 6,
           }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+              <polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>
             </svg>
             Save Open
           </button>
@@ -426,7 +393,8 @@ function RaiseReplacementModal({ onClose, onSubmit }) {
             boxShadow: "0 2px 8px rgba(37,99,235,0.3)",
           }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+              <polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+              <polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>
             </svg>
             Save & Raise PO
           </button>
@@ -435,6 +403,55 @@ function RaiseReplacementModal({ onClose, onSubmit }) {
     </div>
   );
 }
+
+// ─── STAT CARD ────────────────────────────────────────────────────────────────
+// label sits on its own line; count + sub are inline on the same line
+const StatCard = ({ iconEl, label, count, sub, iconBg, showDot }) => (
+  <div style={{
+    flex: 1,
+    background: "#fff",
+    borderRadius: 16,
+    padding: "18px 22px",
+    display: "flex",
+    alignItems: "center",
+    gap: 14,
+    boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
+    border: "1px solid #f0f0f0",
+  }}>
+    <div style={{ position: "relative", flexShrink: 0 }}>
+      <div style={{
+        width: 48,
+        height: 48,
+        borderRadius: "50%",
+        background: iconBg,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}>
+        {iconEl}
+      </div>
+      {showDot && (
+        <div style={{
+          position: "absolute",
+          top: -2,
+          right: -2,
+          width: 8,
+          height: 8,
+          borderRadius: "50%",
+          background: "#ef4444",
+          border: "1.5px solid #fff",
+        }} />
+      )}
+    </div>
+    <div>
+      <div style={{ fontSize: 12, color: "#9ca3af", marginBottom: 4 }}>{label}</div>
+      <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
+        <div style={{ fontSize: 22, fontWeight: 700, color: "#111827", lineHeight: 1.1 }}>{count}</div>
+        <div style={{ fontSize: 12, color: "#9ca3af" }}>{sub}</div>
+      </div>
+    </div>
+  </div>
+);
 
 export default function Replacement() {
   const [data, setData] = useState(initialData);
@@ -461,7 +478,11 @@ export default function Replacement() {
 
   const handleRaiseOrder = (id) => {
     setData((prev) =>
-      prev.map((r) => r.id === id ? { ...r, status: "PO Raised", linkedPO: `PO-2026-${String(Math.floor(Math.random() * 9000) + 1000)}` } : r)
+      prev.map((r) =>
+        r.id === id
+          ? { ...r, status: "PO Raised", linkedPO: `PO-2026-${String(Math.floor(Math.random() * 9000) + 1000)}` }
+          : r
+      )
     );
   };
 
@@ -497,23 +518,6 @@ export default function Replacement() {
     a.href = url; a.download = "replacement_tracking.csv"; a.click();
     URL.revokeObjectURL(url);
   };
-
-  const StatCard = ({ iconEl, label, count, sub, iconBg }) => (
-    <div style={{
-      flex: 1, background: "#fff", borderRadius: 14,
-      padding: "18px 22px", display: "flex", alignItems: "center", gap: 16,
-      boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
-    }}>
-      <div style={{ width: 52, height: 52, borderRadius: "50%", background: iconBg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-        {iconEl}
-      </div>
-      <div>
-        <div style={{ fontSize: 11, fontWeight: 600, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.05em" }}>{label}</div>
-        <div style={{ fontSize: 22, fontWeight: 700, color: "#111827", lineHeight: 1.2 }}>{count}</div>
-        <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 2 }}>{sub}</div>
-      </div>
-    </div>
-  );
 
   return (
     <div style={{ background: "#f8f9fb", minHeight: "100vh", padding: "28px 32px", boxSizing: "border-box" }}>
@@ -562,11 +566,11 @@ export default function Replacement() {
           <button onClick={handleExport} style={{
             display: "flex", alignItems: "center", gap: 6, padding: "10px 18px",
             border: "1px solid #e5e7eb", borderRadius: 8, background: "#fff",
-            cursor: "pointer", fontSize: 13, fontWeight: 600, color: "#374151",
-            outline: "none",
+            cursor: "pointer", fontSize: 13, fontWeight: 600, color: "#374151", outline: "none",
           }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" />
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" />
             </svg>
             Export
           </button>
@@ -586,21 +590,63 @@ export default function Replacement() {
 
       {/* Stat Cards */}
       <div className="stat-cards" style={{ display: "flex", gap: 12, marginBottom: 20 }}>
+        {/* Open Requests — orange icon + red dot */}
         <StatCard
-          iconEl={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>}
-          label="Open Requests" count={counts.open} sub="Awaiting action" iconBg="#F59E0B"
+          showDot={true}
+          iconBg="#F59E0B"
+          iconEl={
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+          }
+          label="Open Requests"
+          count={counts.open}
+          sub="Awaiting action"
         />
+
+        {/* PO Raised — purple icon */}
         <StatCard
-          iconEl={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>}
-          label="PO Raised" count={counts.poRaised} sub="Pending delivery" iconBg="#a855f7"
+          iconBg="#a855f7"
+          iconEl={
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+          }
+          label="PO Raised"
+          count={counts.poRaised}
+          sub="Pending delivery"
         />
+
+        {/* In Progress — blue icon */}
         <StatCard
-          iconEl={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>}
-          label="In Progress" count={counts.inProgress} sub="" iconBg="#3b82f6"
+          iconBg="#3b82f6"
+          iconEl={
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+          }
+          label="In Progress"
+          count={counts.inProgress}
+          sub=""
         />
+
+        {/* Closed — green icon */}
         <StatCard
-          iconEl={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/></svg>}
-          label="Closed" count={counts.closed} sub="Successfully replaced" iconBg="#10b981"
+          iconBg="#10b981"
+          iconEl={
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="2" y="3" width="20" height="14" rx="2"/>
+              <path d="M8 21h8"/><path d="M12 17v4"/>
+            </svg>
+          }
+          label="Closed"
+          count={counts.closed}
+          sub="Successfully replaced"
         />
       </div>
 
@@ -628,27 +674,53 @@ export default function Replacement() {
                 const uc = urgencyColor(row.urgency);
                 const sc = statusStyle(row.status);
                 return (
-                  <tr key={row.id} style={{ borderBottom: i < filtered.length - 1 ? "1px solid #f3f4f6" : "none", transition: "background 0.1s" }}
+                  <tr
+                    key={row.id}
+                    style={{ borderBottom: i < filtered.length - 1 ? "1px solid #f3f4f6" : "none", transition: "background 0.1s" }}
                     onMouseEnter={(e) => e.currentTarget.style.background = "#fafafa"}
-                    onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}>
-                    <td style={{ padding: "14px 16px", fontSize: 12.5, fontWeight: 700, color: "#2563eb", whiteSpace: "nowrap" }}>{row.id}</td>
+                    onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
+                  >
+                    {/* Request# — plain dark, no blue */}
+                    <td style={{ padding: "14px 16px", fontSize: 12.5, fontWeight:400, whiteSpace: "nowrap" }}>{row.id}</td>
+
+                    {/* Item */}
                     <td style={{ padding: "14px 16px", minWidth: 160 }}>
                       <div style={{ fontSize: 13, color: "#0f172a" }}>{row.item}</div>
                       <div style={{ fontSize: 11.5, color: "#94a3b8", marginTop: 2 }}>{row.location}</div>
                     </td>
+
+                    {/* Reason */}
                     <td style={{ padding: "14px 16px", fontSize: 13, color: "#374151", whiteSpace: "nowrap" }}>{row.reason}</td>
+
+                    {/* Urgency badge */}
                     <td style={{ padding: "14px 14px" }}>
                       <span style={{ background: uc.bg, color: uc.color, padding: "3px 10px", borderRadius: 6, fontSize: 12, fontWeight: 700 }}>{row.urgency}</span>
                     </td>
+
+                    {/* Disposed */}
                     <td style={{ padding: "14px 16px", fontSize: 13, color: "#374151", textAlign: "center" }}>{row.disposed}</td>
-                    <td style={{ padding: "14px 16px", fontSize: 13, fontWeight: 600, color: "#0f172a", textAlign: "center" }}>{row.replaceQty}</td>
+
+                    {/* Replace QTY — regular weight, no bold */}
+                    <td style={{ padding: "14px 16px", fontSize: 13, fontWeight: 400, color: "#374151", textAlign: "center" }}>{row.replaceQty}</td>
+
+                    {/* Substitute */}
                     <td style={{ padding: "14px 16px", fontSize: 12.5, color: "#374151", maxWidth: 140 }}>{row.substitute}</td>
-                    <td style={{ padding: "14px 16px", fontSize: 12.5, color: row.linkedPO === "-" ? "#cbd5e1" : "#0284c7", fontWeight: row.linkedPO !== "-" ? 600 : 400, whiteSpace: "nowrap" }}>{row.linkedPO}</td>
+
+                    {/* Linked PO — plain dark, no blue */}
+                    <td style={{ padding: "14px 16px", fontSize: 12.5, color: row.linkedPO === "-" ? "#cbd5e1" : "#374151", fontWeight: 400, whiteSpace: "nowrap" }}>{row.linkedPO}</td>
+
+                    {/* Raised by */}
                     <td style={{ padding: "14px 16px", fontSize: 12.5, color: "#374151", whiteSpace: "nowrap" }}>{row.raisedBy}</td>
+
+                    {/* Date */}
                     <td style={{ padding: "14px 16px", fontSize: 12.5, color: "#94a3b8", whiteSpace: "nowrap" }}>{row.date}</td>
+
+                    {/* Status badge */}
                     <td style={{ padding: "14px 14px" }}>
                       <span style={{ background: sc.bg, color: sc.color, border: `1.5px solid ${sc.border}`, padding: "3px 10px", borderRadius: 6, fontSize: 12, fontWeight: 700, whiteSpace: "nowrap" }}>{row.status}</span>
                     </td>
+
+                    {/* Actions */}
                     <td style={{ padding: "14px 14px" }}>
                       <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
                         <button
@@ -686,10 +758,8 @@ export default function Replacement() {
           </table>
         </div>
         <div style={{ padding: "12px 16px", borderTop: "1px solid #f3f4f6", fontSize: 12, color: "#9ca3af", display: "flex", justifyContent: "space-between" }}>
-          <span>Showing {filtered.length} of {data.length} records</span>
-          <span>Replacement Tracking • TiaTELE</span>
         </div>
       </div>
     </div>
   );
-} 
+}
