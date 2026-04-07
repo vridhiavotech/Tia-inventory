@@ -401,19 +401,7 @@ export default function InventoryItems() {
           </Table>
         </TableContainer>
 
-        <Box sx={{ px: "16px", py: "12px", borderTop: "1px solid #f3f4f6", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <Typography sx={{ fontSize: 12, color: "#9ca3af" }}>Showing {filtered.length} of {inventoryItems.length} items</Typography>
-          <Box sx={{ display: "flex", gap: "6px" }}>
-            {[1, 2].map((p) => (
-              <Button key={p} size="small"
-                sx={{ minWidth: 30, height: 28, fontSize: 12, fontWeight: p === 1 ? 700 : 400, borderRadius: "6px", border: "1px solid #e5e7eb",
-                  background: p === 1 ? "#2563eb" : "#fff", color: p === 1 ? "#fff" : "#6b7280", textTransform: "none", px: "10px",
-                  "&:hover": { background: p === 1 ? "#1d4ed8" : "#f9fafb" } }}>
-                {p}
-              </Button>
-            ))}
-          </Box>
-        </Box>
+        
       </Paper>
       <IssueStockModal
         open={issueModal.open}

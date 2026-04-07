@@ -802,11 +802,6 @@ const PurchaseOrders = () => {
           </Table>
         </TableContainer>
 
-        <Box sx={{ px: '16px', py: '12px', borderTop: '1px solid #f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Typography sx={{ fontSize: 12, color: '#9ca3af' }}>
-            Showing {purchaseOrders.length} of {purchaseOrders.length} orders
-          </Typography>
-        </Box>
       </Paper>
 
       {/* Modals */}

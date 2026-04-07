@@ -492,10 +492,7 @@ export default function ExpiryTracking() {
             </TableBody>
           </Table>
         </TableContainer>
-        <Box sx={{ p: "11px 16px", borderTop: "1px solid #f1f5f9", display: "flex", justifyContent: "space-between" }}>
-          <Typography sx={{ fontSize: 12, color: "#94a3b8" }}>Showing {displayed.length} of {enriched.length} records</Typography>
-          <Typography sx={{ fontSize: 12, color: "#94a3b8" }}>Expiry Tracking • TiaTELE</Typography>
-        </Box>
+      
       </Paper>
     </Box>
   );

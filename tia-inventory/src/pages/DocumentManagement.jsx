@@ -536,12 +536,7 @@ export default function DocumentManagement() {
         )}
       </div>
 
-      {/* Footer count */}
-      {filtered.length > 0 && (
-        <div style={{ marginTop: 16, fontSize: 12, color: "#94a3b8", textAlign: "right" }}>
-          Showing {filtered.length} of {docs.length} documents
-        </div>
-      )}
+   
     </div>
   );
 }

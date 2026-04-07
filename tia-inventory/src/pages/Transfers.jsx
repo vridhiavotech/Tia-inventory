@@ -375,10 +375,7 @@ export default function Transfers() {
             </TableBody>
           </Table>
         </TableContainer>
-        <Box sx={{ p: "11px 16px", borderTop: "1px solid #f1f5f9", display: "flex", justifyContent: "space-between" }}>
-          <Typography sx={{ fontSize: 12, color: "#94a3b8" }}>Showing {transfers.length} transfer{transfers.length !== 1 ? "s" : ""}</Typography>
-          <Typography sx={{ fontSize: 12, color: "#94a3b8" }}>Stock Transfers • TiaTELE</Typography>
-        </Box>
+       
       </Paper>
     </Box>
   );
