@@ -9,11 +9,8 @@ import {
   Snackbar,
   Alert,
   Typography,
-  Card,
   CardContent,
 } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
-import RemoveIcon from "@mui/icons-material/Remove";
 
 // Add this color object right after your imports or at the top of the component
 const C = {
@@ -87,10 +84,6 @@ const SystemSettings = () => {
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
   useEffect(() => {
-    const scrollableParent = document.querySelector(
-      ".MuiBox-root[style*='overflow-y: auto']",
-    );
-
     const findScrollableParent = (element) => {
       while (element) {
         const style = window.getComputedStyle(element);
@@ -162,36 +155,50 @@ const SystemSettings = () => {
         },
       }}
     >
-      <Box>
-        <Typography
+      {/* MAIN OUTER CARD */}
+      <Paper
+        elevation={0}
+        sx={{
+          borderRadius: 3,
+          border: "1px solid #e5e7eb",
+          overflow: "hidden",
+        }}
+      >
+        {/* Header inside the card */}
+        <Box
           sx={{
-            fontWeight: 700,
-            fontSize: 22,
-            color: C.textPrimary,
-            letterSpacing: -0.3,
+            px: { xs: 2, sm: 3, md: 4 },
+            pt: { xs: 2, sm: 3, md: 4 },
+            pb: 1,
           }}
         >
-          System Settings
-        </Typography>
+          <Typography
+            sx={{
+              fontWeight: 700,
+              fontSize: 22,
+              color: C.textPrimary,
+              letterSpacing: -0.3,
+            }}
+          >
+            System Settings
+          </Typography>
 
-        <Typography
-          sx={{
-            fontSize: 13,
-            color: C.textSecondary,
-            mt: 0.3,
-            mb: 3,
-          }}
-        >
-          Global configuration
-        </Typography>
-      </Box>
+          <Typography
+            sx={{
+              fontSize: 13,
+              color: C.textSecondary,
+              mt: 0.3,
+            }}
+          >
+            Global configuration
+          </Typography>
+        </Box>
 
-      {/* MAIN OUTER CARD - Light grey/white card wrapper */}
-    
         <CardContent
           sx={{
             p: { xs: 2, sm: 3, md: 4 },
             "&:last-child": { pb: { xs: 2, sm: 3, md: 4 } },
+            pt: 0,
           }}
         >
           {/* FACILITY INFO CARD */}
@@ -407,7 +414,7 @@ const SystemSettings = () => {
             </Button>
           </Box>
         </CardContent>
-      
+      </Paper>
 
       {/* Snackbar */}
       <Snackbar
