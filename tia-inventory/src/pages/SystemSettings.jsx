@@ -156,14 +156,7 @@ const SystemSettings = () => {
       }}
     >
       {/* MAIN OUTER CARD */}
-      <Paper
-        elevation={0}
-        sx={{
-          borderRadius: 3,
-          border: "1px solid #e5e7eb",
-          overflow: "hidden",
-        }}
-      >
+    
         {/* Header inside the card */}
         <Box
           sx={{
@@ -215,8 +208,8 @@ const SystemSettings = () => {
               sx={{
                 px: 2.5,
                 py: 1.5,
-                bgcolor: "#f9fafb",
-                borderBottom: "1px solid #e5e7eb",
+              
+                
               }}
             >
               <Typography sx={{ fontSize: "13px", fontWeight: 600 }}>
@@ -295,8 +288,7 @@ const SystemSettings = () => {
               sx={{
                 px: 2.5,
                 py: 1.5,
-                bgcolor: "#f9fafb",
-                borderBottom: "1px solid #e5e7eb",
+             
               }}
             >
               <Typography sx={{ fontSize: "13px", fontWeight: 600 }}>
@@ -414,7 +406,7 @@ const SystemSettings = () => {
             </Button>
           </Box>
         </CardContent>
-      </Paper>
+ 
 
       {/* Snackbar */}
       <Snackbar
