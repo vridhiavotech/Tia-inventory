@@ -42,26 +42,6 @@ const SUPPLIERS = ["Select...", "MedSupply Co.", "PharmaDirect", "GlobalMed", "H
 const URGENCY_OPTIONS = ["Critical — Within 24h", "High — Within 48h", "Medium — Within 1 week", "Low — No rush"];
 const THERAPEUTIC_EQ = ["AB-Rated — Bioequivalent", "Therapeutically Equivalent", "Partial — Physician Approval Required", "Emergency Substitute Only"];
 
-// ─── Stat Card ────────────────────────────────────────────────────────────────
-
-function StatCard({ label, value, sub, color }) {
-  return (
-    <Box sx={{ flex: 1, bgcolor: "#fff", border: "1px solid #e5e7eb", borderLeft: `3px solid ${color}`, borderRadius: "10px", p: "12px 16px", minWidth: 0 }}>
-      <Typography sx={{ fontSize: 11, fontWeight: 600, color: "#9ca3af", letterSpacing: "0.05em", textTransform: "uppercase", mb: 0.5 }}>
-        {label}
-      </Typography>
-      <Typography sx={{ fontSize: 22, fontWeight: 700, color: "#111827", lineHeight: 1.2 }}>
-        {value}
-      </Typography>
-      {sub && (
-        <Typography sx={{ fontSize: 11, fontWeight: 600, color, mt: 0.4 }}>
-          {sub}
-        </Typography>
-      )}
-    </Box>
-  );
-}
-
 // ─── Field Label ──────────────────────────────────────────────────────────────
 
 const SecLabel = ({ text }) => (
@@ -286,7 +266,7 @@ function DisposeModal({ item, onClose, onConfirm }) {
               <Typography sx={{ fontSize: 12, color: "#94a3b8" }}>This action cannot be undone</Typography>
             </Box>
           </Box>
-          <Box sx={{ bgcolor: "#fef2f2", border: "1px solid #fecaca", borderRadius: "8px", p: "12px 14px", mb: 2.5, fontSize: 13, color: "#374151" }}>
+          <Box sx={{ bgcolor: "#fef2f2", border: "1px solid #fecaca", borderRadius: "8px", p: "12px 14px", mb: 2.5 }}>
             <Typography sx={{ fontSize: 13, color: "#374151" }}>
               Mark <strong>{item.item}</strong> (Lot: {item.lot}, Qty: {item.qty}) at <strong>{item.location}</strong> as disposed?
             </Typography>
@@ -365,6 +345,45 @@ export default function ExpiryTracking() {
     { label: "Expiring Soon", dot: "#d97706" },
   ];
 
+  const statCards = [
+    {
+      label:  "Expired",
+      value:  expired.length,
+      sub:    "Must dispose immediately",
+      iconBg: "#ef4444",
+      icon: (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+      ),
+    },
+    {
+      label:  "Expiring ≤ 60 Days",
+      value:  expiringSoon.length,
+      sub:    "Plan replacement now",
+      iconBg: "#f59e0b",
+      icon: (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <polyline points="12 6 12 12 16 14"/>
+        </svg>
+      ),
+    },
+    {
+      label:  "OK",
+      value:  ok.length,
+      sub:    "No immediate concern",
+      iconBg: "#10b981",
+      icon: (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+      ),
+    },
+  ];
+
   return (
     <Box sx={{ bgcolor: "#f8fafc", minHeight: "100vh", p: "22px 20px" }}>
       {replaceTarget && <ReplaceModal prefill={replaceTarget} onClose={() => setReplaceTarget(null)} onSubmit={() => setReplaceTarget(null)} />}
@@ -391,49 +410,45 @@ export default function ExpiryTracking() {
       </Box>
 
       {/* Stat Cards */}
-    <Box sx={{ display: "flex", gap: "12px", mb: "20px" }}>
-  <Box sx={{ flex: 1, bgcolor: "#fff", border: "1px solid #e5e7eb", borderRadius: "10px", px: 2, py: 1.5 }}>
-    <Typography sx={{ fontSize: 11, fontWeight: 600, color: "#9ca3af", letterSpacing: "0.05em", textTransform: "uppercase", mb: 0.5 }}>
-      Expired
-    </Typography>
-    <Box sx={{ display: "flex", alignItems: "baseline", gap: 0.5 }}>
-      <Typography sx={{ fontSize: 22, fontWeight: 700, color: "#111827" }}>
-        {expired.length}
-      </Typography>
-      <Typography sx={{ fontSize: 11, color: "#6b7280" }}>
-        Must be disposed immediately
-      </Typography>
-    </Box>
-  </Box>
-
-  <Box sx={{ flex: 1, bgcolor: "#fff", border: "1px solid #e5e7eb", borderRadius: "10px", px: 2, py: 1.5 }}>
-    <Typography sx={{ fontSize: 11, fontWeight: 600, color: "#9ca3af", letterSpacing: "0.05em", textTransform: "uppercase", mb: 0.5 }}>
-      Expiring ≤ 60 Days
-    </Typography>
-    <Box sx={{ display: "flex", alignItems: "baseline", gap: 0.5 }}>
-      <Typography sx={{ fontSize: 22, fontWeight: 700, color: "#111827" }}>
-        {expiringSoon.length}
-      </Typography>
-      <Typography sx={{ fontSize: 11, color: "#6b7280" }}>
-        Plan replacement now
-      </Typography>
-    </Box>
-  </Box>
-
-  <Box sx={{ flex: 1, bgcolor: "#fff", border: "1px solid #e5e7eb", borderRadius: "10px", px: 2, py: 1.5 }}>
-    <Typography sx={{ fontSize: 11, fontWeight: 600, color: "#9ca3af", letterSpacing: "0.05em", textTransform: "uppercase", mb: 0.5 }}>
-      OK
-    </Typography>
-    <Box sx={{ display: "flex", alignItems: "baseline", gap: 0.5 }}>
-      <Typography sx={{ fontSize: 22, fontWeight: 700, color: "#111827" }}>
-        {ok.length}
-      </Typography>
-      <Typography sx={{ fontSize: 11, color: "#6b7280" }}>
-        No immediate concern
-      </Typography>
-    </Box>
-  </Box>
-</Box>
+      <Box sx={{ display: "flex", gap: "12px", mb: "20px" }}>
+        {statCards.map((s) => (
+          <Box
+            key={s.label}
+            sx={{
+              flex: 1, bgcolor: "#fff", border: "1px solid #e5e7eb",
+              borderRadius: "10px", px: 2, py: 1.5, minWidth: 0,
+              display: "flex", alignItems: "center", gap: 1.5,
+            }}
+          >
+            <Box
+              sx={{
+                width: 44, height: 44, borderRadius: "50%", bgcolor: s.iconBg,
+                display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+              }}
+            >
+              {s.icon}
+            </Box>
+            <Box>
+              <Typography
+                sx={{
+                  fontSize: 11, fontWeight: 600, color: "#9ca3af",
+                  letterSpacing: "0.05em", textTransform: "uppercase", mb: 0.5,
+                }}
+              >
+                {s.label}
+              </Typography>
+              <Box sx={{ display: "flex", alignItems: "baseline", gap: 0.5 }}>
+                <Typography sx={{ fontSize: 22, fontWeight: 700, color: "#111827", lineHeight: 1.2 }}>
+                  {s.value}
+                </Typography>
+                <Typography sx={{ fontSize: 11, fontWeight: 500, color: "#6b7280", whiteSpace: "nowrap" }}>
+                  {s.sub}
+                </Typography>
+              </Box>
+            </Box>
+          </Box>
+        ))}
+      </Box>
 
       {/* Filter tabs */}
       <Box sx={{ display: "flex", gap: 1, mb: 2.5 }}>
@@ -468,9 +483,20 @@ export default function ExpiryTracking() {
               <col style={{ width: "18%" }} />
             </colgroup>
             <TableHead>
-              <TableRow sx={{ bgcolor: "#f8fafc", borderBottom: "1.5px solid #e2e8f0" }}>
+              <TableRow sx={{ background: "#EBF1FE" }}>
                 {["Item", "NDC", "Location", "Lot #", "QTY", "Expiry Date", "Days Left", "Status", "Action"].map((h) => (
-                  <TableCell key={h} sx={{ py: "11px", px: "10px", fontSize: 10.5, color: "#94a3b8", letterSpacing: "0.06em", textTransform: "uppercase", whiteSpace: "nowrap", fontWeight: 600, borderBottom: "none" }}>
+                  <TableCell
+                    key={h}
+                    sx={{
+                      py: "12px", px: "10px",
+                      fontSize: 11, fontWeight: 500, color: "#373B4D",
+                      letterSpacing: "0.05em", textTransform: "uppercase",
+                      whiteSpace: "nowrap",
+                      borderBottom: "1px solid #f3f4f6",
+                      borderRight: "1px solid #BED3FC",
+                      "&:last-child": { borderRight: "none" },
+                    }}
+                  >
                     {h}
                   </TableCell>
                 ))}
@@ -490,16 +516,27 @@ export default function ExpiryTracking() {
                   const lc = locColor(row.location);
                   const isExpired = row.status === "Expired";
                   return (
-                    <TableRow key={row.id} sx={{ borderBottom: i < displayed.length - 1 ? "1px solid #f1f5f9" : "none", "&:hover td": { bgcolor: "#f8faff" } }}>
+                    <TableRow
+                      key={row.id}
+                      sx={{ borderBottom: i < displayed.length - 1 ? "1px solid #f1f5f9" : "none", "&:hover td": { bgcolor: "#fafafa" } }}
+                    >
                       <TableCell sx={{ py: "11px", px: "10px", border: "none" }}>
-                        <Typography sx={{ fontSize: 12.5, fontWeight: 600, color: "#0f172a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{row.item}</Typography>
+                        <Typography sx={{ fontSize: 13, fontWeight: 500, color: "#2E2E2E", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                          {row.item}
+                        </Typography>
                       </TableCell>
-                      <TableCell sx={{ py: "11px", px: "10px", fontSize: 11.5, color: "#64748b", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", border: "none" }}>{row.ndc}</TableCell>
+                      <TableCell sx={{ py: "11px", px: "10px", fontSize: 11.5, color: "#64748b", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", border: "none" }}>
+                        {row.ndc}
+                      </TableCell>
                       <TableCell sx={{ py: "11px", px: "10px", border: "none" }}>
                         <Chip label={row.location} size="small" sx={{ bgcolor: lc.bg, color: lc.color, fontWeight: 700, fontSize: 11, height: 22, borderRadius: "5px" }} />
                       </TableCell>
-                      <TableCell sx={{ py: "11px", px: "10px", fontSize: 12, color: "#374151", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", border: "none" }}>{row.lot}</TableCell>
-                      <TableCell sx={{ py: "11px", px: "10px", fontSize: 12.5, fontWeight: 600, color: "#0f172a", textAlign: "center", border: "none" }}>{row.qty}</TableCell>
+                      <TableCell sx={{ py: "11px", px: "10px", fontSize: 13, color: "#374151", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", border: "none" }}>
+                        {row.lot}
+                      </TableCell>
+                      <TableCell sx={{ py: "11px", px: "10px", fontSize: 12.5, fontWeight: 500, color: "#0f172a", textAlign: "center", border: "none" }}>
+                        {row.qty}
+                      </TableCell>
                       <TableCell sx={{ py: "11px", px: "10px", border: "none" }}>
                         <Typography sx={{ fontSize: 12, fontWeight: 600, color: isExpired ? "#ef4444" : row.days <= 60 ? "#d97706" : "#374151", whiteSpace: "nowrap", textDecoration: isExpired ? "line-through" : "none" }}>
                           {formatDate(row.expiry)}
@@ -514,11 +551,21 @@ export default function ExpiryTracking() {
                       <TableCell sx={{ py: "11px", px: "10px", border: "none" }}>
                         <Box sx={{ display: "flex", gap: 0.75, alignItems: "center" }}>
                           {isExpired && (
-                            <Button onClick={() => setDisposeTarget(row)} size="small" variant="outlined" sx={{ textTransform: "none", fontSize: 11, fontWeight: 700, color: "#ef4444", borderColor: "#fecaca", borderRadius: "7px", px: 1.25, py: 0.5, minWidth: 0, "&:hover": { bgcolor: "#fef2f2", borderColor: "#ef4444" } }}>
+                            <Button
+                              onClick={() => setDisposeTarget(row)}
+                              size="small"
+                              variant="outlined"
+                              sx={{ textTransform: "none", fontSize: 11, fontWeight: 700, color: "#ef4444", borderColor: "#fecaca", borderRadius: "7px", px: 1.25, py: 0.5, minWidth: 0, "&:hover": { bgcolor: "#fef2f2", borderColor: "#ef4444" } }}
+                            >
                               Dispose
                             </Button>
                           )}
-                          <Button onClick={() => setReplaceTarget(row)} size="small" startIcon={<SyncAltOutlinedIcon sx={{ fontSize: "11px !important" }} />} sx={{ textTransform: "none", fontSize: 11, fontWeight: 700, color: "#1d4ed8", bgcolor: "#eff6ff", border: "1.5px solid #bfdbfe", borderRadius: "7px", px: 1.25, py: 0.5, minWidth: 0, "&:hover": { bgcolor: "#dbeafe" } }}>
+                          <Button
+                            onClick={() => setReplaceTarget(row)}
+                            size="small"
+                            startIcon={<SyncAltOutlinedIcon sx={{ fontSize: "11px !important" }} />}
+                            sx={{ textTransform: "none", fontSize: 11, fontWeight: 700, color: "#1d4ed8", bgcolor: "#eff6ff", border: "1.5px solid #bfdbfe", borderRadius: "7px", px: 1.25, py: 0.5, minWidth: 0, "&:hover": { bgcolor: "#dbeafe" } }}
+                          >
                             Replace
                           </Button>
                         </Box>
@@ -530,7 +577,6 @@ export default function ExpiryTracking() {
             </TableBody>
           </Table>
         </TableContainer>
-      
       </Paper>
     </Box>
   );

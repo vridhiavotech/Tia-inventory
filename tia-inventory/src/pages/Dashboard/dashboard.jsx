@@ -238,6 +238,30 @@ export default function Dashboard() {
     month: "long",
     day: "numeric",
   });
+
+  // Add this custom tooltip component above Dashboard
+const CustomPieTooltip = ({ active, payload }) => {
+  if (active && payload && payload.length) {
+    const data = payload[0];
+    return (
+      <div
+        style={{
+          background: "#fff",
+          border: "1px solid #f0f0f0",
+          borderRadius: 8,
+          padding: "8px 12px",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
+          fontSize: 13,
+          fontWeight: 600,
+          color: data.payload.color,
+        }}
+      >
+         {data.value}%
+      </div>
+    );
+  }
+  return null;
+};
   const navigate = useNavigate();
   return (
     <div
@@ -366,24 +390,33 @@ export default function Dashboard() {
             Stock Status
           </p>
           <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
-            <PieChart width={180} height={180}>
-              <Pie
-                data={stockStatusData}
-                cx={85}
-                cy={85}
-                innerRadius={70}
-                outerRadius={82}
-                paddingAngle={2}
-                dataKey="value"
-                startAngle={90}
-                endAngle={-270}
-              >
-                {stockStatusData.map((entry, i) => (
-                  <Cell key={i} fill={entry.color} />
-                ))}
-              </Pie>
-              <DonutCenter cx={90} cy={95} total={3986} />
-            </PieChart>
+         <PieChart width={180} height={180}>
+  <Pie
+    data={stockStatusData}
+    cx={85}
+    cy={85}
+    innerRadius={70}
+    outerRadius={82}
+    paddingAngle={2}
+    dataKey="value"
+    startAngle={90}
+    endAngle={-270}
+    label={({ cx, cy, midAngle, innerRadius, outerRadius, value }) => {
+      const RADIAN = Math.PI / 180;
+      const radius = innerRadius + (outerRadius - innerRadius) * 2.2;
+      const x = cx + radius * Math.cos(-midAngle * RADIAN);
+      const y = cy + radius * Math.sin(-midAngle * RADIAN);
+      
+    }}
+    labelLine={false}
+  >
+    {stockStatusData.map((entry, i) => (
+      <Cell key={i} fill={entry.color} />
+    ))}
+  </Pie>
+  <Tooltip content={<CustomPieTooltip />} />
+  <DonutCenter cx={90} cy={95} total={3986} />
+</PieChart>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               {stockStatusData.map((s) => (
                 <div

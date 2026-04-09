@@ -24,7 +24,7 @@ const INITIAL_ISSUES = [
   { id:"ISS-2026-0012", type:"Ward Requisition",   from:"CS-01", dept:"Emergency Dept", items:1, value:14.80,  requestedBy:"—",              date:"Mar 30, 2026 12:00", status:"Pending" },
   { id:"ISS-2026-0013", type:"Ward Requisition",   from:"CS-01", dept:"Emergency Dept", items:1, value:57.60,  requestedBy:"—",              date:"Mar 30, 2026 12:22", status:"Pending" },
   { id:"ISS-2026-0014", type:"Patient Dispensing", from:"PH-01", dept:"Emergency Dept", items:1, value:18.50,  requestedBy:"—",              date:"Mar 30, 2026 16:05", status:"Issued"  },
-  { id:"ISS-2026-0015", type:"Patient Dispensing", from:"CS-01", dept:"ICU", items:1, value:16.50,  requestedBy:"—",              date:"Mar 30, 2026 16:30", status:"Issued"  },
+  { id:"ISS-2026-0015", type:"Patient Dispensing", from:"CS-01", dept:"ICU",            items:1, value:16.50,  requestedBy:"—",              date:"Mar 30, 2026 16:30", status:"Issued"  },
 ];
 
 const ISSUE_TYPES = ["Ward Requisition","Emergency Issue","OT Request","Patient Dispensing"];
@@ -37,39 +37,6 @@ const getNextId = (list) => {
 const nowStr = () =>
   new Date().toLocaleString("en-US", { month:"short", day:"2-digit", year:"numeric", hour:"2-digit", minute:"2-digit", hour12:false });
 
-// ── Stat Card — matches Goods Receipt card style exactly ──
-function StatCard({ label, value, sub, color }) {
-  return (
-    <Box sx={{
-      flex: 1,
-      bgcolor: "#fff",
-      border: "1px solid #e5e7eb",
-      borderLeft: `3px solid ${color}`,
-      borderRadius: "10px",
-      px: 2,
-      py: 1.5,
-      minWidth: 0,
-    }}>
-      <Typography sx={{ fontSize: 11, fontWeight: 600, color: "#9ca3af", letterSpacing: "0.05em", textTransform: "uppercase", mb: 0.5 }}>
-        {label}
-      </Typography>
-      <Typography sx={{
-        fontSize: 22,
-        fontWeight: 700,
-        color: "#111827",
-        lineHeight: 1.2,
-      }}>
-        {value}
-      </Typography>
-      {sub && (
-        <Typography sx={{ fontSize: 11, fontWeight: 400, color: color, mt: 0.3 }}>
-          {sub}
-        </Typography>
-      )}
-    </Box>
-  );
-}
-
 // ── Chips ─────────────────────────────────────────────────────────────────────
 function StatusChip({ status }) {
   const map = {
@@ -79,10 +46,7 @@ function StatusChip({ status }) {
   };
   const s = map[status] || map.Pending;
   return (
-    <Chip label={status} size="small" sx={{
-      bgcolor:s.bg, color:s.color,
-      fontWeight:600, fontSize:11, height:22, px:0.2,
-    }} />
+    <Chip label={status} size="small" sx={{ bgcolor:s.bg, color:s.color, fontWeight:600, fontSize:11, height:22, px:0.2 }} />
   );
 }
 
@@ -95,24 +59,18 @@ function TypeChip({ type }) {
   };
   const c = map[type] || { bg:"#f3f4f6", color:"#374151", border:"#e5e7eb" };
   return (
-    <Chip label={type} size="small" sx={{
-      bgcolor:c.bg, color:c.color, border:`1px solid ${c.border}`,
-      fontWeight:600, fontSize:11, height:22,
-    }} />
+    <Chip label={type} size="small" sx={{ bgcolor:c.bg, color:c.color, border:`1px solid ${c.border}`, fontWeight:600, fontSize:11, height:22 }} />
   );
 }
 
 function DeptChip({ dept }) {
   const map = {
-    ICU:           { bg:"#fff7ed", color:"#c2410c", border:"#fed7aa" },
-    "OR / Surgery":{ bg:"#faf5ff", color:"#7e22ce", border:"#e9d5ff" },
+    ICU:            { bg:"#fff7ed", color:"#c2410c", border:"#fed7aa" },
+    "OR / Surgery": { bg:"#faf5ff", color:"#7e22ce", border:"#e9d5ff" },
   };
   const c = map[dept] || { bg:"#eff6ff", color:"#1d4ed8", border:"#bfdbfe" };
   return (
-    <Chip label={dept} size="small" sx={{
-      bgcolor:c.bg, color:c.color, border:`1px solid ${c.border}`,
-      fontWeight:600, fontSize:11, height:22,
-    }} />
+    <Chip label={dept} size="small" sx={{ bgcolor:c.bg, color:c.color, border:`1px solid ${c.border}`, fontWeight:600, fontSize:11, height:22 }} />
   );
 }
 
@@ -174,16 +132,60 @@ export default function StockIssue() {
 
   const issued     = issues.filter(i => i.status === "Issued");
   const pending    = issues.filter(i => i.status === "Pending");
-  const rejected   = issues.filter(i => i.status === "Rejected");
   const issuedVal  = issued.reduce((s, i) => s + i.value, 0);
   const deptCount  = issued.reduce((acc, i) => { acc[i.dept] = (acc[i.dept]||0)+1; return acc; }, {});
   const mostActive = Object.entries(deptCount).sort((a,b) => b[1]-a[1])[0]?.[0] || "—";
 
-  const stats = [
-    { label:"Total Issues",   value:issues.length,                                    sub:"All issues",        color:"#f59e0b" },
-    { label:"Issued",         value:issued.length,   sub:`$${issuedVal.toFixed(0)} total value`, color:"#10b981" },
-    { label:"Pending",        value:pending.length,                                   sub:"Awaiting approval", color:"#8b5cf6" },
-    { label:"Most Active Dept", value:mostActive,                                       sub:"Highest issue volume",        color:"#f59e0b" },
+  const statCards = [
+    {
+      label:  "Total Issues",
+      value:  issues.length,
+      sub:    "All issues",
+      iconBg: "#f59e0b",
+      icon: (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M9 17H5a2 2 0 0 0-2 2v0a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v0a2 2 0 0 0-2-2h-4"/>
+          <rect x="9" y="3" width="6" height="14" rx="1"/>
+        </svg>
+      ),
+    },
+    {
+      label:  "Issued",
+      value:  issued.length,
+      sub:    `$${issuedVal.toFixed(0)} total value`,
+      iconBg: "#10b981",
+      icon: (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+      ),
+    },
+    {
+      label:  "Pending",
+      value:  pending.length,
+      sub:    "Awaiting approval",
+      iconBg: "#8b5cf6",
+      icon: (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <polyline points="12 6 12 12 16 14"/>
+        </svg>
+      ),
+    },
+    {
+      label:  "Most Active Dept",
+      value:  mostActive,
+      sub:    "Highest issue volume",
+      iconBg: "#f59e0b",
+      icon: (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+      ),
+    },
   ];
 
   const filtered = issues.filter(i =>
@@ -198,7 +200,6 @@ export default function StockIssue() {
     setIssues(p => [newRow, ...p]);
     setTypeFilter("All Types");
     setStatusFilter("All Statuses");
-
     clearTimeout(highlightTimer.current);
     setHighlightId(newRow.id);
     setTimeout(() => {
@@ -263,8 +264,8 @@ export default function StockIssue() {
     { label:"TYPE",         width:148 },
     { label:"FROM",         width:72  },
     { label:"TO (DEPT)",    width:130 },
-    { label:"ITEMS",        width:58  },
-    { label:"TOTAL VALUE",  width:90  },
+    { label:"ITEMS",        width:80  },
+    { label:"TOTAL VALUE",  width:100 },
     { label:"REQUESTED BY", width:120 },
     { label:"DATE & TIME",  width:140 },
     { label:"STATUS",       width:82  },
@@ -279,20 +280,15 @@ export default function StockIssue() {
           40%  { background-color: #bfdbfe; }
           100% { background-color: transparent; }
         }
-        .row-highlight {
-          animation: rowFlash 3s ease-out forwards;
-        }
+        .row-highlight { animation: rowFlash 3s ease-out forwards; }
       `}</style>
 
-      {/* ── Outer wrapper — matches Inventory Items exactly ── */}
       <Box sx={{ background: "#f8f9fb", minHeight: "100vh", p: "28px 32px", boxSizing: "border-box" }}>
 
-        {/* ── Title row ── */}
+        {/* Title row */}
         <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: "20px" }}>
           <Box>
-            <Typography sx={{ fontSize: 20, fontWeight: 700, color: "#111827" }}>
-              Stock Issue
-            </Typography>
+            <Typography sx={{ fontSize: 20, fontWeight: 700, color: "#111827" }}>Stock Issue</Typography>
             <Typography sx={{ fontSize: 12, color: "#9ca3af", mt: "4px" }}>
               Outward movements — ward requisitions, OT requests, dispensing
             </Typography>
@@ -306,121 +302,106 @@ export default function StockIssue() {
             </Button>
             <Button startIcon={<Add sx={{ fontSize:16 }} />} variant="contained"
               onClick={() => setIssueModalOpen(true)}
-              sx={{ background: "#2563eb", color: "#fff", borderRadius: "8px", px: "18px", py: "10px", fontSize: 13, fontWeight: 600, textTransform: "none", boxShadow: "0 2px 8px rgba(37,99,235,0.25)", "&:hover": { background: "#1d4ed8" } }}>
+              sx={{ background:"#2563eb", color:"#fff", borderRadius:"8px", px:"18px", py:"10px",
+                fontSize:13, fontWeight:600, textTransform:"none",
+                boxShadow:"0 2px 8px rgba(37,99,235,0.25)", "&:hover":{ background:"#1d4ed8" } }}>
               Issue Stock
             </Button>
           </Stack>
         </Box>
 
-        {/* ── Stat Cards (Goods Receipt style) ── */}
-       <Box sx={{ display: "flex", gap: "12px", mb: "20px" }}>
-  {stats.map((s) => (
-    <Box
-      key={s.label}
-      sx={{
-        flex: 1,
-        bgcolor: "#fff",
-        border: "1px solid #e5e7eb",
-        borderRadius: "10px",
-        px: 2,
-        py: 1.5,
-        minWidth: 0,
-      }}
-    >
-      {/* Title */}
-      <Typography
-        sx={{
-          fontSize: 11,
-          fontWeight: 600,
-          color: "#9ca3af",
-          letterSpacing: "0.05em",
-          textTransform: "uppercase",
-          mb: 0.5,
-        }}
-      >
-        {s.label}
-      </Typography>
+        {/* Stat Cards — GRN icon style */}
+        <Box sx={{ display: "flex", gap: "12px", mb: "20px" }}>
+          {statCards.map((s) => (
+            <Box
+              key={s.label}
+              sx={{
+                flex: 1, bgcolor: "#fff", border: "1px solid #e5e7eb",
+                borderRadius: "10px", px: 2, py: 1.5, minWidth: 0,
+                display: "flex", alignItems: "center", gap: 1.5,
+              }}
+            >
+              <Box
+                sx={{
+                  width: 44, height: 44, borderRadius: "50%", bgcolor: s.iconBg,
+                  display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+                }}
+              >
+                {s.icon}
+              </Box>
+              <Box>
+                <Typography
+                  sx={{
+                    fontSize: 11, fontWeight: 600, color: "#9ca3af",
+                    letterSpacing: "0.05em", textTransform: "uppercase", mb: 0.5,
+                  }}
+                >
+                  {s.label}
+                </Typography>
+                <Box sx={{ display: "flex", alignItems: "baseline", gap: 0.5 }}>
+                  <Typography sx={{ fontSize: 22, fontWeight: 700, color: "#111827", lineHeight: 1.2 }}>
+                    {s.value}
+                  </Typography>
+                  <Typography sx={{ fontSize: 11, fontWeight: 500, color: "#6b7280", whiteSpace: "nowrap" }}>
+                    {s.sub}
+                  </Typography>
+                </Box>
+              </Box>
+            </Box>
+          ))}
+        </Box>
 
-      {/* Value + Subtitle inline */}
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "baseline",
-          gap: 0.5,
-        }}
-      >
-        <Typography
-          sx={{
-            fontSize: 22,
-            fontWeight: 700,
-            color: "#111827",
-            lineHeight: 1.2,
-          }}
-        >
-          {s.value}
-        </Typography>
-
-        <Typography
-          sx={{
-            fontSize: 11,
-            fontWeight: 500,
-            color: "#6b7280",
-            whiteSpace: "nowrap",
-          }}
-        >
-          {s.sub}
-        </Typography>
-      </Box>
-    </Box>
-  ))}
-</Box>
-
-        {/* ── Filters ── */}
+        {/* Filters */}
         <Box sx={{ display: "flex", alignItems: "center", gap: "12px", mb: "20px" }}>
           <FormControl size="small" sx={{ minWidth:148 }}>
             <Select value={typeFilter} onChange={e => setTypeFilter(e.target.value)}
-              sx={{ fontSize: 13, borderRadius: "8px", background: "#fff", "& .MuiOutlinedInput-notchedOutline": { borderColor: "#e5e7eb" }, "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#d1d5db" } }}>
+              sx={{ fontSize:13, borderRadius:"8px", background:"#fff",
+                "& .MuiOutlinedInput-notchedOutline":{ borderColor:"#e5e7eb" },
+                "&:hover .MuiOutlinedInput-notchedOutline":{ borderColor:"#d1d5db" } }}>
               <MenuItem value="All Types">All Types</MenuItem>
               {ISSUE_TYPES.map(t => <MenuItem key={t} value={t}>{t}</MenuItem>)}
             </Select>
           </FormControl>
           <FormControl size="small" sx={{ minWidth:148 }}>
             <Select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}
-              sx={{ fontSize: 13, borderRadius: "8px", background: "#fff", "& .MuiOutlinedInput-notchedOutline": { borderColor: "#e5e7eb" }, "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#d1d5db" } }}>
+              sx={{ fontSize:13, borderRadius:"8px", background:"#fff",
+                "& .MuiOutlinedInput-notchedOutline":{ borderColor:"#e5e7eb" },
+                "&:hover .MuiOutlinedInput-notchedOutline":{ borderColor:"#d1d5db" } }}>
               <MenuItem value="All Statuses">All Statuses</MenuItem>
               <MenuItem value="Issued">Issued</MenuItem>
               <MenuItem value="Pending">Pending</MenuItem>
-              <MenuItem value="Most Active Dept">Most Active Dept</MenuItem>
+              <MenuItem value="Rejected">Rejected</MenuItem>
             </Select>
           </FormControl>
           <Box sx={{ flex:1 }} />
-          <Typography sx={{ fontSize: 12, color: "#9ca3af" }}>
+          <Typography sx={{ fontSize:12, color:"#9ca3af" }}>
             {filtered.length} of {issues.length} records
           </Typography>
         </Box>
 
-        {/* ── Table ── */}
-        <Paper elevation={0} sx={{ borderRadius: "14px", border: "1px solid #f0f0f0", boxShadow: "0 1px 4px rgba(0,0,0,0.04)", overflow: "hidden" }}>
+        {/* Table */}
+        <Paper elevation={0} sx={{ borderRadius:"14px", border:"1px solid #f0f0f0", boxShadow:"0 1px 4px rgba(0,0,0,0.04)", overflow:"hidden" }}>
           <TableContainer
             sx={{
-              overflowX: "auto",
+              overflowX:"auto",
               "&::-webkit-scrollbar":{ height:4 },
               "&::-webkit-scrollbar-track":{ background:"transparent" },
               "&::-webkit-scrollbar-thumb":{ background:"#d1d5db", borderRadius:4 },
               "&::-webkit-scrollbar-thumb:hover":{ background:"#a1a1aa" },
-              scrollbarWidth:"thin",
-              scrollbarColor:"#d1d5db transparent",
+              scrollbarWidth:"thin", scrollbarColor:"#d1d5db transparent",
             }}
           >
             <Table size="small" sx={{ minWidth:1020, tableLayout:"fixed" }}>
               <TableHead>
-                <TableRow sx={{ background: "#f8f9fb" }}>
+                <TableRow sx={{ background:"#EBF1FE" }}>
                   {HEADS.map(h => (
                     <TableCell key={h.label} sx={{
-                      width:h.width, fontWeight:600, fontSize:11, color:"#9ca3af",
-                      letterSpacing:"0.05em", py:"12px", px:"16px",
+                      width:h.width, fontWeight:500, fontSize:11, color:"#373B4D",
+                      letterSpacing:"0.05em", textTransform:"uppercase", whiteSpace:"nowrap",
+                      py:"12px", px:"16px",
                       borderBottom:"1px solid #f3f4f6",
-                      textTransform:"uppercase", whiteSpace:"nowrap",
+                      borderRight:"1px solid #BED3FC",
+                      "&:last-child":{ borderRight:"none" },
                     }}>
                       {h.label}
                     </TableCell>
@@ -443,17 +424,15 @@ export default function StockIssue() {
                       ref={el => { if (el) rowRefs.current[row.id] = el; }}
                       className={isHighlighted ? "row-highlight" : ""}
                       sx={{
-                        background: "#fff",
-                        "&:hover": { background: isHighlighted ? "transparent" : "#fafafa" },
+                        background:"#fff",
+                        "&:hover":{ background: isHighlighted ? "transparent" : "#fafafa" },
                         transition: isHighlighted ? "none" : "background 0.15s",
-                        "& td": { borderBottom: idx < filtered.length - 1 ? "1px solid #f3f4f6" : "none", py: "14px", px: "16px" },
-                        ...(isHighlighted && {
-                          "& td:first-of-type": { borderLeft: "3px solid #2563eb" },
-                        }),
+                        "& td":{ borderBottom: idx < filtered.length - 1 ? "1px solid #f3f4f6" : "none", py:"14px", px:"16px" },
+                        ...(isHighlighted && { "& td:first-of-type":{ borderLeft:"3px solid #2563eb" } }),
                       }}
                     >
                       <TableCell>
-                        <Typography sx={{ fontWeight:700, color:"#1D4ED8", fontSize:12 }}>{row.id}</Typography>
+                        <Typography sx={{ fontWeight:500, color:"#2E2E2E", fontSize:12 }}>{row.id}</Typography>
                       </TableCell>
                       <TableCell><TypeChip type={row.type} /></TableCell>
                       <TableCell>
@@ -464,7 +443,7 @@ export default function StockIssue() {
                         <Typography sx={{ color:C.textSecondary, fontSize:12 }}>{row.items}</Typography>
                       </TableCell>
                       <TableCell>
-                        <Typography sx={{ fontWeight:700, color:C.textPrimary, fontSize:12 }}>${row.value.toFixed(2)}</Typography>
+                        <Typography sx={{ color:C.textPrimary, fontSize:12 }}>${row.value.toFixed(2)}</Typography>
                       </TableCell>
                       <TableCell>
                         <Typography sx={{ color:C.textSecondary, fontSize:12, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
@@ -475,7 +454,6 @@ export default function StockIssue() {
                         <Typography sx={{ color:C.textSecondary, fontSize:11, whiteSpace:"nowrap" }}>{row.date}</Typography>
                       </TableCell>
                       <TableCell><StatusChip status={row.status} /></TableCell>
-
                       <TableCell>
                         <Stack direction="row" spacing={0.5} alignItems="center">
                           {row.status === "Pending" && (<>
@@ -498,7 +476,6 @@ export default function StockIssue() {
                               </IconButton>
                             </Tooltip>
                           </>)}
-
                           {row.status === "Issued" && (
                             <Tooltip title="View Details">
                               <IconButton size="small" onClick={() => { setViewRow(row); setViewOpen(true); }}
@@ -507,7 +484,6 @@ export default function StockIssue() {
                               </IconButton>
                             </Tooltip>
                           )}
-
                           {row.status === "Rejected" && (
                             <Tooltip title="View Details">
                               <IconButton size="small" onClick={() => { setViewRow(row); setViewOpen(true); }}

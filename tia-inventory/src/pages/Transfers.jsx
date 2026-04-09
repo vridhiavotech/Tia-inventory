@@ -57,70 +57,6 @@ const seedTransfers = [
   },
 ];
 
-// ─── Stat Card ────────────────────────────────────────────────────────────────
-function StatCard({ label, value, sub }) {
-  return (
-    <Box
-      sx={{
-        flex: 1,
-        bgcolor: "#fff",
-        border: "1px solid #e5e7eb",
-        borderRadius: "10px",
-        px: 2,
-        py: 1.5,
-        minWidth: 0,
-      }}
-    >
-      {/* Title */}
-      <Typography
-        sx={{
-          fontSize: 11,
-          fontWeight: 600,
-          color: "#9ca3af",
-          letterSpacing: "0.05em",
-          textTransform: "uppercase",
-          mb: 0.5,
-        }}
-      >
-        {label}
-      </Typography>
-
-      {/* Value + Subtitle inline */}
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "baseline",
-          gap: 0.5,
-        }}
-      >
-        <Typography
-          sx={{
-            fontSize: 22,
-            fontWeight: 700,
-            color: "#111827",
-            lineHeight: 1.2,
-          }}
-        >
-          {value}
-        </Typography>
-
-        {sub && (
-          <Typography
-            sx={{
-              fontSize: 11,
-              fontWeight: 500,
-              color: "#6b7280",
-              whiteSpace: "nowrap",
-            }}
-          >
-            {sub}
-          </Typography>
-        )}
-      </Box>
-    </Box>
-  );
-}
-
 // ─── Badge helpers ────────────────────────────────────────────────────────────
 const locColor = (code) => {
   const map = {
@@ -280,6 +216,56 @@ export default function Transfers() {
   const total     = transfers.length;
   const pending   = transfers.filter((t) => t.status === "Pending").length;
   const completed = transfers.filter((t) => t.status === "Completed").length;
+  const rejected  = transfers.filter((t) => t.status === "Rejected").length;
+
+  const statCards = [
+    {
+      label:  "Total Transfers",
+      value:  total,
+      sub:    "All transfers",
+      iconBg: "#f59e0b",
+      icon: (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      ),
+    },
+    {
+      label:  "Pending",
+      value:  pending,
+      sub:    "Awaiting approval",
+      iconBg: "#8b5cf6",
+      icon: (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <polyline points="12 6 12 12 16 14"/>
+        </svg>
+      ),
+    },
+    {
+      label:  "Completed",
+      value:  completed,
+      sub:    "Successfully moved",
+      iconBg: "#10b981",
+      icon: (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+      ),
+    },
+    {
+      label:  "Rejected",
+      value:  rejected,
+      sub:    "Declined transfers",
+      iconBg: "#ef4444",
+      icon: (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      ),
+    },
+  ];
 
   return (
     <Box sx={{ bgcolor: "#f8fafc", minHeight: "100vh", p: "28px" }}>
@@ -316,16 +302,50 @@ export default function Transfers() {
         </Button>
       </Box>
 
-      {/* Stat Cards */}
-      <Box sx={{ display: "flex", gap: 1.5, mb: 3 }}>
-        <StatCard label="Total Transfers" value={total}     color="#f59e0b" sub="All transfers" />
-        <StatCard label="Pending"         value={pending}   color="#8b5cf6" sub="Awaiting approval" />
-        <StatCard label="Completed"       value={completed} color="#10b981" sub="Successfully moved" />
+      {/* Stat Cards — GRN icon style */}
+      <Box sx={{ display: "flex", gap: "12px", mb: 3 }}>
+        {statCards.map((s) => (
+          <Box
+            key={s.label}
+            sx={{
+              flex: 1, bgcolor: "#fff", border: "1px solid #e5e7eb",
+              borderRadius: "10px", px: 2, py: 1.5, minWidth: 0,
+              display: "flex", alignItems: "center", gap: 1.5,
+            }}
+          >
+            <Box
+              sx={{
+                width: 44, height: 44, borderRadius: "50%", bgcolor: s.iconBg,
+                display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+              }}
+            >
+              {s.icon}
+            </Box>
+            <Box>
+              <Typography
+                sx={{
+                  fontSize: 11, fontWeight: 600, color: "#9ca3af",
+                  letterSpacing: "0.05em", textTransform: "uppercase", mb: 0.5,
+                }}
+              >
+                {s.label}
+              </Typography>
+              <Box sx={{ display: "flex", alignItems: "baseline", gap: 0.5 }}>
+                <Typography sx={{ fontSize: 22, fontWeight: 700, color: "#111827", lineHeight: 1.2 }}>
+                  {s.value}
+                </Typography>
+                <Typography sx={{ fontSize: 11, fontWeight: 500, color: "#6b7280", whiteSpace: "nowrap" }}>
+                  {s.sub}
+                </Typography>
+              </Box>
+            </Box>
+          </Box>
+        ))}
       </Box>
 
       {/* Table */}
       <Paper elevation={0} sx={{ borderRadius: "14px", border: "1.5px solid #e2e8f0", boxShadow: "0 1px 6px rgba(0,0,0,0.05)", overflow: "hidden" }}>
-        <TableContainer sx={{ overflowX: "auto", WebkitOverflowScrolling: "touch", "&::-webkit-scrollbar": { height: 5 }, "&::-webkit-scrollbar-track": { bgcolor: "#f1f5f9" }, "&::-webkit-scrollbar-thumb": { bgcolor: "#cbd5e1", borderRadius: 99 }, "&::-webkit-scrollbar-thumb:hover": { bgcolor: "#94a3b8" } }}>
+        <TableContainer sx={{ overflowX: "auto", WebkitOverflowScrolling: "touch", "&::-webkit-scrollbar": { height: 5 }, "&::-webkit-scrollbar-track": { bgcolor: "#EBF1FE" }, "&::-webkit-scrollbar-thumb": { bgcolor: "#cbd5e1", borderRadius: 99 }, "&::-webkit-scrollbar-thumb:hover": { bgcolor: "#94a3b8" } }}>
           <Table sx={{ minWidth: 900, borderCollapse: "collapse" }}>
             <colgroup>
               <col style={{ minWidth: 120 }} /><col style={{ minWidth: 100 }} />
@@ -335,9 +355,19 @@ export default function Transfers() {
               <col style={{ minWidth: 90 }}  /><col style={{ minWidth: 110 }} />
             </colgroup>
             <TableHead>
-              <TableRow sx={{ bgcolor: "#f8fafc", borderBottom: "1.5px solid #e2e8f0" }}>
+              <TableRow sx={{ background: "#EBF1FE" }}>
                 {["Transfer #", "From", "To", "Items", "Priority", "Notes", "By", "Date", "Status", "Actions"].map((h) => (
-                  <TableCell key={h} sx={{ py: "11px", px: "8px", fontSize: 10.5, fontWeight: 700, color: "#94a3b8", letterSpacing: "0.06em", textTransform: "uppercase", whiteSpace: "nowrap", borderBottom: "none" }}>
+                  <TableCell
+                    key={h}
+                    sx={{
+                      py: "12px", px: "16px",
+                      fontSize: 11, fontWeight: 500, color: "#373B4D",
+                      letterSpacing: "0.05em", textTransform: "uppercase", whiteSpace: "nowrap",
+                      borderBottom: "1px solid #f3f4f6",
+                      borderRight: "1px solid #BED3FC",
+                      "&:last-child": { borderRight: "none" },
+                    }}
+                  >
                     {h}
                   </TableCell>
                 ))}
@@ -360,7 +390,7 @@ export default function Transfers() {
                   return (
                     <TableRow key={row.id} sx={{ borderBottom: i < transfers.length - 1 ? "1px solid #f1f5f9" : "none", "&:hover td": { bgcolor: "#f8faff" } }}>
                       <TableCell sx={{ py: "12px", px: "8px", border: "none" }}>
-                        <Typography onClick={() => setViewItem(row)} sx={{ fontSize: 12, fontWeight: 700, color: "#0e7490", cursor: "pointer", "&:hover": { textDecoration: "underline" } }}>
+                        <Typography onClick={() => setViewItem(row)} sx={{ fontSize: 13, fontWeight: 500, color: "#2E2E2E", cursor: "pointer", "&:hover": { textDecoration: "underline" } }}>
                           {row.id}
                         </Typography>
                       </TableCell>
@@ -380,7 +410,6 @@ export default function Transfers() {
                       <TableCell sx={{ py: "12px", px: "8px", border: "none" }}><StyledChip label={row.status} style={ss} /></TableCell>
                       <TableCell sx={{ py: "6px", px: "8px", border: "none" }}>
                         <Box sx={{ display: "flex", gap: 0.5, alignItems: "center" }}>
-                          {/* Approve */}
                           <IconButton
                             title="Approve"
                             disabled={!isPending}
@@ -390,7 +419,6 @@ export default function Transfers() {
                           >
                             <CheckOutlinedIcon sx={{ fontSize: 14, color: "#16a34a" }} />
                           </IconButton>
-                          {/* Reject */}
                           <IconButton
                             title="Reject"
                             disabled={!isPending}
@@ -400,7 +428,6 @@ export default function Transfers() {
                           >
                             <CloseOutlinedIcon sx={{ fontSize: 14, color: "#ef4444" }} />
                           </IconButton>
-                          {/* View */}
                           <IconButton
                             title="View details"
                             onClick={() => setViewItem(row)}
@@ -418,7 +445,6 @@ export default function Transfers() {
             </TableBody>
           </Table>
         </TableContainer>
-       
       </Paper>
     </Box>
   );

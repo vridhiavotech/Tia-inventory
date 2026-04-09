@@ -60,18 +60,7 @@ export default function Header() {
           <KeyboardArrowDownOutlinedIcon
             sx={{ fontSize: 16, color: "#aaa", transition: "transform 0.2s", transform: open ? "rotate(180deg)" : "rotate(0deg)" }} />
         </Box>
-         <Menu anchorEl={anchorEl} open={open} onClose={handleClose}
-          transformOrigin={{ horizontal: "right", vertical: "top" }}
-          anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-          PaperProps={{ sx: { mt: 1, borderRadius: "10px", border: "1px solid #e5e7eb",
-            boxShadow: "0 8px 24px rgba(0,0,0,0.08)", minWidth: 150 } }}>
-          <MenuItem onClick={handleLogout}
-            sx={{ gap: 1.5, py: 1.2, px: 2, fontSize: 13, color: "#dc2626",
-              "&:hover": { bgcolor: "#fef2f2" } }}>
-            <LogoutIcon sx={{ fontSize: 17, color: "#dc2626" }} />
-            Logout
-          </MenuItem>
-        </Menu>
+        
       </Box>
     </Box>
   );

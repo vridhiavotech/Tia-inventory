@@ -1,5 +1,5 @@
 import { Box, Typography, Button, Stack, Paper } from "@mui/material";
-import { FileDownload, TrendingUp, TrendingDown } from "@mui/icons-material";
+import { FileDownload } from "@mui/icons-material";
 import {
   AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip as RTooltip,
@@ -42,84 +42,57 @@ const PO_STATUS = [
   { name: "Received", value: 18, color: "#16A34A" },
 ];
 
-// ── Stat Card — matches Stock Issue style exactly ─────────────────────────────
-function StatCard({ label, value, sub, trend }) {
-  return (
-    <Box
-      sx={{
-        flex: 1,
-        bgcolor: "#fff",
-        border: "1px solid #e5e7eb", // ✅ clean border
-        borderRadius: "10px",
-        px: 2,
-        py: 1.5,
-        minWidth: 0,
-      }}
-    >
-      {/* Title */}
-      <Typography
-        sx={{
-          fontSize: 11,
-          fontWeight: 600,
-          color: "#9ca3af",
-          letterSpacing: "0.05em",
-          textTransform: "uppercase",
-          mb: 0.5,
-        }}
-      >
-        {label}
-      </Typography>
-
-      {/* Value + Subtitle INLINE */}
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "baseline",
-          gap: 0.5,
-        }}
-      >
-        <Typography
-          sx={{
-            fontSize:
-              typeof value === "string" && value.length > 8 ? 15 : 22,
-            fontWeight: 700,
-            color: "#111827",
-            lineHeight: 1.2,
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-          }}
-        >
-          {value}
-        </Typography>
-
-        {sub && (
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: 0.3,
-              whiteSpace: "nowrap",
-            }}
-          >
-            {trend === "up" && <TrendingUp sx={{ fontSize: 12, color: "#10b981" }} />}
-            {trend === "down" && <TrendingDown sx={{ fontSize: 12, color: "#ef4444" }} />}
-
-            <Typography
-              sx={{
-                fontSize: 11,
-                fontWeight: 500,
-                color: "#6b7280",
-              }}
-            >
-              {sub}
-            </Typography>
-          </Box>
-        )}
-      </Box>
-    </Box>
-  );
-}
+// ── Stat Cards config ─────────────────────────────────────────────────────────
+const statCards = [
+  {
+    label:  "Inventory Turnover",
+    value:  "8.4×",
+    sub:    "vs 7.2× prior year",
+    iconBg: "#10b981",
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+        <polyline points="17 6 23 6 23 12"/>
+      </svg>
+    ),
+  },
+  {
+    label:  "Fill Rate",
+    value:  "97.8%",
+    sub:    "↑ 0.4% vs last month",
+    iconBg: "#2563eb",
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+    ),
+  },
+  {
+    label:  "Waste / Shrinkage",
+    value:  "$4,820",
+    sub:    "↑ $620 due to expiries",
+    iconBg: "#ef4444",
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="3 17 9 11 13 15 21 7"/>
+        <polyline points="15 7 21 7 21 13"/>
+      </svg>
+    ),
+  },
+  {
+    label:  "Stockout Events",
+    value:  "3",
+    sub:    "↑ 1 vs last month",
+    iconBg: "#f59e0b",
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+        <line x1="12" y1="9" x2="12" y2="13"/>
+        <line x1="12" y1="17" x2="12.01" y2="17"/>
+      </svg>
+    ),
+  },
+];
 
 // ── Section Card ──────────────────────────────────────────────────────────────
 function SectionCard({ title, subtitle, children }) {
@@ -185,7 +158,7 @@ export default function Reports() {
   return (
     <Box sx={{ background: "#f8f9fb", minHeight: "100vh", p: "28px 32px", boxSizing: "border-box" }}>
 
-      {/* ── Title row ── */}
+      {/* Title row */}
       <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: "20px" }}>
         <Box>
           <Typography sx={{ fontSize: 20, fontWeight: 700, color: "#111827" }}>
@@ -201,7 +174,7 @@ export default function Reports() {
             Inventory CSV
           </Button>
           <Button startIcon={<FileDownload sx={{ fontSize: 16 }} />} variant="outlined" onClick={exportPOCSV}
-            sx={{ border: "1px solid #e5e7eb", color: "#374151", textTransform: "none", fontWeight: 400, fontSize: 13, borderRadius: "8px", height: 36, px: 2, bgcolor: "#fff", "&:hover": { borderColor: "#9ca3af" ,bgcolor: "#f9fafb" } }}>
+            sx={{ border: "1px solid #e5e7eb", color: "#374151", textTransform: "none", fontWeight: 400, fontSize: 13, borderRadius: "8px", height: 36, px: 2, bgcolor: "#fff", "&:hover": { borderColor: "#9ca3af", bgcolor: "#f9fafb" } }}>
             PO CSV
           </Button>
           <Button startIcon={<FileDownload sx={{ fontSize: 16 }} />} variant="contained" onClick={exportFullReport}
@@ -211,15 +184,57 @@ export default function Reports() {
         </Stack>
       </Box>
 
-      {/* ── KPI Stat Cards — Stock Issue style ── */}
-      <Stack direction="row" spacing={1.5} sx={{ mb: "20px" }}>
-        <StatCard label="Inventory Turnover" value="8.4×"   sub="vs 7.2× prior year"     trend="up"   />
-        <StatCard label="Fill Rate"           value="97.8%"  sub="↑ 0.4% vs last month"    trend="up"   />
-        <StatCard label="Waste / Shrinkage"   value="$4,820" sub="↑ $620 due to expiries"  trend="down" />
-        <StatCard label="Stockout Events"     value="3"      sub="↑ 1 vs last month"      trend="down" />
-      </Stack>
+      {/* Stat Cards — GRN icon style */}
+      <Box sx={{ display: "flex", gap: "12px", mb: "20px" }}>
+        {statCards.map((s) => (
+          <Box
+            key={s.label}
+            sx={{
+              flex: 1, bgcolor: "#fff", border: "1px solid #e5e7eb",
+              borderRadius: "10px", px: 2, py: 1.5, minWidth: 0,
+              display: "flex", alignItems: "center", gap: 1.5,
+            }}
+          >
+            <Box
+              sx={{
+                width: 44, height: 44, borderRadius: "50%", bgcolor: s.iconBg,
+                display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+              }}
+            >
+              {s.icon}
+            </Box>
+            <Box sx={{ minWidth: 0 }}>
+              <Typography
+                sx={{
+                  fontSize: 11, fontWeight: 600, color: "#9ca3af",
+                  letterSpacing: "0.05em", textTransform: "uppercase", mb: 0.5,
+                }}
+              >
+                {s.label}
+              </Typography>
+              <Box sx={{ display: "flex", alignItems: "baseline", gap: 0.5 }}>
+               <Typography
+  sx={{
+    fontSize: typeof s.value === "string" && s.value.length > 8 ? 15 : 22,
+    fontWeight: 600,
+    color: "#111827",
+    lineHeight: 1.2,
+    whiteSpace: "nowrap",
+    flexShrink: 0,
+  }}
+>
+                  {s.value}
+                </Typography>
+                <Typography sx={{ fontSize: 11, fontWeight: 500, color: "#6b7280", whiteSpace: "normal", wordBreak: "break-word", }}>
+                  {s.sub}
+                </Typography>
+              </Box>
+            </Box>
+          </Box>
+        ))}
+      </Box>
 
-      {/* ── Charts Row 1 ── */}
+      {/* Charts Row 1 */}
       <Box sx={{ display: "flex", gap: 2, mb: 2, minWidth: 0 }}>
         <Box sx={{ flex: "0 0 58%", minWidth: 0 }}>
           <SectionCard title="Monthly Spend Trend ($K)" subtitle="Sep 2025 – Mar 2026">
@@ -263,7 +278,7 @@ export default function Reports() {
         </Box>
       </Box>
 
-      {/* ── Charts Row 2 ── */}
+      {/* Charts Row 2 */}
       <Box sx={{ display: "flex", gap: 2, minWidth: 0 }}>
         <Box sx={{ flex: "0 0 58%", minWidth: 0 }}>
           <SectionCard title="Issue Volume by Department" subtitle="Total stock issues per department">
