@@ -187,9 +187,9 @@ const ViewPOModal = ({ open, onClose, po }) => {
             label={po.status}
             size="small"
             sx={{
-              bgcolor: statusStyle.bg,
-              color: statusStyle.color,
-              border: `1px solid ${statusStyle.border}`,
+              bgcolor: getStatusColor(po.status).bg,
+              color: getStatusColor(po.status).color,
+              border: `1px solid ${getStatusColor(po.status).border}`,
               fontWeight: 700,
               fontSize: 11,
               height: 24,
@@ -199,9 +199,9 @@ const ViewPOModal = ({ open, onClose, po }) => {
             label={po.priority}
             size="small"
             sx={{
-              bgcolor: priorityStyle.bg,
-              color: priorityStyle.color,
-              border: `1px solid ${priorityStyle.border}`,
+              bgcolor: getPriorityColor(po.priority).bg,
+              color: getPriorityColor(po.priority).color,
+              border: `1px solid ${getPriorityColor(po.priority).border}`,
               fontWeight: 700,
               fontSize: 11,
               height: 24,
@@ -1063,13 +1063,15 @@ const PurchaseOrders = () => {
   const thSx = {
     fontSize: 11,
     fontWeight: 600,
-    color: "#9ca3af",
+    color: "#373B4D",
     letterSpacing: "0.05em",
     textTransform: "uppercase",
     whiteSpace: "nowrap",
     py: "12px",
     px: "16px",
-    borderBottom: "1px solid #f3f4f6",
+    borderBottom: "none",
+    borderRight: "1px solid #BED3FC",
+    "&:last-child": { borderRight: "none" }
   };
 
   return (
@@ -1153,7 +1155,7 @@ const PurchaseOrders = () => {
             <Box
               sx={{
                 display: "flex",
-                alignItems: "baseline", // 🔥 important
+                alignItems: "baseline",
                 gap: 0.5,
               }}
             >
@@ -1231,7 +1233,7 @@ const PurchaseOrders = () => {
         >
           <Table sx={{ minWidth: 1100 }}>
             <TableHead>
-              <TableRow sx={{ background: "#f8f9fb" }}>
+              <TableRow sx={{ background: "#EBF1FE" }}>
                 {[
                   "PO NUMBER",
                   "QUOT. REF",
@@ -1276,18 +1278,18 @@ const PurchaseOrders = () => {
                   >
                     <TableCell>
                       <Typography
-                        sx={{ color: "#14b8a6", fontWeight: 700, fontSize: 12 }}
+                        sx={{ color: "#111827", fontWeight: 500, fontSize: 13 }}
                       >
                         {po.id}
                       </Typography>
                     </TableCell>
                     <TableCell>
                       <Typography
-                        sx={{ fontSize: 12, fontWeight: 600, color: "#111827" }}
+                        sx={{ fontSize: 13, fontWeight: 500, color: "#111827" }}
                       >
                         {po.quotRef}
                       </Typography>
-                      <Typography sx={{ fontSize: 11, color: "#9ca3af" }}>
+                      <Typography sx={{ fontSize: 13, color: "#9ca3af" }}>
                         Quot. Ref
                       </Typography>
                     </TableCell>
@@ -1320,7 +1322,7 @@ const PurchaseOrders = () => {
                     </TableCell>
                     <TableCell>
                       <Typography
-                        sx={{ fontSize: 13, fontWeight: 600, color: "#111827" }}
+                        sx={{ fontSize: 13, color: "#111827" }}
                       >
                         ${po.total.toLocaleString()}
                       </Typography>

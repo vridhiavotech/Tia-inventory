@@ -198,7 +198,11 @@ export default function Sidebar() {
                 "&:focus": { outline: "none" },
                 "&:focus-visible": { outline: "none" },
                 transition: "color 0.15s, background 0.15s",
-              
+                "&:hover": {
+                  bgcolor: active ? "#ede9fe" : "#f5f5f5",
+                  "& .admin-icon": { color: "#6366f1" },
+                  "& .admin-label": { color: "#6366f1" },
+                },
               }}
             >
               <Box

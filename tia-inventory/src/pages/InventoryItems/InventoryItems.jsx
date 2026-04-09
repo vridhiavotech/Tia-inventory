@@ -72,7 +72,7 @@ function QtyBar({ qty, par }) {
   const isLow = qty < par;
   return (
     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-      <Typography sx={{ fontSize: 13, fontWeight: 600, color: isLow ? "#f97316" : "#111827", minWidth: 32 }}>{qty}</Typography>
+      <Typography sx={{ fontSize: 13, minWidth: 32 }}>{qty}</Typography>
       <LinearProgress variant="determinate" value={pct}
         sx={{ width: 80, height: 5, borderRadius: 3, backgroundColor: "#f3f4f6",
           "& .MuiLinearProgress-bar": { borderRadius: 3, backgroundColor: isLow ? "#f97316" : "#22c55e" } }} />
@@ -245,7 +245,7 @@ export default function InventoryItems() {
         <FormControl size="small">
           <Select value={location} onChange={(e) => setLocation(e.target.value)} sx={{ ...selectSx, minWidth: 150 }}>
             {["All Locations","Central Store","ICU","Emergency Dept","Pharmacy","Surgery","Laboratory"].map((l) => (
-              <MenuItem key={l} value={l} sx={{ fontSize: 13 }}>{l}</MenuItem>
+              <MenuItem key={l} value={l} sx={{ fontSize: 13 ,color:"#FFFFFF" }}>{l}</MenuItem>
             ))}
           </Select>
         </FormControl>
@@ -295,9 +295,11 @@ export default function InventoryItems() {
         >
           <Table sx={{ minWidth: 900 }}>
             <TableHead>
-              <TableRow sx={{ background: "#f8f9fb" }}>
+              <TableRow sx={{ background: "#EBF1FE" }}>
                 {["ITEM / NDC","CATEGORY","LOCATION","QTY","PAR","COST","EXPIRY","STATUS","ACTIONS"].map((col) => (
-                  <TableCell key={col} sx={{ fontSize: 11, fontWeight: 600, color: "#9ca3af", letterSpacing: "0.05em", borderBottom: "1px solid #f3f4f6", py: "12px", px: "16px", whiteSpace: "nowrap" }}>
+                 <TableCell key={col} sx={{ fontSize: 11, fontWeight: 700, color: "#373B4D", letterSpacing: "0.05em", borderBottom: "none", borderRight: "1px solid #BED3FC", py: "12px", px: "16px", whiteSpace: "nowrap",
+  "&:last-child": { borderRight: "none" }
+}}>
                     {col}
                   </TableCell>
                 ))}
@@ -336,8 +338,8 @@ export default function InventoryItems() {
                   </TableCell>
 
                   <TableCell><QtyBar qty={item.qty} par={item.par} /></TableCell>
-                  <TableCell><Typography sx={{ fontSize: 13, color: "#6b7280" }}>{item.par}</Typography></TableCell>
-                  <TableCell><Typography sx={{ fontSize: 13, fontWeight: 500, color: "#111827" }}>${item.cost.toFixed(2)}</Typography></TableCell>
+                  <TableCell><Typography sx={{ fontSize: 14, color: "#2E2E2E" }}>{item.par}</Typography></TableCell>
+                  <TableCell><Typography sx={{ fontSize: 14, color: "#2E2E2E" }}>${item.cost.toFixed(2)}</Typography></TableCell>
 
                   <TableCell>
                     <Typography sx={{ fontSize: 12, fontWeight: item.expired || item.expiringSoon ? 600 : 400,
