@@ -24,7 +24,7 @@ const INITIAL_ISSUES = [
   { id:"ISS-2026-0012", type:"Ward Requisition",   from:"CS-01", dept:"Emergency Dept", items:1, value:14.80,  requestedBy:"—",              date:"Mar 30, 2026 12:00", status:"Pending" },
   { id:"ISS-2026-0013", type:"Ward Requisition",   from:"CS-01", dept:"Emergency Dept", items:1, value:57.60,  requestedBy:"—",              date:"Mar 30, 2026 12:22", status:"Pending" },
   { id:"ISS-2026-0014", type:"Patient Dispensing", from:"PH-01", dept:"Emergency Dept", items:1, value:18.50,  requestedBy:"—",              date:"Mar 30, 2026 16:05", status:"Issued"  },
-  { id:"ISS-2026-0015", type:"Patient Dispensing", from:"CS-01", dept:"Emergency Dept", items:1, value:16.50,  requestedBy:"—",              date:"Mar 30, 2026 16:30", status:"Issued"  },
+  { id:"ISS-2026-0015", type:"Patient Dispensing", from:"CS-01", dept:"ICU", items:1, value:16.50,  requestedBy:"—",              date:"Mar 30, 2026 16:30", status:"Issued"  },
 ];
 
 const ISSUE_TYPES = ["Ward Requisition","Emergency Issue","OT Request","Patient Dispensing"];
@@ -62,7 +62,7 @@ function StatCard({ label, value, sub, color }) {
         {value}
       </Typography>
       {sub && (
-        <Typography sx={{ fontSize: 11, fontWeight: 600, color: color, mt: 0.3 }}>
+        <Typography sx={{ fontSize: 11, fontWeight: 400, color: color, mt: 0.3 }}>
           {sub}
         </Typography>
       )}
@@ -183,7 +183,7 @@ export default function StockIssue() {
     { label:"Total Issues",   value:issues.length,                                    sub:"All issues",        color:"#f59e0b" },
     { label:"Issued",         value:issued.length,   sub:`$${issuedVal.toFixed(0)} total value`, color:"#10b981" },
     { label:"Pending",        value:pending.length,                                   sub:"Awaiting approval", color:"#8b5cf6" },
-    { label:"Rejected",       value:rejected.length,                                  sub:"Needs review",      color:"#ef4444" },
+    { label:"Most Active Dept", value:mostActive,                                       sub:"Highest issue volume",        color:"#f59e0b" },
   ];
 
   const filtered = issues.filter(i =>
@@ -334,7 +334,7 @@ export default function StockIssue() {
               <MenuItem value="All Statuses">All Statuses</MenuItem>
               <MenuItem value="Issued">Issued</MenuItem>
               <MenuItem value="Pending">Pending</MenuItem>
-              <MenuItem value="Rejected">Rejected</MenuItem>
+              <MenuItem value="Most Active Dept">Most Active Dept</MenuItem>
             </Select>
           </FormControl>
           <Box sx={{ flex:1 }} />

@@ -235,7 +235,6 @@ export default function Transfers() {
   const total     = transfers.length;
   const pending   = transfers.filter((t) => t.status === "Pending").length;
   const completed = transfers.filter((t) => t.status === "Completed").length;
-  const rejected  = transfers.filter((t) => t.status === "Rejected").length;
 
   return (
     <Box sx={{ bgcolor: "#f8fafc", minHeight: "100vh", p: "28px" }}>
@@ -277,7 +276,6 @@ export default function Transfers() {
         <StatCard label="Total Transfers" value={total}     color="#f59e0b" sub="All transfers" />
         <StatCard label="Pending"         value={pending}   color="#8b5cf6" sub="Awaiting approval" />
         <StatCard label="Completed"       value={completed} color="#10b981" sub="Successfully moved" />
-        <StatCard label="Rejected"        value={rejected}  color="#ef4444" sub="Needs review" />
       </Box>
 
       {/* Table */}

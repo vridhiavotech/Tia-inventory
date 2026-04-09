@@ -195,7 +195,7 @@ export default function Reports() {
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
                   <XAxis dataKey="month" tick={{ fontSize: 11, fill: "#9ca3af" }} axisLine={false} tickLine={false} />
-                  <YAxis tickFormatter={(v) => `$${(v / 1000).toFixed(0)}K`} tick={{ fontSize: 10, fill: "#9ca3af" }} axisLine={false} tickLine={false} />
+                  <YAxis domain={[40000, 70000]} ticks={[40000, 45000, 50000, 55000, 60000, 65000, 70000]} tickFormatter={(v) => `$${(v / 1000).toFixed(0)}K`} tick={{ fontSize: 10, fill: "#9ca3af" }} axisLine={false} tickLine={false} width={50} />
                   <RTooltip content={<CustomTooltip prefix="$" />} />
                   <Area type="monotone" dataKey="value" stroke="#0EA5E9" strokeWidth={2.5} fill="url(#spendGrad)" dot={{ r: 4, fill: "#0EA5E9", strokeWidth: 0 }} activeDot={{ r: 5 }} />
                 </AreaChart>
@@ -210,7 +210,7 @@ export default function Reports() {
                 <BarChart data={STOCK_BY_LOCATION} margin={{ top: 4, right: 4, left: -10, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
                   <XAxis dataKey="loc" tick={{ fontSize: 11, fill: "#9ca3af" }} axisLine={false} tickLine={false} />
-                  <YAxis tickFormatter={(v) => `$${(v / 1000).toFixed(1)}K`} tick={{ fontSize: 10, fill: "#9ca3af" }} axisLine={false} tickLine={false} />
+                  <YAxis domain={[0, 3000]} ticks={[0, 500, 1000, 1500, 2000, 2500, 3000]} tickFormatter={(v) => `$${(v / 1000).toFixed(1)}K`} tick={{ fontSize: 10, fill: "#9ca3af" }} axisLine={false} tickLine={false} width={50} />
                   <RTooltip content={<CustomTooltip prefix="$" />} />
                   <Bar dataKey="value" radius={[4, 4, 0, 0]}>
                     {STOCK_BY_LOCATION.map((_, i) => (
@@ -225,7 +225,7 @@ export default function Reports() {
       </Box>
 
       {/* ── Charts Row 2 ── */}
-      <Box sx={{ display: "flex", gap: 2, mb: 2, minWidth: 0 }}>
+      <Box sx={{ display: "flex", gap: 2, minWidth: 0 }}>
         <Box sx={{ flex: "0 0 58%", minWidth: 0 }}>
           <SectionCard title="Issue Volume by Department" subtitle="Total stock issues per department">
             <Box sx={{ width: "100%", height: 200 }}>
@@ -233,7 +233,7 @@ export default function Reports() {
                 <BarChart data={ISSUE_BY_DEPT} margin={{ top: 4, right: 4, left: -10, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
                   <XAxis dataKey="dept" tick={{ fontSize: 11, fill: "#9ca3af" }} axisLine={false} tickLine={false} />
-                  <YAxis allowDecimals={false} tick={{ fontSize: 10, fill: "#9ca3af" }} axisLine={false} tickLine={false} />
+                  <YAxis allowDecimals={false} domain={[0, 6]} ticks={[0, 1, 2, 3, 4, 5, 6]} tick={{ fontSize: 10, fill: "#9ca3af" }} axisLine={false} tickLine={false} />
                   <RTooltip content={<CustomTooltip prefix="" suffix=" issues" />} />
                   <Bar dataKey="value" fill="#F59E0B" radius={[4, 4, 0, 0]} />
                 </BarChart>
@@ -243,22 +243,21 @@ export default function Reports() {
         </Box>
         <Box sx={{ flex: "1 1 0", minWidth: 0 }}>
           <SectionCard title="PO Status Breakdown" subtitle="Purchase order distribution">
-            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 3, height: 200 }}>
-              <Box sx={{ width: 160, height: 160, flexShrink: 0 }}>
+            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 4, height: 200 }}>
+              <Box sx={{ width: 140, height: 140, flexShrink: 0 }}>
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
-                    <Pie data={PO_STATUS} cx="50%" cy="50%" innerRadius={44} outerRadius={68} dataKey="value" paddingAngle={3}>
+                    <Pie data={PO_STATUS} cx="50%" cy="50%" innerRadius={40} outerRadius={60} dataKey="value" paddingAngle={2}>
                       {PO_STATUS.map((e, i) => <Cell key={i} fill={e.color} />)}
                     </Pie>
                   </PieChart>
                 </ResponsiveContainer>
               </Box>
-              <Stack spacing={1.2}>
+              <Stack spacing={1}>
                 {PO_STATUS.map((s) => (
-                  <Box key={s.name} sx={{ display: "flex", alignItems: "center", gap: 1, minWidth: 110 }}>
-                    <Box sx={{ width: 10, height: 10, borderRadius: "2px", bgcolor: s.color, flexShrink: 0 }} />
-                    <Typography sx={{ fontSize: 12, color: "#6b7280", fontWeight: 500 }}>{s.name}</Typography>
-                    <Typography sx={{ fontSize: 12, fontWeight: 700, color: "#111827", ml: "auto", pl: 1 }}>{s.value}</Typography>
+                  <Box key={s.name} sx={{ display: "flex", alignItems: "center", gap: 0.8 }}>
+                    <Box sx={{ width: 12, height: 12, borderRadius: "1px", bgcolor: s.color, flexShrink: 0 }} />
+                    <Typography sx={{ fontSize: 12, color: "#6b7280", fontWeight: 400 }}>{s.name}</Typography>
                   </Box>
                 ))}
               </Stack>

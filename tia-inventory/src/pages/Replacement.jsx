@@ -430,18 +430,8 @@ const StatCard = ({ iconEl, label, count, sub, iconBg, showDot }) => (
       }}>
         {iconEl}
       </div>
-      {showDot && (
-        <div style={{
-          position: "absolute",
-          top: -2,
-          right: -2,
-          width: 8,
-          height: 8,
-          borderRadius: "50%",
-          background: "#ef4444",
-          border: "1.5px solid #fff",
-        }} />
-      )}
+    
+      
     </div>
     <div>
       <div style={{ fontSize: 12, color: "#9ca3af", marginBottom: 4 }}>{label}</div>
@@ -556,8 +546,8 @@ export default function Replacement() {
           <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 4, fontSize: 12, color: "#9ca3af" }}>
             {["Flag", "Request", "PO", "Receive", "Close"].map((step, i, arr) => (
               <span key={step} style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <span style={{ color: i === 1 ? "#2563eb" : "#cbd5e1", fontWeight: i === 1 ? 700 : 400 }}>{step}</span>
-                {i < arr.length - 1 && <span style={{ color: "#cbd5e1" }}>→</span>}
+                <span style={{ color: "#9ca3af"}}>{step}</span>
+                {i < arr.length - 1 && <span style={{ color: "#9ca3af" }}>→</span>}
               </span>
             ))}
           </div>

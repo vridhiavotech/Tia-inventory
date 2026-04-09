@@ -51,7 +51,7 @@ const labelStyle = {
 };
 
 const SystemSettings = () => {
-  // --- Initial Values ---
+  // --- Initial Values (as Placeholders) ---
   const initialFacilityName = "St. Mary's Regional Medical Center";
   const initialNpiNumber = "1234567890";
   const initialDeaRegistration = "AS1234563";
@@ -62,22 +62,16 @@ const SystemSettings = () => {
   const initialAutoReorder = "Yes — Create draft PO";
   const initialAlertEmail = "inventory@stmarys.org";
 
-  // --- State ---
-  const [facilityName, setFacilityName] = useState(initialFacilityName);
-  const [npiNumber, setNpiNumber] = useState(initialNpiNumber);
-  const [deaRegistration, setDeaRegistration] = useState(
-    initialDeaRegistration,
-  );
-  const [stateLicense, setStateLicense] = useState(initialStateLicense);
+  // --- State (empty by default, showing placeholders) ---
+  const [facilityName, setFacilityName] = useState("");
+  const [npiNumber, setNpiNumber] = useState("");
+  const [deaRegistration, setDeaRegistration] = useState("");
+  const [stateLicense, setStateLicense] = useState("");
 
-  const [lowStockThreshold, setLowStockThreshold] = useState(
-    initialLowStockThreshold,
-  );
-  const [expiryWarningDays, setExpiryWarningDays] = useState(
-    initialExpiryWarningDays,
-  );
-  const [autoReorder, setAutoReorder] = useState(initialAutoReorder);
-  const [alertEmail, setAlertEmail] = useState(initialAlertEmail);
+  const [lowStockThreshold, setLowStockThreshold] = useState("");
+  const [expiryWarningDays, setExpiryWarningDays] = useState("");
+  const [autoReorder, setAutoReorder] = useState("");
+  const [alertEmail, setAlertEmail] = useState("");
 
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -128,14 +122,14 @@ const SystemSettings = () => {
   };
 
   const handleCancel = () => {
-    setFacilityName(initialFacilityName);
-    setNpiNumber(initialNpiNumber);
-    setDeaRegistration(initialDeaRegistration);
-    setStateLicense(initialStateLicense);
-    setLowStockThreshold(initialLowStockThreshold);
-    setExpiryWarningDays(initialExpiryWarningDays);
-    setAutoReorder(initialAutoReorder);
-    setAlertEmail(initialAlertEmail);
+    setFacilityName("");
+    setNpiNumber("");
+    setDeaRegistration("");
+    setStateLicense("");
+    setLowStockThreshold("");
+    setExpiryWarningDays("");
+    setAutoReorder("");
+    setAlertEmail("");
 
     setSnackbarMessage("Changes discarded");
     setSnackbarSeverity("info");
@@ -227,6 +221,7 @@ const SystemSettings = () => {
                       value={facilityName}
                       onChange={(e) => setFacilityName(e.target.value)}
                       size="small"
+                      placeholder={initialFacilityName}
                       sx={inputStyles}
                     />
                   </Box>
@@ -240,6 +235,7 @@ const SystemSettings = () => {
                       value={npiNumber}
                       onChange={(e) => setNpiNumber(e.target.value)}
                       size="small"
+                      placeholder={initialNpiNumber}
                       sx={inputStyles}
                     />
                   </Box>
@@ -253,6 +249,7 @@ const SystemSettings = () => {
                       value={deaRegistration}
                       onChange={(e) => setDeaRegistration(e.target.value)}
                       size="small"
+                      placeholder={initialDeaRegistration}
                       sx={inputStyles}
                     />
                   </Box>
@@ -266,6 +263,7 @@ const SystemSettings = () => {
                       value={stateLicense}
                       onChange={(e) => setStateLicense(e.target.value)}
                       size="small"
+                      placeholder={initialStateLicense}
                       sx={inputStyles}
                     />
                   </Box>
@@ -309,6 +307,7 @@ const SystemSettings = () => {
                       value={lowStockThreshold}
                       onChange={(e) => setLowStockThreshold(e.target.value)}
                       size="small"
+                      placeholder={String(initialLowStockThreshold)}
                       sx={inputStyles}
                     />
                   </Box>
@@ -325,6 +324,7 @@ const SystemSettings = () => {
                       value={expiryWarningDays}
                       onChange={(e) => setExpiryWarningDays(e.target.value)}
                       size="small"
+                      placeholder={String(initialExpiryWarningDays)}
                       sx={inputStyles}
                     />
                   </Box>
@@ -339,6 +339,7 @@ const SystemSettings = () => {
                       value={autoReorder}
                       onChange={(e) => setAutoReorder(e.target.value)}
                       size="small"
+                      placeholder={initialAutoReorder}
                       sx={inputStyles}
                     >
                       <MenuItem
@@ -365,6 +366,7 @@ const SystemSettings = () => {
                       value={alertEmail}
                       onChange={(e) => setAlertEmail(e.target.value)}
                       size="small"
+                      placeholder={initialAlertEmail}
                       sx={inputStyles}
                     />
                   </Box>

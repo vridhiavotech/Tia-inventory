@@ -1,49 +1,53 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { Box, Typography, ButtonBase, Badge, Divider } from "@mui/material";
 
-import GridViewOutlinedIcon from "@mui/icons-material/GridViewOutlined";
-import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
-import EditNoteOutlinedIcon from "@mui/icons-material/EditNoteOutlined";
-import InboxOutlinedIcon from "@mui/icons-material/InboxOutlined";
-import OutputOutlinedIcon from "@mui/icons-material/OutputOutlined";
-import CompareArrowsOutlinedIcon from "@mui/icons-material/CompareArrowsOutlined";
-import FactoryOutlinedIcon from "@mui/icons-material/FactoryOutlined";
-import AccessTimeOutlinedIcon from "@mui/icons-material/AccessTimeOutlined";
-import TrendingUpOutlinedIcon from "@mui/icons-material/TrendingUpOutlined";
-import BarChartOutlinedIcon from "@mui/icons-material/BarChartOutlined";
-import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
-import GroupOutlinedIcon from "@mui/icons-material/GroupOutlined";
-import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
-import ViewListOutlinedIcon from "@mui/icons-material/ViewListOutlined";
-import LocalShippingOutlinedIcon from "@mui/icons-material/LocalShippingOutlined";
-import ArticleOutlinedIcon from "@mui/icons-material/ArticleOutlined";
-import KeyOutlinedIcon from "@mui/icons-material/KeyOutlined";
-import HistoryOutlinedIcon from "@mui/icons-material/HistoryOutlined";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import {
+  DashboardIcon,
+  InventoryIcon,
+  ShoppingCartIcon,
+  PurchaseOrderIcon,
+  GoodsReceiptIcon,
+  StockIssueIcon,
+  TransfersIcon,
+  ExpiryTrackingIcon,
+  ReplacementIcon,
+  ReportsIcon,
+  AdminOverviewIcon,
+  UsersIcon,
+  LocationIcon,
+  CategoriesIcon,
+  DocumentsIcon,
+  SuppliersIcon,
+  ManufacturersIcon,
+  AuditLogIcon,
+  SettingsIcon,
+} from "../assets/Icons";
+
+import { LogoIcon } from "../assets/Assets";
 
 const navItems = [
-  { icon: <GridViewOutlinedIcon fontSize="small" />, label: "Dashboard", path: "/admin/dashboard", badge: null },
-  { icon: <PeopleOutlinedIcon fontSize="small" />, label: "Inventory Items", path: "/admin/inventory/items", badge: null },
-  { icon: <ShoppingCartIcon fontSize="small" />, label: "Indent/Procurement", path: "/admin/inventory/indent", badge: null },
-  { icon: <EditNoteOutlinedIcon fontSize="small" />, label: "Purchase Orders", path: "/admin/purchase-orders", badge: null },
-  { icon: <InboxOutlinedIcon fontSize="small" />, label: "Goods Receipt", path: "/admin/goods-receipt", badge: null },
-  { icon: <OutputOutlinedIcon fontSize="small" />, label: "Stock Issue", path: "/admin/stock-issue", badge: null },
-  { icon: <CompareArrowsOutlinedIcon fontSize="small" />, label: "Transfers", path: "/admin/transfers", badge: null },
-  { icon: <AccessTimeOutlinedIcon fontSize="small" />, label: "Expiry Tracking", path: "/admin/expiry-tracking", badge: null },
-  { icon: <TrendingUpOutlinedIcon fontSize="small" />, label: "Replacement", path: "/admin/replacement", badge: 1 },
-  { icon: <BarChartOutlinedIcon fontSize="small" />, label: "Reports", path: "/admin/reports", badge: null },
+  { icon: <DashboardIcon />, label: "Dashboard", path: "/admin/dashboard", badge: null },
+  { icon: <InventoryIcon />, label: "Inventory Items", path: "/admin/inventory/items", badge: null },
+  { icon: <ShoppingCartIcon />, label: "Indent/Procurement", path: "/admin/inventory/indent", badge: null },
+  { icon: <PurchaseOrderIcon />, label: "Purchase Orders", path: "/admin/purchase-orders", badge: null },
+  { icon: <GoodsReceiptIcon />, label: "Goods Receipt", path: "/admin/goods-receipt", badge: null },
+  { icon: <StockIssueIcon />, label: "Stock Issue", path: "/admin/stock-issue", badge: null },
+  { icon: <TransfersIcon />, label: "Transfers", path: "/admin/transfers", badge: null },
+  { icon: <ExpiryTrackingIcon />, label: "Expiry Tracking", path: "/admin/expiry-tracking", badge: null },
+  { icon: <ReplacementIcon />, label: "Replacement", path: "/admin/replacement", badge: 1 },
+  { icon: <ReportsIcon />, label: "Reports", path: "/admin/reports", badge: null },
 ];
 
 const adminItems = [
-  { icon: <EmailOutlinedIcon fontSize="small" />, label: "Admin Overview", path: "/admin/overview" },
-  { icon: <GroupOutlinedIcon fontSize="small" />, label: "Users & Roles", path: "/admin/users" },
-  { icon: <LocationOnOutlinedIcon fontSize="small" />, label: "Locations", path: "/admin/locations" },
-  { icon: <ViewListOutlinedIcon fontSize="small" />, label: "Categories", path: "/admin/categories" },
-  { icon: <ArticleOutlinedIcon fontSize="small" />, label: "Documents", path: "/admin/documents" },
-  { icon: <LocalShippingOutlinedIcon fontSize="small" />, label: "Suppliers", path: "/admin/suppliers" },
-  { icon: <FactoryOutlinedIcon fontSize="small" />, label: "Manufacturers", path: "/admin/manufacturers" },
-  { icon: <HistoryOutlinedIcon fontSize="small" />, label: "Audit Log", path: "/admin/audit-log" },
-  { icon: <KeyOutlinedIcon fontSize="small" />, label: "Settings", path: "/admin/system-settings" },
+  { icon: <AdminOverviewIcon />, label: "Admin Overview", path: "/admin/overview" },
+  { icon: <UsersIcon />, label: "Users & Roles", path: "/admin/users" },
+  { icon: <LocationIcon />, label: "Locations", path: "/admin/locations" },
+  { icon: <CategoriesIcon />, label: "Categories", path: "/admin/categories" },
+  { icon: <DocumentsIcon />, label: "Documents", path: "/admin/documents" },
+  { icon: <SuppliersIcon />, label: "Suppliers", path: "/admin/suppliers" },
+  { icon: <ManufacturersIcon />, label: "Manufacturers", path: "/admin/manufacturers" },
+  { icon: <AuditLogIcon />, label: "Audit Log", path: "/admin/audit-log" },
+  { icon: <SettingsIcon />, label: "Settings", path: "/admin/system-settings" },
 ];
 
 export default function Sidebar() {
@@ -74,26 +78,7 @@ export default function Sidebar() {
     >
       {/* ── Logo (fixed, never scrolls) ── */}
       <Box sx={{ display: "flex", alignItems: "center", gap: 1, px: 2.5, pb: 3, flexShrink: 0 }}>
-        <Box
-          sx={{
-            width: 32,
-            height: 32,
-            borderRadius: 2,
-            background: "linear-gradient(135deg, #6366f1, #818cf8)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            color: "#fff",
-            fontWeight: 800,
-            fontSize: 14,
-            flexShrink: 0,
-          }}
-        >
-          T
-        </Box>
-        <Typography sx={{ fontWeight: 700, fontSize: 15, color: "#1a1a2e" }}>
-          Tia<span style={{ color: "#6366f1" }}>TELE</span>
-        </Typography>
+        <LogoIcon />
       </Box>
 
       {/* ── Scrollable nav area ── */}
@@ -142,9 +127,17 @@ export default function Sidebar() {
                 className="nav-icon"
                 sx={{
                   display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
                   color: active ? "#6366f1" : "#999",
                   flexShrink: 0,
                   transition: "color 0.15s",
+                  width: 20,
+                  height: 20,
+                  "& svg": {
+                    width: "100%",
+                    height: "100%",
+                  },
                 }}
               >
                 {item.badge ? (
@@ -205,20 +198,24 @@ export default function Sidebar() {
                 "&:focus": { outline: "none" },
                 "&:focus-visible": { outline: "none" },
                 transition: "color 0.15s, background 0.15s",
-                "&:hover": {
-                  bgcolor: active ? "#ede9fe" : "#f5f5f5",
-                  "& .admin-icon": { color: "#6366f1" },
-                  "& .admin-label": { color: "#6366f1" },
-                },
+              
               }}
             >
               <Box
                 className="admin-icon"
                 sx={{
                   display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
                   color: active ? "#6366f1" : "#aaa",
                   flexShrink: 0,
                   transition: "color 0.15s",
+                  width: 20,
+                  height: 20,
+                  "& svg": {
+                    width: "100%",
+                    height: "100%",
+                  },
                 }}
               >
                 {item.icon}

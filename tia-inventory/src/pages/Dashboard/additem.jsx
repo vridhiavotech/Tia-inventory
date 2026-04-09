@@ -16,7 +16,7 @@ import { useInventory } from "../InventoryItems/useInventory";
 
 function Label({ children, required }) {
   return (
-    <label style={{ fontSize: 13, fontWeight: 500, color: "#374151", marginBottom: 6, display: "block" }}>
+    <label style={{ fontSize: 15, fontWeight: 500, color: "#2F3036", marginBottom: 6, display: "block" }}>
       {children}
       {required && <span style={{ color: "#ef4444" }}> *</span>}
     </label>
@@ -47,7 +47,7 @@ function TextInput({ placeholder, value, onChange, icon }) {
         style={{ ...inputStyle, padding: icon ? "10px 36px 10px 12px" : "10px 12px" }}
       />
       {icon && (
-        <span style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", color: "#9ca3af", display: "flex" }}>
+        <span style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", color:"#C5C6CC", display: "flex" }}>
           {icon}
         </span>
       )}
@@ -172,10 +172,8 @@ function SectionCard({ title, children }) {
         display: "flex",
         alignItems: "center",
         padding: "14px 28px",
-        borderBottom: "1px solid #f3f4f6",
-        background: "#fafafa",
       }}>
-        <h3 style={{ margin: 0, fontSize: 13, fontWeight: 700, color: "#111827", letterSpacing: "0.05em" }}>
+        <h3 style={{ margin: 0, fontSize: 13, fontWeight: 800, color: "#111827", letterSpacing: "0.05em" }}>
           {title}
         </h3>
       </div>
@@ -329,16 +327,6 @@ export default function AddItem() {
         </div>
       </div>
 
-      {/* ── Item Type Card ── */}
-      {!isEdit && (
-        <SectionCard title="ITEM TYPE">
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 }}>
-            <ItemTypeTab label="Consumable" description="Medicines, supplies"  icon={LocalPharmacyIcon}   isSelected={itemType === "consumable"} onClick={() => setItemType("consumable")} />
-            <ItemTypeTab label="Equipment"  description="Reusable equipment"   icon={DevicesIcon}         isSelected={itemType === "equipment"}  onClick={() => setItemType("equipment")} />
-            <ItemTypeTab label="Device"     description="Medical devices"       icon={MedicalServicesIcon} isSelected={itemType === "device"}     onClick={() => setItemType("device")} />
-          </div>
-        </SectionCard>
-      )}
 
       {/* ── Item Details Card ── */}
       <SectionCard title="ITEM DETAILS">
@@ -404,42 +392,8 @@ export default function AddItem() {
           </div>
         </Row>
 
-        <Row cols={3}>
-          <div>
-            <Label>Supplier</Label>
-            <SelectInput
-              placeholder="Select supplier..."
-              value={form.supplier}
-              onChange={set("supplier")}
-              options={["Cardinal Health","McKesson","Medline","Owens & Minor","Henry Schein"]}
-            />
-          </div>
-          <div /><div />
-        </Row>
 
-        {isConsumable && (
-          <Row cols={3}>
-            <div>
-              <Label>Item Status</Label>
-              <SelectInput
-                placeholder="Select status..."
-                value={form.itemStatus}
-                onChange={set("itemStatus")}
-                options={["Active","Quarantined","Recalled","Disposed"]}
-              />
-            </div>
-            <div>
-              <Label>DEA Schedule</Label>
-              <SelectInput
-                placeholder="Select schedule..."
-                value={form.deaSchedule}
-                onChange={set("deaSchedule")}
-                options={["None — Not Controlled","Schedule I","Schedule II","Schedule III","Schedule IV","Schedule V"]}
-              />
-            </div>
-            <div />
-          </Row>
-        )}
+      
       </SectionCard>
 
       {/* ── Equipment / Device Details Card ── */}
@@ -491,8 +445,22 @@ export default function AddItem() {
                 options={["Central Store","ICU","Emergency Dept","Pharmacy","Surgery","Laboratory"]}
               />
             </div>
+            <Row cols={3}>
+          <div>
+            <Label>Supplier</Label>
+            <SelectInput
+              placeholder="Select supplier..."
+              value={form.supplier}
+              onChange={set("supplier")}
+              options={["Cardinal Health","McKesson","Medline","Owens & Minor","Henry Schein"]}
+            />
+          </div>
+          <div /><div />
+        </Row>
             <div />
+            
           </Row>
+          
         </SectionCard>
       )}
 
@@ -515,7 +483,7 @@ export default function AddItem() {
               value={form.notes}
               onChange={set("notes")}
               placeholder="Type here"
-              rows={3}
+              rows={1}
               style={{
                 width: "100%", padding: "10px 12px", fontSize: 13,
                 border: "1px solid #e5e7eb", borderRadius: 8, outline: "none",
