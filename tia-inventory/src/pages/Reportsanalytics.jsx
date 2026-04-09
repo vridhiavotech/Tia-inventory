@@ -41,7 +41,30 @@ const PO_STATUS = [
   { name: "Approved", value: 22, color: "#0EA5E9" },
   { name: "Received", value: 18, color: "#16A34A" },
 ];
-
+// Add this custom tooltip near your other tooltip components
+const CustomPieTooltip = ({ active, payload }) => {
+  if (active && payload && payload.length) {
+    const data = payload[0];
+    const total = PO_STATUS.reduce((sum, s) => sum + s.value, 0);
+    const pct = Math.round((data.value / total) * 100);
+    return (
+      <Box sx={{
+        bgcolor: "#fff",
+        border: "1px solid #e5e7eb",
+        borderRadius: "8px",
+        px: 1.5,
+        py: 0.8,
+        boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+        fontSize: 13,
+        fontWeight: 700,
+        color: data.payload.color,
+      }}>
+        {pct}%
+      </Box>
+    );
+  }
+  return null;
+};
 // ── Stat Cards config ─────────────────────────────────────────────────────────
 const statCards = [
   {
@@ -300,11 +323,21 @@ export default function Reports() {
             <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 4, height: 200 }}>
               <Box sx={{ width: 140, height: 140, flexShrink: 0 }}>
                 <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie data={PO_STATUS} cx="50%" cy="50%" innerRadius={40} outerRadius={60} dataKey="value" paddingAngle={2}>
-                      {PO_STATUS.map((e, i) => <Cell key={i} fill={e.color} />)}
-                    </Pie>
-                  </PieChart>
+                <PieChart>
+  <Pie
+    data={PO_STATUS}
+    cx="50%"
+    cy="50%"
+    innerRadius={40}
+    outerRadius={60}
+    dataKey="value"
+    paddingAngle={2}
+  >
+    {PO_STATUS.map((e, i) => <Cell key={i} fill={e.color} />)}
+  </Pie>
+  <RTooltip content={<CustomPieTooltip />} />
+</PieChart>
+                
                 </ResponsiveContainer>
               </Box>
               <Stack spacing={1}>
