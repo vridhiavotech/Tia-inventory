@@ -313,11 +313,67 @@ export default function StockIssue() {
         </Box>
 
         {/* ── Stat Cards (Goods Receipt style) ── */}
-        <Box sx={{ display: "flex", gap: "12px", mb: "20px" }}>
-          {stats.map((s) => (
-            <StatCard key={s.label} label={s.label} value={s.value} sub={s.sub} color={s.color} />
-          ))}
-        </Box>
+       <Box sx={{ display: "flex", gap: "12px", mb: "20px" }}>
+  {stats.map((s) => (
+    <Box
+      key={s.label}
+      sx={{
+        flex: 1,
+        bgcolor: "#fff",
+        border: "1px solid #e5e7eb",
+        borderRadius: "10px",
+        px: 2,
+        py: 1.5,
+        minWidth: 0,
+      }}
+    >
+      {/* Title */}
+      <Typography
+        sx={{
+          fontSize: 11,
+          fontWeight: 600,
+          color: "#9ca3af",
+          letterSpacing: "0.05em",
+          textTransform: "uppercase",
+          mb: 0.5,
+        }}
+      >
+        {s.label}
+      </Typography>
+
+      {/* Value + Subtitle inline */}
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "baseline",
+          gap: 0.5,
+        }}
+      >
+        <Typography
+          sx={{
+            fontSize: 22,
+            fontWeight: 700,
+            color: "#111827",
+            lineHeight: 1.2,
+          }}
+        >
+          {s.value}
+        </Typography>
+
+        <Typography
+          sx={{
+            fontSize: 11,
+            fontWeight: 500,
+            color: "#6b7280",
+            whiteSpace: "nowrap",
+          }}
+        >
+          {s.sub}
+        </Typography>
+      </Box>
+    </Box>
+  ))}
+</Box>
 
         {/* ── Filters ── */}
         <Box sx={{ display: "flex", alignItems: "center", gap: "12px", mb: "20px" }}>

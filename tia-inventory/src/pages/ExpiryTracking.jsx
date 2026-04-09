@@ -391,11 +391,49 @@ export default function ExpiryTracking() {
       </Box>
 
       {/* Stat Cards */}
-      <Box sx={{ display: "flex", gap: 1.5, mb: 3 }}>
-        <StatCard label="Expired"            value={expired.length}      color="#ef4444" sub="Must be disposed immediately" />
-        <StatCard label="Expiring ≤ 60 Days" value={expiringSoon.length} color="#d97706" sub="Plan replacement now" />
-        <StatCard label="OK"                 value={ok.length}           color="#10b981" sub="No immediate concern" />
-      </Box>
+    <Box sx={{ display: "flex", gap: "12px", mb: "20px" }}>
+  <Box sx={{ flex: 1, bgcolor: "#fff", border: "1px solid #e5e7eb", borderRadius: "10px", px: 2, py: 1.5 }}>
+    <Typography sx={{ fontSize: 11, fontWeight: 600, color: "#9ca3af", letterSpacing: "0.05em", textTransform: "uppercase", mb: 0.5 }}>
+      Expired
+    </Typography>
+    <Box sx={{ display: "flex", alignItems: "baseline", gap: 0.5 }}>
+      <Typography sx={{ fontSize: 22, fontWeight: 700, color: "#111827" }}>
+        {expired.length}
+      </Typography>
+      <Typography sx={{ fontSize: 11, color: "#6b7280" }}>
+        Must be disposed immediately
+      </Typography>
+    </Box>
+  </Box>
+
+  <Box sx={{ flex: 1, bgcolor: "#fff", border: "1px solid #e5e7eb", borderRadius: "10px", px: 2, py: 1.5 }}>
+    <Typography sx={{ fontSize: 11, fontWeight: 600, color: "#9ca3af", letterSpacing: "0.05em", textTransform: "uppercase", mb: 0.5 }}>
+      Expiring ≤ 60 Days
+    </Typography>
+    <Box sx={{ display: "flex", alignItems: "baseline", gap: 0.5 }}>
+      <Typography sx={{ fontSize: 22, fontWeight: 700, color: "#111827" }}>
+        {expiringSoon.length}
+      </Typography>
+      <Typography sx={{ fontSize: 11, color: "#6b7280" }}>
+        Plan replacement now
+      </Typography>
+    </Box>
+  </Box>
+
+  <Box sx={{ flex: 1, bgcolor: "#fff", border: "1px solid #e5e7eb", borderRadius: "10px", px: 2, py: 1.5 }}>
+    <Typography sx={{ fontSize: 11, fontWeight: 600, color: "#9ca3af", letterSpacing: "0.05em", textTransform: "uppercase", mb: 0.5 }}>
+      OK
+    </Typography>
+    <Box sx={{ display: "flex", alignItems: "baseline", gap: 0.5 }}>
+      <Typography sx={{ fontSize: 22, fontWeight: 700, color: "#111827" }}>
+        {ok.length}
+      </Typography>
+      <Typography sx={{ fontSize: 11, color: "#6b7280" }}>
+        No immediate concern
+      </Typography>
+    </Box>
+  </Box>
+</Box>
 
       {/* Filter tabs */}
       <Box sx={{ display: "flex", gap: 1, mb: 2.5 }}>

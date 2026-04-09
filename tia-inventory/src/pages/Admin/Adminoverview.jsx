@@ -201,63 +201,75 @@ const ROLE_COLORS = {
 };
 
 // ── Stat Card ─────────────────────────────────────────────────────────────
-function StatCard({ label, value, sub, color, icon: Icon }) {
+function StatCard({ label, value, sub, icon: Icon }) {
   return (
     <Box
       sx={{
         flex: 1,
         bgcolor: "#fff",
-        border: `1px solid ${C.border}`,
-        borderLeft: `3px solid ${color}`,
-        borderRadius: "8px",
+        border: "1px solid #e5e7eb", // ✅ simple border
+        borderRadius: "10px",
         px: 2,
         py: 1.5,
         minWidth: 0,
       }}
     >
+      {/* Top row (label + icon) */}
       <Box
         sx={{
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          mb: 0.4,
+          mb: 0.5,
         }}
       >
         <Typography
           sx={{
-            fontSize: 10,
-            fontWeight: 700,
-            color: C.textSecondary,
-            letterSpacing: 0.7,
+            fontSize: 11,
+            fontWeight: 600,
+            color: "#9ca3af",
+            letterSpacing: "0.05em",
             textTransform: "uppercase",
           }}
         >
           {label}
         </Typography>
-        {Icon && <Icon sx={{ fontSize: 15, color }} />}
+
+        {Icon && <Icon sx={{ fontSize: 16, color: "#9ca3af" }} />}
       </Box>
-      <Typography
+
+      {/* Value + Subtitle INLINE */}
+      <Box
         sx={{
-          fontSize: 24,
-          fontWeight: 800,
-          color: C.textPrimary,
-          lineHeight: 1.15,
+          display: "flex",
+          alignItems: "baseline",
+          gap: 0.5,
         }}
       >
-        {value}
-      </Typography>
-      {sub && (
         <Typography
           sx={{
-            fontSize: 11,
-            fontWeight: 600,
-            color: C.textSecondary,
-            mt: 0.2,
+            fontSize: 22,
+            fontWeight: 700,
+            color: "#111827",
+            lineHeight: 1.2,
           }}
         >
-          {sub}
+          {value}
         </Typography>
-      )}
+
+        {sub && (
+          <Typography
+            sx={{
+              fontSize: 11,
+              fontWeight: 500,
+              color: "#6b7280",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {sub}
+          </Typography>
+        )}
+      </Box>
     </Box>
   );
 }

@@ -43,41 +43,80 @@ const PO_STATUS = [
 ];
 
 // ── Stat Card — matches Stock Issue style exactly ─────────────────────────────
-function StatCard({ label, value, sub, color, trend }) {
+function StatCard({ label, value, sub, trend }) {
   return (
-    <Box sx={{
-      flex: 1,
-      bgcolor: "#fff",
-      border: "1px solid #e5e7eb",
-      borderLeft: `3px solid ${color}`,
-      borderRadius: "10px",
-      px: 2,
-      py: 1.5,
-      minWidth: 0,
-    }}>
-      <Typography sx={{
-        fontSize: 11, fontWeight: 600, color: "#9ca3af",
-        letterSpacing: "0.05em", textTransform: "uppercase", mb: 0.5,
-      }}>
+    <Box
+      sx={{
+        flex: 1,
+        bgcolor: "#fff",
+        border: "1px solid #e5e7eb", // ✅ clean border
+        borderRadius: "10px",
+        px: 2,
+        py: 1.5,
+        minWidth: 0,
+      }}
+    >
+      {/* Title */}
+      <Typography
+        sx={{
+          fontSize: 11,
+          fontWeight: 600,
+          color: "#9ca3af",
+          letterSpacing: "0.05em",
+          textTransform: "uppercase",
+          mb: 0.5,
+        }}
+      >
         {label}
       </Typography>
-      <Typography sx={{
-        fontSize: typeof value === "string" && value.length > 8 ? 15 : 22,
-        fontWeight: 700, color: "#111827", lineHeight: 1.2,
-        whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
-      }}>
-        {value}
-      </Typography>
-      {sub && (
-        <Typography sx={{
-          fontSize: 11, fontWeight: 600, color, mt: 0.3,
-          whiteSpace: "nowrap", display: "flex", alignItems: "center", gap: 0.3,
-        }}>
-          {trend === "up"   && <TrendingUp   sx={{ fontSize: 12 }} />}
-          {trend === "down" && <TrendingDown sx={{ fontSize: 12 }} />}
-          {sub}
+
+      {/* Value + Subtitle INLINE */}
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "baseline",
+          gap: 0.5,
+        }}
+      >
+        <Typography
+          sx={{
+            fontSize:
+              typeof value === "string" && value.length > 8 ? 15 : 22,
+            fontWeight: 700,
+            color: "#111827",
+            lineHeight: 1.2,
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+        >
+          {value}
         </Typography>
-      )}
+
+        {sub && (
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 0.3,
+              whiteSpace: "nowrap",
+            }}
+          >
+            {trend === "up" && <TrendingUp sx={{ fontSize: 12, color: "#10b981" }} />}
+            {trend === "down" && <TrendingDown sx={{ fontSize: 12, color: "#ef4444" }} />}
+
+            <Typography
+              sx={{
+                fontSize: 11,
+                fontWeight: 500,
+                color: "#6b7280",
+              }}
+            >
+              {sub}
+            </Typography>
+          </Box>
+        )}
+      </Box>
     </Box>
   );
 }
@@ -174,10 +213,10 @@ export default function Reports() {
 
       {/* ── KPI Stat Cards — Stock Issue style ── */}
       <Stack direction="row" spacing={1.5} sx={{ mb: "20px" }}>
-        <StatCard label="Inventory Turnover" value="8.4×"   sub="vs 7.2× prior year"     color="#7C3AED" trend="up"   />
-        <StatCard label="Fill Rate"           value="97.8%"  sub="↑ 0.4% vs last month"   color="#2563EB" trend="up"   />
-        <StatCard label="Waste / Shrinkage"   value="$4,820" sub="↑ $620 due to expiries" color="#DC2626" trend="down" />
-        <StatCard label="Stockout Events"     value="3"      sub="↑ 1 vs last month"      color="#D97706" trend="down" />
+        <StatCard label="Inventory Turnover" value="8.4×"   sub="vs 7.2× prior year"     trend="up"   />
+        <StatCard label="Fill Rate"           value="97.8%"  sub="↑ 0.4% vs last month"    trend="up"   />
+        <StatCard label="Waste / Shrinkage"   value="$4,820" sub="↑ $620 due to expiries"  trend="down" />
+        <StatCard label="Stockout Events"     value="3"      sub="↑ 1 vs last month"      trend="down" />
       </Stack>
 
       {/* ── Charts Row 1 ── */}

@@ -58,20 +58,65 @@ const seedTransfers = [
 ];
 
 // ─── Stat Card ────────────────────────────────────────────────────────────────
-function StatCard({ label, value, sub, color }) {
+function StatCard({ label, value, sub }) {
   return (
-    <Box sx={{ flex: 1, bgcolor: "#fff", border: "1px solid #e5e7eb", borderLeft: `3px solid ${color}`, borderRadius: "10px", p: "12px 16px", minWidth: 0 }}>
-      <Typography sx={{ fontSize: 11, fontWeight: 600, color: "#9ca3af", letterSpacing: "0.05em", textTransform: "uppercase", mb: 0.5 }}>
+    <Box
+      sx={{
+        flex: 1,
+        bgcolor: "#fff",
+        border: "1px solid #e5e7eb",
+        borderRadius: "10px",
+        px: 2,
+        py: 1.5,
+        minWidth: 0,
+      }}
+    >
+      {/* Title */}
+      <Typography
+        sx={{
+          fontSize: 11,
+          fontWeight: 600,
+          color: "#9ca3af",
+          letterSpacing: "0.05em",
+          textTransform: "uppercase",
+          mb: 0.5,
+        }}
+      >
         {label}
       </Typography>
-      <Typography sx={{ fontSize: 22, fontWeight: 700, color: "#111827", lineHeight: 1.2 }}>
-        {value}
-      </Typography>
-      {sub && (
-        <Typography sx={{ fontSize: 11, fontWeight: 600, color, mt: 0.4 }}>
-          {sub}
+
+      {/* Value + Subtitle inline */}
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "baseline",
+          gap: 0.5,
+        }}
+      >
+        <Typography
+          sx={{
+            fontSize: 22,
+            fontWeight: 700,
+            color: "#111827",
+            lineHeight: 1.2,
+          }}
+        >
+          {value}
         </Typography>
-      )}
+
+        {sub && (
+          <Typography
+            sx={{
+              fontSize: 11,
+              fontWeight: 500,
+              color: "#6b7280",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {sub}
+          </Typography>
+        )}
+      </Box>
     </Box>
   );
 }

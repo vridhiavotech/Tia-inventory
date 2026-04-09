@@ -89,39 +89,57 @@ function StatCard({ title, value, subtitle, accent }) {
     <div
       style={{
         background: "#fff",
-        borderRadius: 12,
-        padding: "18px 20px",
+        borderRadius: 10,
+        padding: "12px 14px",
         border: "1px solid #f0f0f0",
-        boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
+        boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
         flex: 1,
         minWidth: 0,
       }}
     >
+      {/* Title */}
       <p
         style={{
           margin: 0,
-          fontSize: 12,
+          fontSize: 11,
           color: "#9ca3af",
           fontWeight: 500,
-          letterSpacing: "0.02em",
         }}
       >
         {title}
       </p>
-      <p
+
+      {/* Value + Subtitle inline */}
+      <div
         style={{
-          margin: "6px 0 2px",
-          fontSize: 26,
-          fontWeight: 700,
-          color: accent || "#111827",
-          lineHeight: 1,
+          display: "flex",
+          alignItems: "baseline", // 🔥 important
+          gap: 6,
+          marginTop: 4,
         }}
       >
-        {value}
-      </p>
-      {subtitle && (
-        <p style={{ margin: 0, fontSize: 12, color: "#6b7280" }}>{subtitle}</p>
-      )}
+        <p
+          style={{
+            margin: 0,
+            fontSize: 20,
+            fontWeight: 700,
+            color: accent || "#111827",
+          }}
+        >
+          {value}
+        </p>
+
+        {subtitle && (
+          <span
+            style={{
+              fontSize: 11,
+              color: "#6b7280",
+            }}
+          >
+            {subtitle}
+          </span>
+        )}
+      </div>
     </div>
   );
 }
@@ -133,29 +151,57 @@ function PendingCard({ title, value, subtitle }) {
     <div
       style={{
         background: "#fff",
-        borderRadius: 12,
-        padding: "18px 20px",
+        borderRadius: 10,
+        padding: "12px 14px",
         border: "1px solid #f0f0f0",
-        boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
+        boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
         flex: 1,
         minWidth: 0,
       }}
     >
-      <p style={{ margin: 0, fontSize: 12, color: "#9ca3af", fontWeight: 500 }}>
-        {title}
-      </p>
+      {/* Title */}
       <p
         style={{
-          margin: "6px 0 2px",
-          fontSize: 26,
-          fontWeight: 700,
-          color: "#111827",
-          lineHeight: 1,
+          margin: 0,
+          fontSize: 11,
+          color: "#9ca3af",
+          fontWeight: 500,
         }}
       >
-        {value}
+        {title}
       </p>
-      <p style={{ margin: 0, fontSize: 12, color: "#6b7280" }}>{subtitle}</p>
+
+      {/* Value + Subtitle inline */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "baseline", // 🔥 key
+          gap: 6,
+          marginTop: 4,
+        }}
+      >
+        <p
+          style={{
+            margin: 0,
+            fontSize: 20,
+            fontWeight: 700,
+            color: "#111827",
+          }}
+        >
+          {value}
+        </p>
+
+        {subtitle && (
+          <span
+            style={{
+              fontSize: 11,
+              color: "#6b7280",
+            }}
+          >
+            {subtitle}
+          </span>
+        )}
+      </div>
     </div>
   );
 }

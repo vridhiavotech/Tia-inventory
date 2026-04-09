@@ -179,10 +179,10 @@ const Manufacturers = () => {
   };
 
   const statCards = [
-    { title: "Pharma", value: typeStats.Pharma, subtitle: "manufacturers", color: "#3b82f6" },
-    { title: "PPE", value: typeStats.PPE, subtitle: "manufacturers", color: "#10b981" },
-    { title: "Surgical", value: typeStats.Surgical, subtitle: "manufacturers", color: "#f59e0b" },
-    { title: "Diagnostics", value: typeStats.Diagnostics, subtitle: "manufacturers", color: "#8b5cf6" },
+    { title: "Pharma", value: typeStats.Pharma, subtitle: "manufacturers" },
+    { title: "PPE", value: typeStats.PPE, subtitle: "manufacturers"},
+    { title: "Surgical", value: typeStats.Surgical, subtitle: "manufacturers" },
+    { title: "Diagnostics", value: typeStats.Diagnostics, subtitle: "manufacturers"},
   ];
 
   const handleEdit = (manufacturer) => {
@@ -565,33 +565,77 @@ const Manufacturers = () => {
         </Button>
       </Box>
 
-      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: 'repeat(4, 1fr)' }, gap: 2, mb: 3 }}>
-        {statCards.map((card, index) => (
-          <Card
-            key={index}
+     <Box
+  sx={{
+    display: "grid",
+    gridTemplateColumns: {
+      xs: "1fr",
+      sm: "1fr 1fr",
+      md: "repeat(4, 1fr)",
+    },
+    gap: 2,
+    mb: 3,
+  }}
+>
+  {statCards.map((card, index) => (
+    <Card
+      key={index}
+      sx={{
+        backgroundColor: "#fff",
+        border: "1px solid #e5e7eb", // ✅ clean border
+        borderRadius: "10px",
+        boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+      }}
+    >
+      <CardContent sx={{ p: 1.5, "&:last-child": { pb: 1.5 } }}>
+        {/* Title */}
+        <Typography
+          sx={{
+            fontSize: 11,
+            fontWeight: 600,
+            color: "#9ca3af",
+            textTransform: "uppercase",
+            letterSpacing: "0.05em",
+            mb: 0.5,
+          }}
+        >
+          {card.title}
+        </Typography>
+
+        {/* Value + Subtitle INLINE */}
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "baseline",
+            gap: 0.5,
+          }}
+        >
+          <Typography
             sx={{
-              backgroundColor: '#ffffff',
-              borderLeft: `4px solid ${card.color}`,
-              borderRadius: 3,
-              boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+              fontSize: 22,
+              fontWeight: 700,
+              color: "#111827",
+              lineHeight: 1.2,
             }}
           >
-            <CardContent sx={{ p: 1.5, '&:last-child': { pb: 1.5 } }}>
-              <Box>
-                <Typography sx={{ fontSize: '0.7rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                  {card.title}
-                </Typography>
-                <Typography sx={{ fontSize: '1.3rem', fontWeight: 700, color: "black", mt: 0.5 }}>
-                  {card.value}
-                </Typography>
-                <Typography sx={{ fontSize: '0.65rem', color: '#64748b', mt: 0.5 }}>
-                  {card.subtitle}
-                </Typography>
-              </Box>
-            </CardContent>
-          </Card>
-        ))}
-      </Box>
+            {card.value}
+          </Typography>
+
+          <Typography
+            sx={{
+              fontSize: 11,
+              fontWeight: 500,
+              color: "#6b7280",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {card.subtitle}
+          </Typography>
+        </Box>
+      </CardContent>
+    </Card>
+  ))}
+</Box>
 
       {/* MAIN OUTER CARD - Light grey/white card wrapper */}
       <Card sx={{ 
