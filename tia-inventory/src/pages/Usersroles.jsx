@@ -750,9 +750,7 @@ export default function UsersRoles() {
   const locationsList = uniqueLocs.map((n, i) => ({ id: `LOC-${i}`, name: n }));
 
   return (
-    <Box
-      
-    >
+    <Box>
       <Box sx={{ maxWidth: "1400px", mx: "auto" }}>
         {/* ── Title row ── */}
         <Box
@@ -790,26 +788,26 @@ export default function UsersRoles() {
             startIcon={<Add sx={{ fontSize: 16 }} />}
             variant="contained"
             onClick={() => setModalOpen(true)}
-               sx={{
-           display: 'inline-flex',
-           alignItems: 'center',
-           justifyContent: 'center',
-           gap: '6px',
-           background: '#2563eb',
-           color: '#fff',
-           borderRadius: '12px',        
-           px: '15px',                  
-           py: '8px',                 
-          fontSize: '12px',            
-          fontWeight: 500,             
-          textTransform: 'none',
-          lineHeight: 1,
-          boxShadow: '0 1px 4px rgba(37,99,235,0.25)',
-          '&:hover': {
-          background: '#1d4ed8',
-          boxShadow: '0 2px 6px rgba(37,99,235,0.3)', 
-   },
- }}
+            sx={{
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "6px",
+              background: "#2563eb",
+              color: "#fff",
+              borderRadius: "12px",
+              px: "15px",
+              py: "8px",
+              fontSize: "12px",
+              fontWeight: 500,
+              textTransform: "none",
+              lineHeight: 1,
+              boxShadow: "0 1px 4px rgba(37,99,235,0.25)",
+              "&:hover": {
+                background: "#1d4ed8",
+                boxShadow: "0 2px 6px rgba(37,99,235,0.3)",
+              },
+            }}
           >
             Create User
           </Button>
@@ -833,14 +831,29 @@ export default function UsersRoles() {
               onChange={(e) => setRoleFilter(e.target.value)}
               sx={{
                 fontSize: 13,
-                borderRadius: "8px",
+                borderRadius: "20px",
                 bgcolor: "#fff",
-                "& .MuiOutlinedInput-notchedOutline": { borderColor: C.border },
+
+                "& .MuiOutlinedInput-notchedOutline": {
+                  borderColor: C.border,
+                  borderWidth: "1px", // 👈 thin
+                },
+
+                "&:hover .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "#015DFF", // 👈 blue hover
+                  borderWidth: "1px",
+                },
+
+                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "#015DFF", // 👈 blue focus
+                  borderWidth: "1px",
+                },
               }}
             >
               <MenuItem value="All Roles" sx={{ fontSize: 13 }}>
                 All Roles
               </MenuItem>
+
               {uniqueRoles.map((r) => (
                 <MenuItem key={r} value={r} sx={{ fontSize: 13 }}>
                   {r}
@@ -856,14 +869,29 @@ export default function UsersRoles() {
               onChange={(e) => setLocFilter(e.target.value)}
               sx={{
                 fontSize: 13,
-                borderRadius: "8px",
+                borderRadius: "20px",
                 bgcolor: "#fff",
-                "& .MuiOutlinedInput-notchedOutline": { borderColor: C.border },
+
+                "& .MuiOutlinedInput-notchedOutline": {
+                  borderColor: C.border,
+                  borderWidth: "1px", // 👈 thin
+                },
+
+                "&:hover .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "#015DFF", // 👈 blue hover
+                  borderWidth: "1px",
+                },
+
+                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "#015DFF", // 👈 blue focus
+                  borderWidth: "1px",
+                },
               }}
             >
               <MenuItem value="All Locations" sx={{ fontSize: 13 }}>
                 All Locations
               </MenuItem>
+
               {uniqueLocs.map((l) => (
                 <MenuItem key={l} value={l} sx={{ fontSize: 13 }}>
                   {l}
@@ -871,7 +899,6 @@ export default function UsersRoles() {
               ))}
             </Select>
           </FormControl>
-
           {/* Search */}
           <TextField
             size="small"
@@ -1252,7 +1279,7 @@ export default function UsersRoles() {
                 },
               }}
             >
-              <Table size="small" sx={{ minWidth: 1000 }}>
+              <Table size="small" sx={{ Width: 1000 }}>
                 <TableHead>
                   <TableRow sx={{ bgcolor: "#F9FAFB" }}>
                     <TableCell

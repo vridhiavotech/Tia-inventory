@@ -272,15 +272,56 @@ export default function ExpiryTracking() {
       </Box>
 
       {/* Filter tabs */}
-      <Box sx={{ display:"flex", gap:1, mb:2.5 }}>
-        {filters.map(({ label, dot }) => (
-          <Button key={label} onClick={() => setFilter(label)}
-            sx={{ textTransform:"none", fontSize:13, fontWeight:filter===label?700:500, color:filter===label?"#015DFF":"#374151", bgcolor:filter===label?"#EFF4FF":"#fff", border:"1.5px solid", borderColor:filter===label?"#015DFF":"#e2e8f0", borderRadius:"99px", px:2, py:0.75, gap:0.75, "&:hover":{ bgcolor:filter===label?"#EFF4FF":"#f1f5f9" } }}>
-            {dot && <Box sx={{ width:8, height:8, borderRadius:"50%", bgcolor:dot, flexShrink:0 }} />}
-            {label}
-          </Button>
-        ))}
-      </Box>
+  <Box sx={{ display: "flex", gap: 1, mb: 2.5 }}>
+  {filters.map(({ label, dot }) => (
+    <Button
+      key={label}
+      onClick={() => setFilter(label)}
+      sx={{
+        textTransform: "none",
+        fontSize: 13,
+        fontWeight: filter === label ? 700 : 500,
+        color: filter === label ? "#015DFF" : "#374151",
+        bgcolor: filter === label ? "#EFF4FF" : "#fff",
+
+        border: "1px solid", // 👈 thin
+        borderColor: filter === label ? "#015DFF" : "#e2e8f0",
+
+        borderRadius: "99px",
+        px: 2,
+        py: 0.75,
+        gap: 0.75,
+
+        "&:hover": {
+          bgcolor: filter === label ? "#EFF4FF" : "#f1f5f9",
+          borderColor: "#015DFF", // 👈 blue on hover (all buttons)
+        },
+
+        "&:focus": {
+          borderColor: "#015DFF", // 👈 blue on focus
+          outline: "none",
+        },
+
+        "&.Mui-focusVisible": {
+          borderColor: "#015DFF",
+        },
+      }}
+    >
+      {dot && (
+        <Box
+          sx={{
+            width: 8,
+            height: 8,
+            borderRadius: "50%",
+            bgcolor: dot,
+            flexShrink: 0,
+          }}
+        />
+      )}
+      {label}
+    </Button>
+  ))}
+</Box>
 
       {/* Table */}
       <Paper elevation={0} sx={{ borderRadius:"14px", border:"1.5px solid #e2e8f0", overflow:"hidden", boxShadow:"0 1px 6px rgba(0,0,0,0.05)" }}>
