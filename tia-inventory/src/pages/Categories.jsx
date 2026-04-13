@@ -1031,11 +1031,7 @@ export default function Categories() {
 
   return (
     <div
-      style={{
-        background: "#f8fafc",
-        minHeight: "100vh",
-        padding: "26px 24px",
-      }}
+    
     >
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap');

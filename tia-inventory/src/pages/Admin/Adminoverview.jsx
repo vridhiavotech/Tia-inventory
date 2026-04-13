@@ -27,7 +27,7 @@ import {
 import AddUserModal from "./AddUserModal";
 import AddLocationModal from "./AddLocationModal";
 
-// ── Colour tokens ─────────────────────────────────────────────────────────
+// ── Colour tokens ─────────────────────────────────────────────────────────────
 const C = {
   bg: "#F5F6FA",
   surface: "#FFFFFF",
@@ -39,7 +39,7 @@ const C = {
   accent: "#7C3AED",
 };
 
-// ── Seed data ─────────────────────────────────────────────────────────────
+// ── Seed data ─────────────────────────────────────────────────────────────────
 const SEED_LOCATIONS = [
   { id: "CS-01",  name: "Central Store", type: "CENTRAL STORE", inCharge: "Admin",          users: 1, skus: 8, code: "CS",  phone: "", address: "" },
   { id: "ICU-01", name: "ICU",           type: "WARD/DEPT",     inCharge: "Dr. Patel",       users: 1, skus: 2, code: "ICU", phone: "", address: "" },
@@ -56,7 +56,7 @@ const SEED_USERS = [
   { id: "TW", name: "Tom Williams",   role: "Storekeeper", roleBg: "#FFF7ED", roleColor: "#C2410C", location: "Laboratory",    status: "Blocked", initials: "TW", avatarBg: "#DC2626" },
 ];
 
-// ── Location badge colours ────────────────────────────────────────────────
+// ── Location badge colours ─────────────────────────────────────────────────────
 const LOC_COLORS = {
   CS:  { bg: "#EFF6FF", color: "#1D4ED8", border: "#BFDBFE", accent: "#1976D2" },
   ICU: { bg: "#FFF7ED", color: "#C2410C", border: "#FED7AA", accent: "#EA580C" },
@@ -67,7 +67,7 @@ const LOC_COLORS = {
 };
 const DEFAULT_LOC_COLOR = { bg: "#F5F3FF", color: "#6D28D9", border: "#DDD6FE", accent: "#7C3AED" };
 
-// ── Role colour map ───────────────────────────────────────────────────────
+// ── Role colour map ───────────────────────────────────────────────────────────
 const ROLE_COLORS = {
   "Location Manager": { bg: "#EFF6FF", color: "#1D4ED8", avatarBg: "#1976D2" },
   Manager:    { bg: "#EFF6FF", color: "#1D4ED8", avatarBg: "#1976D2" },
@@ -78,7 +78,7 @@ const ROLE_COLORS = {
   Admin:      { bg: "#F5F3FF", color: "#6D28D9", avatarBg: "#6D28D9" },
 };
 
-// ── Location Card ─────────────────────────────────────────────────────────
+// ── Location Card ─────────────────────────────────────────────────────────────
 function LocationCard({ loc }) {
   const navigate = useNavigate();
   const c = LOC_COLORS[loc.code] || DEFAULT_LOC_COLOR;
@@ -125,7 +125,7 @@ function LocationCard({ loc }) {
   );
 }
 
-// ── User Card ─────────────────────────────────────────────────────────────
+// ── User Card ─────────────────────────────────────────────────────────────────
 function UserCard({ user, onToggle }) {
   const isBlocked = user.status === "Blocked";
   return (
@@ -151,7 +151,7 @@ function UserCard({ user, onToggle }) {
   );
 }
 
-// ── MAIN COMPONENT ────────────────────────────────────────────────────────
+// ── MAIN COMPONENT ────────────────────────────────────────────────────────────
 export default function AdminOverview() {
   const navigate = useNavigate();
   const [locations, setLocations] = useState(SEED_LOCATIONS);
@@ -196,7 +196,7 @@ export default function AdminOverview() {
     );
   };
 
-  // ── Stat cards config ─────────────────────────────────────────────────
+  // ── Stat cards config ──────────────────────────────────────────────────────
   const statCardsRow1 = [
     {
       label:  "Active Users",
@@ -286,13 +286,7 @@ export default function AdminOverview() {
   ];
 
   const StatCardGRN = ({ label, value, sub, iconBg, icon }) => (
-    <Box
-      sx={{
-        flex: 1, bgcolor: "#fff", border: "1px solid #e5e7eb",
-        borderRadius: "10px", px: 2, py: 1.5, minWidth: 0,
-        display: "flex", alignItems: "center", gap: 1.5,
-      }}
-    >
+    <Box sx={{ flex: 1, bgcolor: "#fff", border: "1px solid #e5e7eb", borderRadius: "10px", px: 2, py: 1.5, minWidth: 0, display: "flex", alignItems: "center", gap: 1.5 }}>
       <Box sx={{ width: 44, height: 44, borderRadius: "50%", bgcolor: iconBg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
         {icon}
       </Box>
@@ -314,8 +308,42 @@ export default function AdminOverview() {
     </Box>
   );
 
+  // ── Shared button sx (Figma-matched: same as Export / Raise Replacement) ──
+  const outlinedBtnSx = {
+    height: 32,
+    px: "12px",
+    borderRadius: "12px",
+    border: "1px solid #015DFF",
+    color: "#015DFF",
+    textTransform: "none",
+    fontWeight: 600,
+    fontSize: 13,
+    bgcolor: "#fff",
+    boxShadow: "none",
+    gap: "8px",
+    minWidth: 0,
+    "& .MuiButton-startIcon": { mr: 0 },
+    "&:hover": { border: "1px solid #015DFF", bgcolor: "#EFF4FF", boxShadow: "none" },
+  };
+
+  const containedBtnSx = {
+    height: 32,
+    px: "12px",
+    borderRadius: "12px",
+    bgcolor: "#015DFF",
+    color: "#fff",
+    textTransform: "none",
+    fontWeight: 600,
+    fontSize: 13,
+    boxShadow: "none",
+    gap: "8px",
+    minWidth: 0,
+    "& .MuiButton-startIcon": { mr: 0 },
+    "&:hover": { bgcolor: "#0147CC", boxShadow: "none" },
+  };
+
   return (
-    <Box sx={{ background: "#f8fafc", minHeight: "100vh", padding: "26px 24px" }}>
+    <Box>
       <Box sx={{ maxWidth: "1400px", mx: "auto" }}>
 
         {/* Title row */}
@@ -324,19 +352,32 @@ export default function AdminOverview() {
             <Typography sx={{ fontWeight: 700, fontSize: 22, color: C.textPrimary, letterSpacing: -0.3 }}>Admin Overview</Typography>
             <Typography sx={{ fontSize: 13, color: C.textSecondary, mt: 0.3 }}>System health — all locations and master data</Typography>
           </Box>
-          <Stack direction="row" spacing={1.5}>
-            <Button startIcon={<PersonAdd sx={{ fontSize: 16 }} />} variant="outlined" onClick={() => setAddUserOpen(true)}
-              sx={{ border: `1px solid ${C.border}`, color: C.textSecondary, textTransform: "none", fontWeight: 600, fontSize: 13, borderRadius: "8px", height: 36, px: 2, bgcolor: "#fff", "&:hover": { borderColor: "#9CA3AF", bgcolor: "#F9FAFB" } }}>
+
+          {/* ── Buttons — Figma-matched (same as Export / Raise Replacement) ── */}
+          <Stack direction="row" spacing={1.5} alignItems="center">
+            {/* Add User — outlined #015DFF */}
+            <Button
+              startIcon={<PersonAdd sx={{ fontSize: "14px !important" }} />}
+              variant="outlined"
+              onClick={() => setAddUserOpen(true)}
+              sx={outlinedBtnSx}
+            >
               Add User
             </Button>
-            <Button startIcon={<AddLocation sx={{ fontSize: 16 }} />} variant="contained" onClick={() => setAddLocOpen(true)}
-              sx={{ bgcolor: "#2563eb", textTransform: "none", fontWeight: 700, fontSize: 13, borderRadius: "8px", height: 36, px: 2.5, boxShadow: "0 1px 4px #2563eb", "&:hover": { bgcolor: "#2563eb", boxShadow: "0 2px 8px #2563eb" } }}>
+
+            {/* Add Location — filled #015DFF */}
+            <Button
+              startIcon={<AddLocation sx={{ fontSize: "14px !important" }} />}
+              variant="contained"
+              onClick={() => setAddLocOpen(true)}
+              sx={containedBtnSx}
+            >
               Add Location
             </Button>
           </Stack>
         </Box>
 
-        {/* Stat Cards — GRN icon style, 2 rows of 3 */}
+        {/* Stat Cards — 2 rows of 3 */}
         <CardContent sx={{ p: 0, "&:last-child": { pb: 0 }, mb: 2.5 }}>
           <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5} sx={{ mb: 1.5 }}>
             {statCardsRow1.map((s) => <StatCardGRN key={s.label} {...s} />)}

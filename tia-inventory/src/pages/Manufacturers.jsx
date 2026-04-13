@@ -514,7 +514,7 @@ const Manufacturers = () => {
   };
 
   return (
-    <Box sx={{ width: '100%', px: 0, overflow: 'hidden', background: "#f8fafc", minHeight: "100vh", padding: "26px 24px" }}>
+    <Box >
       <Box sx={{ 
         display: 'flex', 
         justifyContent: 'space-between', 

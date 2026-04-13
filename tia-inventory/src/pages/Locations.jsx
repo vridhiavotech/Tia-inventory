@@ -240,7 +240,7 @@ export default function Locations() {
   };
 
   return (
-    <Box sx={{ background: "#f8fafc", minHeight: "100vh", padding: "26px 24px" }}>
+    <Box >
       <Box sx={{ maxWidth: '1400px', mx: 'auto' }}>
 
         {/* ── Title row ── */}

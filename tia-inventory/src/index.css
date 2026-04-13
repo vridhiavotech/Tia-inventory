@@ -1,5 +1,5 @@
 :root {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: Inter, system-ui, -apple-system, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
@@ -11,6 +11,18 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* ── Design Tokens ───────────────────────────────────────────── */
+  --color-primary:        #015DFF;
+  --color-primary-hover:  #0147CC;
+  --color-primary-light:  #EFF4FF;
+
+  --btn-height:           32px;
+  --btn-border-radius:    12px;
+  --btn-font-size:        13px;
+  --btn-font-weight:      600;
+  --btn-px:               12px;
+  --btn-gap:              8px;
 }
 
 a {
@@ -28,8 +40,7 @@ body {
   min-height: 100vh;
   width: 100%;
   display: block;
-    font-family: inherit;
-
+  font-family: inherit;
 }
 
 h1 {
@@ -37,8 +48,9 @@ h1 {
   line-height: 1.1;
 }
 
+/* ── Base button reset ──────────────────────────────────────────── */
 button {
-  border-radius: 8px;
+  border-radius: var(--btn-border-radius);
   border: 1px solid transparent;
   padding: 0.6em 1.2em;
   font-size: 1em;
@@ -54,6 +66,56 @@ button:hover {
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
+}
+
+/* ── App button classes ─────────────────────────────────────────── */
+
+/* Primary — solid blue fill */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--btn-gap);
+  height: var(--btn-height);
+  padding: 0 var(--btn-px);
+  border-radius: var(--btn-border-radius);
+  border: 1px solid transparent;
+  background-color: var(--color-primary);
+  color: #fff;
+  font-size: var(--btn-font-size);
+  font-weight: var(--btn-font-weight);
+  font-family: inherit;
+  text-transform: none;
+  cursor: pointer;
+  box-shadow: none;
+  transition: background-color 0.2s;
+}
+.btn-primary:hover {
+  background-color: var(--color-primary-hover);
+  border-color: transparent;
+}
+
+/* Outlined — blue border + text, white bg */
+.btn-outlined {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--btn-gap);
+  height: var(--btn-height);
+  padding: 0 var(--btn-px);
+  border-radius: var(--btn-border-radius);
+  border: 1px solid var(--color-primary);
+  background-color: #fff;
+  color: var(--color-primary);
+  font-size: var(--btn-font-size);
+  font-weight: var(--btn-font-weight);
+  font-family: inherit;
+  text-transform: none;
+  cursor: pointer;
+  box-shadow: none;
+  transition: background-color 0.2s;
+}
+.btn-outlined:hover {
+  background-color: var(--color-primary-light);
+  border-color: var(--color-primary);
 }
 
 @media (prefers-color-scheme: light) {

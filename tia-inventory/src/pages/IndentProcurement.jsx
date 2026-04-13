@@ -193,7 +193,7 @@ const IndentProcurement = () => {
       }} />
 
       {/* ── Outer wrapper — matches InventoryItems / StockIssue exactly ── */}
-      <Box sx={{ background: '#f8f9fb', minHeight: '100vh', p: '28px 32px', boxSizing: 'border-box' }}>
+      <Box >
 
         {/* ── Page Header ── */}
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: '20px' }}>

@@ -56,7 +56,7 @@ export default function GoodsReceipt() {
 
   const ViewRow = ({ label, value, valueColor }) => (
     <Box sx={{ display:"flex", justifyContent:"space-between", alignItems:"center", py:"10px", borderBottom:"1px solid #f3f4f6" }}>
-      <Typography sx={{ fontSize:12, fontWeight:600, color:"#9ca3af", textTransform:"uppercase", letterSpacing:"0.05em", minWidth:130 }}>
+      <Typography sx={{ fontSize:12, fontWeight:600, color:"#9ca3af", letterSpacing:"0.05em", minWidth:130 }}>
         {label}
       </Typography>
       <Typography sx={{ fontSize:13, fontWeight:600, color: valueColor || "#111827", textAlign:"right" }}>
@@ -131,8 +131,8 @@ export default function GoodsReceipt() {
   ];
 
   return (
-    <Box sx={{ background: "#f8f9fb", minHeight: "100vh" }}>
-      <Box sx={{ p: "28px 32px", boxSizing: "border-box" }}>
+    <Box >
+      <Box >
 
         {/* Header */}
         <Box sx={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", flexWrap:"wrap", gap:2, mb:3 }}>

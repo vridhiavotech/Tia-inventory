@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import {
   Box, Typography, Button, Chip, IconButton, Table, TableBody,
   TableCell, TableContainer, TableHead, TableRow, Paper,
@@ -7,11 +7,9 @@ import {
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
-import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import SaveOutlinedIcon from "@mui/icons-material/SaveOutlined";
 import SyncAltOutlinedIcon from "@mui/icons-material/SyncAltOutlined";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
@@ -77,6 +75,41 @@ const FLabel = ({ text }) => (
   <Typography sx={{ display: "block", fontSize: 11, fontWeight: 700, color: "#64748b", letterSpacing: "0.06em", textTransform: "uppercase", mb: 0.75 }}>
     {text}
   </Typography>
+);
+
+// ─── Cart SVG Icon (exact SVG provided) ───────────────────────────────────────
+
+const CartIcon = ({ color = "#73767C", size = 15 }) => (
+  <svg width={size} height={size} viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <g clipPath="url(#clip0_cart)">
+      <path
+        d="M1.01221 1.01221H5.06141L7.77437 14.5669C7.86694 15.033 8.12048 15.4516 8.49062 15.7496C8.86075 16.0475 9.3239 16.2058 9.79897 16.1967H19.6385C20.1136 16.2058 20.5767 16.0475 20.9469 15.7496C21.317 15.4516 21.5706 15.033 21.6631 14.5669L23.2828 6.07371H6.07371M10.1229 21.2582C10.1229 21.8173 9.66968 22.2705 9.11061 22.2705C8.55153 22.2705 8.09831 21.8173 8.09831 21.2582C8.09831 20.6991 8.55153 20.2459 9.11061 20.2459C9.66968 20.2459 10.1229 20.6991 10.1229 21.2582ZM21.2582 21.2582C21.2582 21.8173 20.805 22.2705 20.2459 22.2705C19.6868 22.2705 19.2336 21.8173 19.2336 21.2582C19.2336 20.6991 19.6868 20.2459 20.2459 20.2459C20.805 20.2459 21.2582 20.6991 21.2582 21.2582Z"
+        stroke={color}
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </g>
+    <defs>
+      <clipPath id="clip0_cart">
+        <rect width="24.2952" height="24.2952" fill="white" />
+      </clipPath>
+    </defs>
+  </svg>
+);
+
+// ─── X Icon — Icon/Neutral/Tertiary #767676, 16×16px ─────────────────────────
+
+const XIcon = ({ color = "#767676", size = 14 }) => (
+  <svg width={size} height={size} viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path
+      d="M12 4L4 12M4 4L12 12"
+      stroke={color}
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
 );
 
 // ─── Raise Replacement Modal ──────────────────────────────────────────────────
@@ -267,7 +300,7 @@ function StatCard({ label, count, sub, iconEl, iconBg }) {
   );
 }
 
-// ─── Dropdown (MUI Select) ────────────────────────────────────────────────────
+// ─── Dropdown ────────────────────────────────────────────────────────────────
 
 function FilterSelect({ value, onChange, options }) {
   return (
@@ -282,7 +315,7 @@ function FilterSelect({ value, onChange, options }) {
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
-const HEADS = ["Request#", "Item", "Reason", "Urgency", "Disposed", "Replace QTY", "Substitute", "Linked PO", "Raised by", "Date", "Status", "Action"];
+const HEADS = ["Request#", "Item", "Reason", "Urgency", "Disposed", "Replace Qty", "Substitute", "Linked PO", "Raised By", "Date", "Status", "Action"];
 
 export default function Replacement() {
   const [data, setData] = useState(initialData);
@@ -344,15 +377,14 @@ export default function Replacement() {
   };
 
   const statCards = [
-    { label: "Open Requests", count: counts.open, sub: "Awaiting action", iconBg: "#f59e0b", icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> },
+    { label: "Open Requests", count: counts.open,       sub: "Awaiting action",       iconBg: "#f59e0b", icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> },
     { label: "PO Raised",     count: counts.poRaised,   sub: "Pending delivery",      iconBg: "#a855f7", icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> },
     { label: "In Progress",   count: counts.inProgress, sub: "",                       iconBg: "#3b82f6", icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> },
     { label: "Closed",        count: counts.closed,     sub: "Successfully replaced",  iconBg: "#10b981", icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/></svg> },
   ];
 
   return (
-    <Box sx={{ background: "#f8f9fb", minHeight: "100vh", p: "28px 32px", boxSizing: "border-box" }}>
-
+    <Box>
       {showModal && <RaiseReplacementModal onClose={() => setShowModal(false)} onSubmit={handleRaiseReplacement} />}
 
       {/* Header */}
@@ -368,13 +400,37 @@ export default function Replacement() {
             ))}
           </Stack>
         </Box>
-        <Stack direction="row" spacing={1.5}>
-          <Button startIcon={<FileDownloadOutlinedIcon sx={{ fontSize: 16 }} />} variant="outlined" onClick={handleExport}
-            sx={{ border: "1px solid #e5e7eb", color: "#374151", textTransform: "none", fontWeight: 600, fontSize: 13, borderRadius: "8px", height: 36, px: 2, bgcolor: "#fff", "&:hover": { borderColor: "#9ca3af", bgcolor: "#f9fafb" } }}>
+
+        {/* ── Header Buttons (Figma-matched) ── */}
+        <Stack direction="row" spacing={1.5} alignItems="center">
+          <Button
+            startIcon={<FileDownloadOutlinedIcon sx={{ fontSize: "14px !important" }} />}
+            variant="outlined"
+            onClick={handleExport}
+            sx={{
+              height: 32, px: "12px", borderRadius: "12px",
+              border: "1px solid #015DFF", color: "#015DFF",
+              textTransform: "none", fontWeight: 600, fontSize: 13,
+              bgcolor: "#fff", boxShadow: "none", gap: "8px", minWidth: 0,
+              "& .MuiButton-startIcon": { mr: 0 },
+              "&:hover": { border: "1px solid #015DFF", bgcolor: "#EFF4FF", boxShadow: "none" },
+            }}
+          >
             Export
           </Button>
-          <Button startIcon={<AddIcon sx={{ fontSize: 16 }} />} variant="contained" onClick={() => setShowModal(true)}
-            sx={{ bgcolor: "#2563eb", color: "#fff", borderRadius: "8px", px: "18px", fontSize: 13, fontWeight: 600, textTransform: "none", boxShadow: "0 2px 8px rgba(37,99,235,0.25)", "&:hover": { bgcolor: "#1d4ed8" } }}>
+          <Button
+            startIcon={<AddIcon sx={{ fontSize: "14px !important" }} />}
+            variant="contained"
+            onClick={() => setShowModal(true)}
+            sx={{
+              height: 32, px: "12px", borderRadius: "12px",
+              bgcolor: "#015DFF", color: "#fff",
+              textTransform: "none", fontWeight: 600, fontSize: 13,
+              boxShadow: "none", gap: "8px", minWidth: 0,
+              "& .MuiButton-startIcon": { mr: 0 },
+              "&:hover": { bgcolor: "#0147CC", boxShadow: "none" },
+            }}
+          >
             Raise Replacement
           </Button>
         </Stack>
@@ -404,7 +460,7 @@ export default function Replacement() {
                 {HEADS.map((h, i) => (
                   <TableCell key={h} sx={{
                     py: "12px", px: "16px", fontSize: 11, fontWeight: 500,
-                    color: "#373B4D", letterSpacing: "0.05em", textTransform: "uppercase",
+                    color: "#373B4D", letterSpacing: "0.05em",
                     whiteSpace: "nowrap", borderBottom: "1px solid #f3f4f6",
                     borderRight: i < HEADS.length - 1 ? "1px solid #BED3FC" : "none",
                   }}>
@@ -426,14 +482,16 @@ export default function Replacement() {
                 const canRaisePO = row.status !== "Closed" && row.status !== "PO Raised";
                 return (
                   <TableRow key={row.id}
-                    sx={{ background: "#fff", "&:hover": { background: "#fafafa" }, transition: "background 0.15s",
-                      "& td": { borderBottom: idx < filtered.length - 1 ? "1px solid #f3f4f6" : "none", py: "13px", px: "16px" } }}>
+                    sx={{
+                      background: "#fff", "&:hover": { background: "#fafafa" }, transition: "background 0.15s",
+                      "& td": { borderBottom: idx < filtered.length - 1 ? "1px solid #f3f4f6" : "none", py: "13px", px: "16px" },
+                    }}>
 
                     <TableCell><Typography sx={{ fontSize: 12, fontWeight: 400, color: "#2e2e2e", whiteSpace: "nowrap" }}>{row.id}</Typography></TableCell>
 
                     <TableCell sx={{ minWidth: 160 }}>
                       <Typography sx={{ fontSize: 13, color: "#0f172a" }}>{row.item}</Typography>
-                      <Typography sx={{ fontSize: 11.5, color: "#94a3b8", mt: 0.25 }}>{row.location}</Typography>
+                      <Typography sx={{ fontSize: 11.5, color: "#374151", mt: 0.25 }}>{row.location}</Typography>
                     </TableCell>
 
                     <TableCell><Typography sx={{ fontSize: 13, color: "#374151", whiteSpace: "nowrap" }}>{row.reason}</Typography></TableCell>
@@ -449,28 +507,53 @@ export default function Replacement() {
 
                     <TableCell><Typography sx={{ fontSize: 12.5, color: row.linkedPO === "-" ? "#cbd5e1" : "#374151", whiteSpace: "nowrap" }}>{row.linkedPO}</Typography></TableCell>
                     <TableCell><Typography sx={{ fontSize: 12.5, color: "#374151", whiteSpace: "nowrap" }}>{row.raisedBy}</Typography></TableCell>
-                    <TableCell><Typography sx={{ fontSize: 12.5, color: "#94a3b8", whiteSpace: "nowrap" }}>{row.date}</Typography></TableCell>
+                    <TableCell><Typography sx={{ fontSize: 12.5, color: "#374151", whiteSpace: "nowrap" }}>{row.date}</Typography></TableCell>
 
                     <TableCell>
                       <Chip label={row.status} size="small" variant="outlined" sx={{ bgcolor: ss.bg, color: ss.color, borderColor: ss.border, fontWeight: 700, fontSize: 11, height: 22, borderRadius: "6px" }} />
                     </TableCell>
 
+                    {/* ── Action: Cart SVG + X SVG (Figma-matched) ── */}
                     <TableCell>
                       <Stack direction="row" spacing={0.5} alignItems="center">
+
+                        {/* Raise PO — Cart icon, neutral border, 28×28 */}
                         <Tooltip title="Raise PO">
                           <span>
-                            <IconButton size="small" onClick={() => canRaisePO && handleRaiseOrder(row.id)} disabled={!canRaisePO}
-                              sx={{ width: 26, height: 26, borderRadius: "6px", border: "1.5px solid #e2e8f0", bgcolor: "#fff", opacity: canRaisePO ? 1 : 0.35, "&:hover": { bgcolor: "#f0fdf4", borderColor: "#86efac" } }}>
-                              <ShoppingCartOutlinedIcon sx={{ fontSize: 13, color: "#374151" }} />
+                            <IconButton
+                              size="small"
+                              onClick={() => canRaisePO && handleRaiseOrder(row.id)}
+                              disabled={!canRaisePO}
+                              sx={{
+                                width: 28, height: 28, borderRadius: "6px",
+                                border: "1px solid #E4E4E4", bgcolor: "#fff",
+                                opacity: canRaisePO ? 1 : 0.35, p: 0,
+                                display: "flex", alignItems: "center", justifyContent: "center",
+                                "&:hover": { bgcolor: "#f5f5f5", borderColor: "#d1d5db" },
+                              }}
+                            >
+                              <CartIcon color={canRaisePO ? "#73767C" : "#b0b0b0"} size={15} />
                             </IconButton>
                           </span>
                         </Tooltip>
+
+                        {/* Remove — X icon, neutral border, 28×28 */}
                         <Tooltip title="Remove">
-                          <IconButton size="small" onClick={() => handleDelete(row.id)}
-                            sx={{ width: 26, height: 26, borderRadius: "6px", border: "1.5px solid #fecaca", bgcolor: "#fff", "&:hover": { bgcolor: "#fef2f2" } }}>
-                            <DeleteOutlineIcon sx={{ fontSize: 13, color: "#ef4444" }} />
+                          <IconButton
+                            size="small"
+                            onClick={() => handleDelete(row.id)}
+                            sx={{
+                              width: 28, height: 28, borderRadius: "6px",
+                              border: "1px solid #E4E4E4", bgcolor: "#fff",
+                              p: 0,
+                              display: "flex", alignItems: "center", justifyContent: "center",
+                              "&:hover": { bgcolor: "#fef2f2", borderColor: "#fecaca" },
+                            }}
+                          >
+                            <XIcon color="#767676" size={14} />
                           </IconButton>
                         </Tooltip>
+
                       </Stack>
                     </TableCell>
                   </TableRow>

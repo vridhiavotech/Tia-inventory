@@ -138,26 +138,13 @@ const SystemSettings = () => {
 
   return (
     <Box
-      sx={{
-        background: "#f8fafc",
-        minHeight: "100vh",
-        padding: "26px 24px",
-        overflow: "auto",
-        scrollbarWidth: "none",
-        "&::-webkit-scrollbar": {
-          display: "none",
-        },
-      }}
+
     >
       {/* MAIN OUTER CARD */}
     
         {/* Header inside the card */}
         <Box
-          sx={{
-            px: { xs: 2, sm: 3, md: 4 },
-            pt: { xs: 2, sm: 3, md: 4 },
-            pb: 1,
-          }}
+       
         >
           <Typography
             sx={{
@@ -187,7 +174,7 @@ const SystemSettings = () => {
             "&:last-child": { pb: { xs: 2, sm: 3, md: 4 } },
             pt: 0,
           }}
-        >
+        > 
           {/* FACILITY INFO CARD */}
           <Paper
             elevation={0}

@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { Box, Typography, ButtonBase, Badge, Divider } from "@mui/material";
+import { Box, Typography, ButtonBase, Divider } from "@mui/material";
 
 import {
   DashboardIcon,
@@ -26,40 +26,35 @@ import {
 import { LogoIcon } from "../assets/Assets";
 
 const navItems = [
-  { icon: <DashboardIcon />, label: "Dashboard", path: "/admin/dashboard", badge: null },
-  { icon: <InventoryIcon />, label: "Inventory Items", path: "/admin/inventory/items", badge: null },
-  { icon: <ShoppingCartIcon />, label: "Indent/Procurement", path: "/admin/inventory/indent", badge: null },
-  { icon: <PurchaseOrderIcon />, label: "Purchase Orders", path: "/admin/purchase-orders", badge: null },
-  { icon: <GoodsReceiptIcon />, label: "Goods Receipt", path: "/admin/goods-receipt", badge: null },
-  { icon: <StockIssueIcon />, label: "Stock Issue", path: "/admin/stock-issue", badge: null },
-  { icon: <TransfersIcon />, label: "Transfers", path: "/admin/transfers", badge: null },
-  { icon: <ExpiryTrackingIcon />, label: "Expiry Tracking", path: "/admin/expiry-tracking", badge: null },
-  { icon: <ReplacementIcon />, label: "Replacement", path: "/admin/replacement", badge: 1 },
-  { icon: <ReportsIcon />, label: "Reports", path: "/admin/reports", badge: null },
+  { icon: <DashboardIcon />,      label: "Dashboard",          path: "/admin/dashboard",        badge: null },
+  { icon: <InventoryIcon />,      label: "Inventory Items",    path: "/admin/inventory/items",  badge: null },
+  { icon: <ShoppingCartIcon />,   label: "Indent/Procurement", path: "/admin/inventory/indent", badge: null },
+  { icon: <PurchaseOrderIcon />,  label: "Purchase Orders",    path: "/admin/purchase-orders",  badge: null },
+  { icon: <GoodsReceiptIcon />,   label: "Goods Receipt",      path: "/admin/goods-receipt",    badge: null },
+  { icon: <StockIssueIcon />,     label: "Stock Issue",        path: "/admin/stock-issue",      badge: null },
+  { icon: <TransfersIcon />,      label: "Transfers",          path: "/admin/transfers",        badge: null },
+  { icon: <ExpiryTrackingIcon />, label: "Expiry Tracking",    path: "/admin/expiry-tracking",  badge: null },
+  { icon: <ReplacementIcon />,    label: "Replacement",        path: "/admin/replacement",      badge: 1 },
+  { icon: <ReportsIcon />,        label: "Reports",            path: "/admin/reports",          badge: null },
 ];
 
 const adminItems = [
   { icon: <AdminOverviewIcon />, label: "Admin Overview", path: "/admin/overview" },
-  { icon: <UsersIcon />, label: "Users & Roles", path: "/admin/users" },
-  { icon: <LocationIcon />, label: "Locations", path: "/admin/locations" },
-  { icon: <CategoriesIcon />, label: "Categories", path: "/admin/categories" },
-  { icon: <DocumentsIcon />, label: "Documents", path: "/admin/documents" },
-  { icon: <SuppliersIcon />, label: "Suppliers", path: "/admin/suppliers" },
-  { icon: <ManufacturersIcon />, label: "Manufacturers", path: "/admin/manufacturers" },
-  { icon: <AuditLogIcon />, label: "Audit Log", path: "/admin/audit-log" },
-  { icon: <SettingsIcon />, label: "Settings", path: "/admin/system-settings" },
+  { icon: <UsersIcon />,         label: "Users & Roles",  path: "/admin/users" },
+  { icon: <LocationIcon />,      label: "Locations",      path: "/admin/locations" },
+  { icon: <CategoriesIcon />,    label: "Categories",     path: "/admin/categories" },
+  { icon: <DocumentsIcon />,     label: "Documents",      path: "/admin/documents" },
+  { icon: <SuppliersIcon />,     label: "Suppliers",      path: "/admin/suppliers" },
+  { icon: <ManufacturersIcon />, label: "Manufacturers",  path: "/admin/manufacturers" },
+  { icon: <AuditLogIcon />,      label: "Audit Log",      path: "/admin/audit-log" },
+  { icon: <SettingsIcon />,      label: "Settings",       path: "/admin/system-settings" },
 ];
 
 export default function Sidebar() {
-  const navigate = useNavigate();
-  const location = useLocation();
+  const navigate  = useNavigate();
+  const location  = useLocation();
 
-  // Single source of truth — always derived from the real URL
   const isActive = (path) => location.pathname === path;
-
-  const handleNavigation = (path) => {
-    navigate(path);
-  };
 
   return (
     <Box
@@ -76,7 +71,7 @@ export default function Sidebar() {
         py: 2.5,
       }}
     >
-      {/* ── Logo (fixed, never scrolls) ── */}
+      {/* ── Logo ── */}
       <Box sx={{ display: "flex", alignItems: "center", gap: 1, px: 2.5, pb: 3, flexShrink: 0 }}>
         <LogoIcon />
       </Box>
@@ -89,10 +84,7 @@ export default function Sidebar() {
           overflowX: "hidden",
           "&::-webkit-scrollbar": { width: 4 },
           "&::-webkit-scrollbar-track": { background: "transparent" },
-          "&::-webkit-scrollbar-thumb": {
-            background: "#d1d5db",
-            borderRadius: 4,
-          },
+          "&::-webkit-scrollbar-thumb": { background: "#d1d5db", borderRadius: 4 },
           "&::-webkit-scrollbar-thumb:hover": { background: "#a1a1aa" },
         }}
       >
@@ -102,7 +94,7 @@ export default function Sidebar() {
           return (
             <ButtonBase
               key={item.label}
-              onClick={() => handleNavigation(item.path)}
+              onClick={() => navigate(item.path)}
               sx={{
                 display: "flex",
                 alignItems: "center",
@@ -113,16 +105,17 @@ export default function Sidebar() {
                 width: "100%",
                 bgcolor: active ? "#ede9fe" : "transparent",
                 outline: "none",
-                "&:focus": { outline: "none" },
+                "&:focus":         { outline: "none" },
                 "&:focus-visible": { outline: "none" },
                 transition: "background 0.15s",
                 "&:hover": {
                   bgcolor: active ? "#ede9fe" : "#f5f5f5",
-                  "& .nav-icon": { color: active ? "#6366f1" : "#6366f1" },
-                  "& .nav-label": { color: active ? "#6366f1" : "#6366f1" },
+                  "& .nav-icon":  { color: "#6366f1" },
+                  "& .nav-label": { color: "#6366f1" },
                 },
               }}
             >
+              {/* Icon */}
               <Box
                 className="nav-icon"
                 sx={{
@@ -134,31 +127,13 @@ export default function Sidebar() {
                   transition: "color 0.15s",
                   width: 20,
                   height: 20,
-                  "& svg": {
-                    width: "100%",
-                    height: "100%",
-                  },
+                  "& svg": { width: "100%", height: "100%" },
                 }}
               >
-                {item.badge ? (
-                  <Badge
-                    badgeContent={item.badge}
-                    sx={{
-                      "& .MuiBadge-badge": {
-                        bgcolor: "#3b82f6",
-                        color: "#fff",
-                        fontSize: 10,
-                        minWidth: 16,
-                        height: 16,
-                      },
-                    }}
-                  >
-                    {item.icon}
-                  </Badge>
-                ) : (
-                  item.icon
-                )}
+                {item.icon}
               </Box>
+
+              {/* Label — takes all remaining space */}
               <Typography
                 className="nav-label"
                 sx={{
@@ -167,10 +142,34 @@ export default function Sidebar() {
                   color: active ? "#6366f1" : "#666",
                   lineHeight: 1,
                   transition: "color 0.15s",
+                  textAlign: "left",
                 }}
               >
                 {item.label}
               </Typography>
+
+              {/* Badge — pinned to the right */}
+              {item.badge && (
+                <Box
+                  sx={{
+                    minWidth: 18,
+                    height: 18,
+                    borderRadius: "9px",
+                    bgcolor: "#3b82f6",
+                    color: "#fff",
+                    fontSize: 11,
+                    fontWeight: 600,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    px: "5px",
+                    lineHeight: 1,
+                    flexShrink: 0,
+                  }}
+                >
+                  {item.badge}
+                </Box>
+              )}
             </ButtonBase>
           );
         })}
@@ -184,7 +183,7 @@ export default function Sidebar() {
           return (
             <ButtonBase
               key={item.label}
-              onClick={() => handleNavigation(item.path)}
+              onClick={() => navigate(item.path)}
               sx={{
                 display: "flex",
                 alignItems: "center",
@@ -195,16 +194,17 @@ export default function Sidebar() {
                 width: "100%",
                 bgcolor: active ? "#ede9fe" : "transparent",
                 outline: "none",
-                "&:focus": { outline: "none" },
+                "&:focus":         { outline: "none" },
                 "&:focus-visible": { outline: "none" },
                 transition: "color 0.15s, background 0.15s",
                 "&:hover": {
                   bgcolor: active ? "#ede9fe" : "#f5f5f5",
-                  "& .admin-icon": { color: "#6366f1" },
+                  "& .admin-icon":  { color: "#6366f1" },
                   "& .admin-label": { color: "#6366f1" },
                 },
               }}
             >
+              {/* Icon */}
               <Box
                 className="admin-icon"
                 sx={{
@@ -216,14 +216,13 @@ export default function Sidebar() {
                   transition: "color 0.15s",
                   width: 20,
                   height: 20,
-                  "& svg": {
-                    width: "100%",
-                    height: "100%",
-                  },
+                  "& svg": { width: "100%", height: "100%" },
                 }}
               >
                 {item.icon}
               </Box>
+
+              {/* Label */}
               <Typography
                 className="admin-label"
                 sx={{
@@ -232,6 +231,8 @@ export default function Sidebar() {
                   color: active ? "#6366f1" : "#777",
                   lineHeight: 1,
                   transition: "color 0.15s",
+                  flex: 1,
+                  textAlign: "left",
                 }}
               >
                 {item.label}

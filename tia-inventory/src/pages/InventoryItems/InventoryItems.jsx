@@ -57,7 +57,6 @@ const SUBCATEGORY_ICONS = {
   Monitoring:                     { icon: <MonitorHeartIcon sx={{ fontSize: 13 }} />,     color: "#475569" },
 };
 
-
 function CategoryTile({ category }) {
   const cfg = CATEGORY_ICONS[category] || { icon: <MedicationIcon sx={{ fontSize: 17 }} />, bg: "#f3f4f6", color: "#6b7280" };
   return (
@@ -68,7 +67,7 @@ function CategoryTile({ category }) {
 }
 
 function QtyBar({ qty, par }) {
-  const pct = Math.min((qty / (par * 2)) * 100, 100);
+  const pct   = Math.min((qty / (par * 2)) * 100, 100);
   const isLow = qty < par;
   return (
     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
@@ -98,7 +97,7 @@ function StatusChip({ label, color, icon }) {
   );
 }
 
-// Delete Confirmation Dialog
+// ─── Delete Confirmation Dialog ───────────────────────────────────────────────
 function DeleteConfirmDialog({ open, item, onCancel, onConfirm, deleting }) {
   return (
     <Dialog open={open} onClose={deleting ? undefined : onCancel} maxWidth="xs" fullWidth
@@ -152,20 +151,38 @@ function DeleteConfirmDialog({ open, item, onCancel, onConfirm, deleting }) {
   );
 }
 
-// Main Component
+const pillSelectSx = {
+  fontSize: 13,
+  fontWeight: 500,
+  color: "#111827",
+  height: 34,
+  borderRadius: "17px",
+  background: "#fff",
+ 
+ 
+  "& .MuiSelect-select": {
+    padding: "0 14px",
+    display: "flex",
+    alignItems: "center",
+    height: "34px !important",
+    minHeight: "unset !important",
+  },
+};
+
+// ─── Main Component ───────────────────────────────────────────────────────────
 export default function InventoryItems() {
   const navigate = useNavigate();
   const { items: inventoryItems, deleteItem } = useInventory();
 
-  const [search, setSearch]               = useState("");
-  const [location, setLocation]           = useState("All Locations");
-  const [category, setCategory]           = useState("All Categories");
-  const [filter, setFilter]               = useState("All");
-  const [issueModal, setIssueModal]       = useState({ open: false, item: null });
-  const [transferModal, setTransferModal] = useState({ open: false, item: null });
-  const [deleteDialog, setDeleteDialog]   = useState({ open: false, item: null });
-  const [deleting, setDeleting]           = useState(false);
-  const [toast, setToast]                 = useState({ open: false, message: "", severity: "success" });
+  const [search,         setSearch]         = useState("");
+  const [location,       setLocation]       = useState("All Locations");
+  const [category,       setCategory]       = useState("All Categories");
+  const [filter,         setFilter]         = useState("All");
+  const [issueModal,     setIssueModal]     = useState({ open: false, item: null });
+  const [transferModal,  setTransferModal]  = useState({ open: false, item: null });
+  const [deleteDialog,   setDeleteDialog]   = useState({ open: false, item: null });
+  const [deleting,       setDeleting]       = useState(false);
+  const [toast,          setToast]          = useState({ open: false, message: "", severity: "success" });
 
   const today = new Date();
 
@@ -183,22 +200,9 @@ export default function InventoryItems() {
   const openDeleteDialog  = (item) => setDeleteDialog({ open: true, item });
   const closeDeleteDialog = () => { if (!deleting) setDeleteDialog({ open: false, item: null }); };
 
-  // ── Issue Stock submitted → close modal immediately, then navigate ────────
-  const handleIssued = () => {
-    setIssueModal({ open: false, item: null });
-    navigate("/admin/stock-issue");
-  };
-
-  const handleIssuePending = () => {
-    setIssueModal({ open: false, item: null });
-    navigate("/admin/stock-issue");
-  };
-
-  // ── Transfer submitted → close modal immediately, then navigate ───────────
-  const handleTransferSubmitted = () => {
-    setTransferModal({ open: false, item: null });
-    navigate("/admin/transfers");
-  };
+  const handleIssued        = () => { setIssueModal({ open: false, item: null });    navigate("/admin/stock-issue"); };
+  const handleIssuePending  = () => { setIssueModal({ open: false, item: null });    navigate("/admin/stock-issue"); };
+  const handleTransferSubmitted = () => { setTransferModal({ open: false, item: null }); navigate("/admin/transfers"); };
 
   const handleConfirmDelete = async () => {
     setDeleting(true);
@@ -215,42 +219,60 @@ export default function InventoryItems() {
     }
   };
 
-  const selectSx = {
-    fontSize: 13, borderRadius: "8px", background: "#fff",
-    "& .MuiOutlinedInput-notchedOutline": { borderColor: "#e5e7eb" },
-    "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#d1d5db" },
-  };
-
   return (
-    <Box sx={{ background: "#f8f9fb", minHeight: "100vh", p: "28px 32px", boxSizing: "border-box" }}>
+    <Box>
+      {/* ── Header ── */}
       <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: "20px" }}>
         <Box>
           <Typography sx={{ fontSize: 20, fontWeight: 700, color: "#111827" }}>Inventory Items</Typography>
           <Typography sx={{ fontSize: 12, color: "#9ca3af", mt: "4px" }}>{inventoryItems.length} items across all locations</Typography>
         </Box>
+
+        {/* ── Add Item button — design system: #015DFF, borderRadius 12px, height 32px ── */}
         <Button
           startIcon={<AddIcon sx={{ fontSize: 16 }} />}
           onClick={() => navigate("/admin/inventory/add")}
           sx={{
-            background: "#2563eb", color: "#fff", borderRadius: "8px",
-            px: "18px", py: "10px", fontSize: 13, fontWeight: 600,
-            textTransform: "none", boxShadow: "0 2px 8px rgba(37,99,235,0.25)",
-            "&:hover": { background: "#1d4ed8" },
+            background: "#015DFF",
+            color: "#fff",
+            borderRadius: "12px",
+            height: 32,
+            px: "12px",
+            fontSize: 13,
+            fontWeight: 600,
+            textTransform: "none",
+            boxShadow: "0 2px 8px rgba(1,93,255,0.25)",
+            border: "none",
+            "&:hover": { background: "#0147CC" },
           }}
         >
           Add Item
         </Button>
       </Box>
-      <Box sx={{ display: "flex", gap: "12px", alignItems: "center", flexWrap: "wrap", mb: "20px" }}>
+
+      {/* ── Filters row ── */}
+      <Box sx={{ display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap", mb: "20px" }}>
+
+        {/* Location pill select */}
         <FormControl size="small">
-          <Select value={location} onChange={(e) => setLocation(e.target.value)} sx={{ ...selectSx, minWidth: 150 }}>
+          <Select
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            sx={{ ...pillSelectSx, minWidth: 150 }}
+          >
             {["All Locations","Central Store","ICU","Emergency Dept","Pharmacy","Surgery","Laboratory"].map((l) => (
-              <MenuItem key={l} value={l} sx={{ fontSize: 13 ,color:"#FFFFFF" }}>{l}</MenuItem>
+              <MenuItem key={l} value={l} sx={{ fontSize: 13 }}>{l}</MenuItem>
             ))}
           </Select>
         </FormControl>
+
+        {/* Category pill select */}
         <FormControl size="small">
-          <Select value={category} onChange={(e) => setCategory(e.target.value)} sx={{ ...selectSx, minWidth: 170 }}>
+          <Select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            sx={{ ...pillSelectSx, minWidth: 170 }}
+          >
             {["All Categories","Pharmaceuticals","Surgical Supplies","PPE & Protective","Wound Care","Lab Supplies","Equipment/Devices"].map((c) => {
               const cfg = CATEGORY_ICONS[c];
               return (
@@ -264,23 +286,80 @@ export default function InventoryItems() {
             })}
           </Select>
         </FormControl>
-        <TextField size="small" placeholder="Search..." value={search} onChange={(e) => setSearch(e.target.value)}
-          InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon sx={{ fontSize: 16, color: "#9ca3af" }} /></InputAdornment> }}
-          sx={{ "& .MuiOutlinedInput-root": { fontSize: 13, borderRadius: "8px", background: "#fff", "& fieldset": { borderColor: "#e5e7eb" }, "&:hover fieldset": { borderColor: "#d1d5db" } }, minWidth: 220 }} />
+
+        {/* Search */}
+        <TextField
+          size="small"
+          placeholder="Search..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon sx={{ fontSize: 16, color: "#9ca3af" }} />
+              </InputAdornment>
+            ),
+          }}
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              fontSize: 13,
+              height: 34,
+              borderRadius: "17px",
+              background: "#fff",
+            },
+            "& .MuiOutlinedInput-input": { padding: "0 14px", height: "34px" },
+            minWidth: 220,
+          }}
+        />
+
+        {/* Filter pills — All / Low Stock / Expiring */}
         <Box sx={{ display: "flex", gap: "8px", ml: "auto" }}>
-          {["All","Low Stock","Expiring"].map((f) => (
-            <Button key={f} size="small" onClick={() => setFilter(f)}
-              startIcon={f === "Low Stock" ? <WarningAmberIcon sx={{ fontSize: 14 }} /> : f === "Expiring" ? <AccessTimeIcon sx={{ fontSize: 14 }} /> : null}
-              sx={{ fontSize: 12, fontWeight: 600, textTransform: "none", borderRadius: "8px", px: "14px", py: "6px",
-                border: filter === f ? "none" : "1px solid #e5e7eb",
-                background: filter === f ? (f === "Low Stock" ? "#fff7ed" : f === "Expiring" ? "#eff6ff" : "#2563eb") : "#fff",
-                color: filter === f ? (f === "Low Stock" ? "#f97316" : f === "Expiring" ? "#2563eb" : "#fff") : "#6b7280",
-                "&:hover": { background: filter === f ? (f === "Low Stock" ? "#fed7aa" : f === "Expiring" ? "#dbeafe" : "#1d4ed8") : "#f9fafb" } }}>
+          {["All", "Low Stock", "Expiring"].map((f) => (
+            <Button
+              key={f}
+              size="small"
+              onClick={() => setFilter(f)}
+              startIcon={
+                f === "Low Stock" ? <WarningAmberIcon sx={{ fontSize: 14 }} /> :
+                f === "Expiring"  ? <AccessTimeIcon   sx={{ fontSize: 14 }} /> : null
+              }
+              sx={{
+                fontSize: 12,
+                fontWeight: 600,
+                textTransform: "none",
+                borderRadius: "17px",
+                height: 34,
+                px: "14px",
+                background:
+                  filter === f
+                    ? f === "Low Stock" ? "#fff7ed"
+                    : f === "Expiring"  ? "#eff6ff"
+                    : "#015DFF"
+                    : "#fff",
+                color:
+                  filter === f
+                    ? f === "Low Stock" ? "#f97316"
+                    : f === "Expiring"  ? "#015DFF"
+                    : "#fff"
+                    : "#6b7280",
+                "&:hover": {
+                  background:
+                    filter === f
+                      ? f === "Low Stock" ? "#fed7aa"
+                      : f === "Expiring"  ? "#dbeafe"
+                      : "#0147CC"
+                      : "#f9fafb",
+                  borderColor: filter === f ? "transparent" : "#015DFF",
+                },
+              }}
+            >
               {f}
             </Button>
           ))}
         </Box>
       </Box>
+
+      {/* ── Table ── */}
       <Paper elevation={0} sx={{ borderRadius: "14px", border: "1px solid #f0f0f0", boxShadow: "0 1px 4px rgba(0,0,0,0.04)", overflow: "hidden" }}>
         <TableContainer
           sx={{
@@ -297,9 +376,7 @@ export default function InventoryItems() {
             <TableHead>
               <TableRow sx={{ background: "#EBF1FE" }}>
                 {["ITEM / NDC","CATEGORY","LOCATION","QTY","PAR","COST","EXPIRY","STATUS","ACTIONS"].map((col) => (
-                 <TableCell key={col} sx={{ fontSize: 11, fontWeight: 700, color: "#373B4D", letterSpacing: "0.05em", borderBottom: "none", borderRight: "1px solid #BED3FC", py: "12px", px: "16px", whiteSpace: "nowrap",
-  "&:last-child": { borderRight: "none" }
-}}>
+                  <TableCell key={col} sx={{ fontSize: 11, fontWeight: 700, color: "#373B4D", letterSpacing: "0.05em", borderBottom: "none", borderRight: "1px solid #BED3FC", py: "12px", px: "16px", whiteSpace: "nowrap", "&:last-child": { borderRight: "none" } }}>
                     {col}
                   </TableCell>
                 ))}
@@ -360,7 +437,7 @@ export default function InventoryItems() {
                       <Tooltip title="Edit">
                         <IconButton size="small" onClick={() => navigate(`/admin/inventory/add?id=${item.id}&edit=true`)}
                           sx={{ color: "#6b7280", border: "1px solid #e5e7eb", borderRadius: "6px", width: 28, height: 28,
-                            "&:hover": { background: "#eff6ff", color: "#2563eb", borderColor: "#bfdbfe" } }}>
+                            "&:hover": { background: "#eff6ff", color: "#015DFF", borderColor: "#bfdbfe" } }}>
                           <EditIcon sx={{ fontSize: 14 }} />
                         </IconButton>
                       </Tooltip>
@@ -402,9 +479,8 @@ export default function InventoryItems() {
             </TableBody>
           </Table>
         </TableContainer>
-
-        
       </Paper>
+
       <IssueStockModal
         open={issueModal.open}
         onClose={() => setIssueModal({ open: false, item: null })}

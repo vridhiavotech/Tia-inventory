@@ -24,7 +24,7 @@ import GoodsReceipt from "./pages/GoodsReceipt/GoodsReceipt";
 
 import IndentProcurement from "./pages/IndentProcurement";
 import PurchaseOrders from "./pages/PurchaseOrders";
-import DocumentManagement from "./pages/DocumentManagement";
+import DocumentManagement from "./pages/Documents/DocumentManagement";
 import Manufacturers from "./pages/Manufacturers";
 import ReportsAnalytics from "./pages/ReportsAnalytics";
 import StockIssue from "./pages/Stockissue";

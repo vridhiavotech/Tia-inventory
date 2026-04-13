@@ -265,12 +265,7 @@ const CustomPieTooltip = ({ active, payload }) => {
   const navigate = useNavigate();
   return (
     <div
-      style={{
-        background: "#f8f9fb",
-        minHeight: "100vh",
-        padding: "28px 32px",
-        boxSizing: "border-box",
-      }}
+   
     >
       {/* ── Header ── */}
       <div

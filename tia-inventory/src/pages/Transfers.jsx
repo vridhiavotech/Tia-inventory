@@ -268,7 +268,7 @@ export default function Transfers() {
   ];
 
   return (
-    <Box sx={{ bgcolor: "#f8fafc", minHeight: "100vh", p: "28px" }}>
+    <Box>
       {/* Toast */}
       <Snackbar open={!!toast} anchorOrigin={{ vertical: "top", horizontal: "right" }} sx={{ mt: 1 }}>
         <Alert
@@ -362,7 +362,7 @@ export default function Transfers() {
                     sx={{
                       py: "12px", px: "16px",
                       fontSize: 11, fontWeight: 500, color: "#373B4D",
-                      letterSpacing: "0.05em", textTransform: "uppercase", whiteSpace: "nowrap",
+                      letterSpacing: "0.05em", whiteSpace: "nowrap",
                       borderBottom: "1px solid #f3f4f6",
                       borderRight: "1px solid #BED3FC",
                       "&:last-child": { borderRight: "none" },

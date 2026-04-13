@@ -751,7 +751,7 @@ export default function UsersRoles() {
 
   return (
     <Box
-      sx={{ background: "#f8fafc", minHeight: "100vh", padding: "26px 24px" }}
+      
     >
       <Box sx={{ maxWidth: "1400px", mx: "auto" }}>
         {/* ── Title row ── */}
