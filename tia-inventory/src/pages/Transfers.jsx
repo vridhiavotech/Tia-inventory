@@ -296,7 +296,26 @@ export default function Transfers() {
           onClick={() => setShowCreate(true)}
           variant="contained"
           startIcon={<AddIcon sx={{ fontSize: "15px !important" }} />}
-          sx={{ textTransform: "none", fontSize: 13.5, fontWeight: 700, bgcolor: "#2563eb", borderRadius: "10px", px: 2.5, py: 1.25, letterSpacing: "0.01em", boxShadow: "none", "&:hover": { bgcolor: "#1d4ed8", boxShadow: "none" } }}
+               sx={{
+           display: 'inline-flex',
+           alignItems: 'center',
+           justifyContent: 'center',
+           gap: '6px',
+           background: '#2563eb',
+           color: '#fff',
+           borderRadius: '12px',        
+           px: '15px',                  
+           py: '8px',                 
+          fontSize: '12px',            
+          fontWeight: 500,             
+          textTransform: 'none',
+          lineHeight: 1,
+          boxShadow: '0 1px 4px rgba(37,99,235,0.25)',
+          '&:hover': {
+          background: '#1d4ed8',
+          boxShadow: '0 2px 6px rgba(37,99,235,0.3)', 
+   },
+ }}
         >
           New Transfer
         </Button>

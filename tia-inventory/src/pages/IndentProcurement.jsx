@@ -212,12 +212,26 @@ const IndentProcurement = () => {
             <Button
               variant="outlined"
               onClick={handleNewIndent}
-              sx={{
-                 background: '#2563eb', color: '#fff', borderRadius: '8px',
-            px: '18px', py: '10px', fontSize: 13, fontWeight: 600,
-            textTransform: 'none', boxShadow: '0 2px 8px rgba(37,99,235,0.25)',
-            '&:hover': { background: '#1d4ed8' },
-              }}
+           sx={{
+           display: 'inline-flex',
+           alignItems: 'center',
+           justifyContent: 'center',
+           gap: '6px',
+           background: '#2563eb',
+           color: '#fff',
+           borderRadius: '12px',        
+           px: '15px',                  
+           py: '8px',                 
+          fontSize: '12px',            
+          fontWeight: 500,             
+          textTransform: 'none',
+          lineHeight: 1,
+          boxShadow: '0 1px 4px rgba(37,99,235,0.25)',
+          '&:hover': {
+          background: '#1d4ed8',
+          boxShadow: '0 2px 6px rgba(37,99,235,0.3)', 
+   },
+ }}
             >
               🔄 New Indent
             </Button>

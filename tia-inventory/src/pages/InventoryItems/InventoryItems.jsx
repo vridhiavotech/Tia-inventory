@@ -228,7 +228,6 @@ export default function InventoryItems() {
           <Typography sx={{ fontSize: 12, color: "#9ca3af", mt: "4px" }}>{inventoryItems.length} items across all locations</Typography>
         </Box>
 
-        {/* ── Add Item button — design system: #015DFF, borderRadius 12px, height 32px ── */}
         <Button
           startIcon={<AddIcon sx={{ fontSize: 16 }} />}
           onClick={() => navigate("/admin/inventory/add")}

@@ -294,21 +294,27 @@ const CustomPieTooltip = ({ active, payload }) => {
         </div>
         <button
           onClick={() => navigate("/admin/inventory/add")}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 6,
-            background: "#2563eb",
-            color: "#fff",
-            border: "none",
-            borderRadius: 8,
-            outline: "none",
-            padding: "10px 18px",
-            fontSize: 13,
-            fontWeight: 600,
-            cursor: "pointer",
-            boxShadow: "0 2px 8px rgba(37,99,235,0.25)",
-          }}
+         style={{
+  display: "inline-flex",
+  alignItems: "center",
+  justifyContent: "center",
+  gap: "6px",
+
+  background: "#2563eb",
+  color: "#ffffff",
+
+  border: "none",
+  borderRadius: "12px",
+
+  padding: "6px 12px",   
+  fontSize: "12px",      
+  fontWeight: 500,       
+
+  cursor: "pointer",
+  lineHeight: 1,
+
+  boxShadow: "0 1px 4px rgba(37, 99, 235, 0.25)",
+}}
         >
           <AddIcon sx={{ fontSize: 16 }} />
           Add Item
