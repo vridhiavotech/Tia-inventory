@@ -22,6 +22,7 @@ import {
   MenuItem,
   Grid,
   Chip,
+  Stack,
 } from "@mui/material";
 import {
   Add as AddIcon,
@@ -158,6 +159,59 @@ const initialManufacturers = [
   }
 ];
 
+// ─── Stat Card Component (matching replacement page style) ────────────────────────────────────────────────
+function StatCard({ label, count, sub, iconEl, iconBg }) {
+  return (
+    <Box sx={{ 
+      flex: 1, 
+      bgcolor: "#fff", 
+      border: "1px solid #e5e7eb", 
+      borderRadius: "10px", 
+      px: 2, 
+      py: 1.5, 
+      minWidth: 0, 
+      display: "flex", 
+      alignItems: "center", 
+      gap: 1.5 
+    }}>
+      <Box sx={{ 
+        width: 44, 
+        height: 44, 
+        borderRadius: "50%", 
+        bgcolor: iconBg, 
+        display: "flex", 
+        alignItems: "center", 
+        justifyContent: "center", 
+        flexShrink: 0 
+      }}>
+        {iconEl}
+      </Box>
+      <Box>
+        <Typography sx={{ 
+          fontSize: 11, 
+          fontWeight: 600, 
+          color: "#9ca3af", 
+          letterSpacing: "0.05em", 
+          textTransform: "uppercase", 
+          mb: 0.5 
+        }}>
+          {label}
+        </Typography>
+        <Box sx={{ display: "flex", alignItems: "baseline", gap: 0.5 }}>
+          <Typography sx={{ fontSize: 22, fontWeight: 700, color: "#111827", lineHeight: 1.2 }}>
+            {count}
+          </Typography>
+          {sub && (
+            <Typography sx={{ fontSize: 11, fontWeight: 500, color: "#6b7280", whiteSpace: "nowrap" }}>
+              {sub}
+            </Typography>
+          )}
+        </Box>
+      </Box>
+    </Box>
+  );
+}
+
 const Manufacturers = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -178,11 +232,26 @@ const Manufacturers = () => {
     Diagnostics: manufacturers.filter(m => m.type === "Diagnostics").length,
   };
 
+  // Icons for stat cards
+  const statIcons = {
+    Pharma: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/><circle cx="12" cy="12" r="3"/></svg>,
+    PPE: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 12H4M12 4v16M8 8h8M8 16h8"/></svg>,
+    Surgical: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>,
+    Diagnostics: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>,
+  };
+
+  const statColors = {
+    Pharma: "#3b82f6",      // blue
+    PPE: "#10b981",         // green
+    Surgical: "#f59e0b",    // orange
+    Diagnostics: "#a855f7", // purple
+  };
+
   const statCards = [
-    { title: "Pharma", value: typeStats.Pharma, subtitle: "manufacturers" },
-    { title: "PPE", value: typeStats.PPE, subtitle: "manufacturers"},
-    { title: "Surgical", value: typeStats.Surgical, subtitle: "manufacturers" },
-    { title: "Diagnostics", value: typeStats.Diagnostics, subtitle: "manufacturers"},
+    { label: "Pharma", count: typeStats.Pharma, sub: "manufacturers", iconBg: statColors.Pharma, iconEl: statIcons.Pharma },
+    { label: "PPE", count: typeStats.PPE, sub: "manufacturers", iconBg: statColors.PPE, iconEl: statIcons.PPE },
+    { label: "Surgical", count: typeStats.Surgical, sub: "manufacturers", iconBg: statColors.Surgical, iconEl: statIcons.Surgical },
+    { label: "Diagnostics", count: typeStats.Diagnostics, sub: "manufacturers", iconBg: statColors.Diagnostics, iconEl: statIcons.Diagnostics },
   ];
 
   const handleEdit = (manufacturer) => {
@@ -574,77 +643,19 @@ const Manufacturers = () => {
         </Button>
       </Box>
 
-     <Box
-  sx={{
-    display: "grid",
-    gridTemplateColumns: {
-      xs: "1fr",
-      sm: "1fr 1fr",
-      md: "repeat(4, 1fr)",
-    },
-    gap: 2,
-    mb: 3,
-  }}
->
-  {statCards.map((card, index) => (
-    <Card
-      key={index}
-      sx={{
-        backgroundColor: "#fff",
-        border: "1px solid #e5e7eb", // ✅ clean border
-        borderRadius: "10px",
-        boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
-      }}
-    >
-      <CardContent sx={{ p: 1.5, "&:last-child": { pb: 1.5 } }}>
-        {/* Title */}
-        <Typography
-          sx={{
-            fontSize: 11,
-            fontWeight: 600,
-            color: "#9ca3af",
-            textTransform: "uppercase",
-            letterSpacing: "0.05em",
-            mb: 0.5,
-          }}
-        >
-          {card.title}
-        </Typography>
-
-        {/* Value + Subtitle INLINE */}
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "baseline",
-            gap: 0.5,
-          }}
-        >
-          <Typography
-            sx={{
-              fontSize: 22,
-              fontWeight: 700,
-              color: "#111827",
-              lineHeight: 1.2,
-            }}
-          >
-            {card.value}
-          </Typography>
-
-          <Typography
-            sx={{
-              fontSize: 11,
-              fontWeight: 500,
-              color: "#6b7280",
-              whiteSpace: "nowrap",
-            }}
-          >
-            {card.subtitle}
-          </Typography>
-        </Box>
-      </CardContent>
-    </Card>
-  ))}
-</Box>
+      {/* Stat Cards - NEW DESIGN matching replacement page */}
+      <Box sx={{ display: "flex", gap: "12px", mb: "20px" }}>
+        {statCards.map((card) => (
+          <StatCard 
+            key={card.label} 
+            label={card.label} 
+            count={card.count} 
+            sub={card.sub} 
+            iconBg={card.iconBg} 
+            iconEl={card.iconEl} 
+          />
+        ))}
+      </Box>
 
       {/* MAIN OUTER CARD - Light grey/white card wrapper */}
       <Card sx={{ 
