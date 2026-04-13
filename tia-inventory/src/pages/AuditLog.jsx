@@ -193,24 +193,13 @@ const AuditLog = () => {
                 <line x1="12" y1="15" x2="12" y2="3" />
               </svg>
             }
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: "6px",
-              padding: "9px 18px",
-              border: "1.5px solid #e2e8f0",
-              borderRadius: "9px",
-              background: "#ffffff",
-              cursor: "pointer",
-              fontSize: "13px",
-              fontWeight: 600,
-              color: "#374151",
-              boxShadow: "0px 1px 3px rgba(0,0,0,0.06)",
-              textTransform: "none",
-              "&:hover": {
-                background: "#f9fafb",
-                borderColor: "#cbd5f5",
-              },
+           sx={{
+              height: 32, px: "12px", borderRadius: "12px",
+              border: "1px solid #015DFF", color: "#015DFF",
+              textTransform: "none", fontWeight: 600, fontSize: 13,
+              bgcolor: "#fff", boxShadow: "none", gap: "8px", minWidth: 0,
+              "& .MuiButton-startIcon": { mr: 0 },
+              "&:hover": { border: "1px solid #015DFF", bgcolor: "#EFF4FF", boxShadow: "none" },
             }}
           >
             Export
