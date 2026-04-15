@@ -743,15 +743,15 @@ export default function InventoryItems() {
             <TableHead>
               <TableRow sx={{ background: "#EBF1FE" }}>
                 {[
-                  "ITEM / NDC",
-                  "CATEGORY",
-                  "LOCATION",
-                  "QTY",
-                  "PAR",
-                  "COST",
-                  "EXPIRY",
-                  "STATUS",
-                  "ACTIONS",
+                  "Item / Ndc",
+                  "Category",
+                  "Location",
+                  "Qty",
+                  "Par",
+                 "Cost",
+                "Expiry",
+                "Status",
+                "Actions",
                 ].map((col) => (
                   <TableCell
                     key={col}

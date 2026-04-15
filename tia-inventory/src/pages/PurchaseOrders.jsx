@@ -56,7 +56,7 @@ const thSx = {
   fontWeight: 500,
   color: "#373B4D",
   letterSpacing: "0.05em",
-  textTransform: "uppercase",
+  textTransform: "none",
   whiteSpace: "nowrap",
   py: "12px",
   px: "16px",
@@ -637,10 +637,21 @@ const PurchaseOrders = () => {
     alert(`Invoice ${invoiceData.invoiceNumber} uploaded successfully for ${invoiceData.poNumber}!`);
   };
 
-  const COLUMNS = [
-    "PO NUMBER","QUOT. REF","SUPPLIER","LOCATION","LINES",
-    "TOTAL","CREATED BY","DATE","DELIVERY","PRIORITY","STATUS","INVOICE","ACTIONS",
-  ];
+ const COLUMNS = [
+  "Po Number",
+  "Quot. Ref",
+  "Supplier",
+  "Location",
+  "Lines",
+  "Total",
+  "Created By",
+  "Date",
+  "Delivery",
+  "Priority",
+  "Status",
+  "Invoice",
+  "Actions",
+];
 
   return (
     <Box>
@@ -661,7 +672,7 @@ const PurchaseOrders = () => {
            display: 'inline-flex',
            alignItems: 'center',
            justifyContent: 'center',
-           gap: '0px',
+           gap: '6px',
            background: '#2563eb',
            color: '#fff',
            borderRadius: '12px',        
