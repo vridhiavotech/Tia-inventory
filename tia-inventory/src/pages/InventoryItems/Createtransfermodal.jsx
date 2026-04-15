@@ -23,6 +23,7 @@ import ErrorOutlineIcon       from "@mui/icons-material/ErrorOutline";
 import WarningAmberIcon       from "@mui/icons-material/WarningAmber";
 import InfoOutlinedIcon       from "@mui/icons-material/InfoOutlined";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import HourglassTopIcon from '@mui/icons-material/HourglassTop'
 
 // ─── Mock data ────────────────────────────────────────────────────────────────
 const availableItems = [
@@ -350,7 +351,7 @@ export default function CreateTransferModal({ open, onClose, onSave, prefillItem
 
           {/* Items to Transfer */}
           <Box sx={{ mb: "16px" }}>
-            <Typography sx={{ fontSize: 12, fontWeight: 700, color: "#2563eb", letterSpacing: "0.05em", textTransform: "uppercase", mb: "12px" }}>
+            <Typography sx={{ fontSize: 12, fontWeight: 700, color: "#2563eb", letterSpacing: "0.05em", textTransform: "uppercase", mb: "12px",mt:"12px" }}>
               Items to Transfer
             </Typography>
 
@@ -463,7 +464,7 @@ export default function CreateTransferModal({ open, onClose, onSave, prefillItem
           </Button>
 
           <Button onClick={handleRequestApproval} disabled={loading}
-            startIcon={<WarningAmberIcon sx={{ fontSize: 15 }} />}
+            startIcon={<HourglassTopIcon sx={{ fontSize: 15 }} />}
             sx={{ fontSize: 13, fontWeight: 600, color: "#d97706", textTransform: "none",
               borderRadius: "8px", px: "20px", py: "9px",
               border: "1px solid #fde68a", bgcolor: "#fffbeb", "&:hover": { bgcolor: "#fef3c7" },
