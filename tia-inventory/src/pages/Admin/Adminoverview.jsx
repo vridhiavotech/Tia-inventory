@@ -5,24 +5,19 @@ import {
   Typography,
   Button,
   Chip,
-  IconButton,
   Snackbar,
   Alert,
-  Tooltip,
   Stack,
   Avatar,
   Divider,
   CardContent,
 } from "@mui/material";
 import {
-  PersonAdd,
-  AddLocation,
-  Block,
-  CheckCircle,
   ExpandMore,
   Settings,
   Group,
 } from "@mui/icons-material";
+import AddIcon from "@mui/icons-material/Add";
 
 import AddUserModal from "./AddUserModal";
 import AddLocationModal from "./AddLocationModal";
@@ -50,10 +45,10 @@ const SEED_LOCATIONS = [
 ];
 
 const SEED_USERS = [
-  { id: "SA", name: "Sarah Anderson", role: "Manager",     roleBg: "#EFF6FF", roleColor: "#1D4ED8", location: "Central Store", status: "Active",  initials: "SA", avatarBg: "#1976D2" },
-  { id: "PC", name: "P. Chen",        role: "Pharmacist",  roleBg: "#F0FDF4", roleColor: "#15803D", location: "Pharmacy",      status: "Active",  initials: "PC", avatarBg: "#059669" },
-  { id: "IN", name: "ICU Nurse",      role: "Nurse",       roleBg: "#FAF5FF", roleColor: "#7E22CE", location: "ICU",           status: "Active",  initials: "IN", avatarBg: "#7C3AED" },
-  { id: "TW", name: "Tom Williams",   role: "Storekeeper", roleBg: "#FFF7ED", roleColor: "#C2410C", location: "Laboratory",    status: "Blocked", initials: "TW", avatarBg: "#DC2626" },
+  { id: "SA", name: "Sarah Anderson", role: "Manager",     roleBg: "#EFF6FF", roleColor: "#1D4ED8", location: "Central Store", initials: "SA", avatarBg: "#1976D2", status: "active"  },
+  { id: "PC", name: "P. Chen",        role: "Pharmacist",  roleBg: "#F0FDF4", roleColor: "#15803D", location: "Pharmacy",      initials: "PC", avatarBg: "#059669", status: "active"  },
+  { id: "IN", name: "ICU Nurse",      role: "Nurse",       roleBg: "#FAF5FF", roleColor: "#7E22CE", location: "ICU",           initials: "IN", avatarBg: "#7C3AED", status: "active"  },
+  { id: "TW", name: "Tom Williams",   role: "Storekeeper", roleBg: "#FFF7ED", roleColor: "#C2410C", location: "Laboratory",    initials: "TW", avatarBg: "#DC2626", status: "blocked" },
 ];
 
 // ── Location badge colours ─────────────────────────────────────────────────────
@@ -126,27 +121,47 @@ function LocationCard({ loc }) {
 }
 
 // ── User Card ─────────────────────────────────────────────────────────────────
-function UserCard({ user, onToggle }) {
-  const isBlocked = user.status === "Blocked";
+function UserCard({ user }) {
+  const isBlocked = user.status === "blocked";
+
   return (
-    <Box sx={{ display: "flex", alignItems: "center", gap: 2, p: "10px 16px", bgcolor: "#fff", border: `1px solid ${C.border}`, borderRadius: "8px", "&:hover": { bgcolor: "#F9FAFB" }, transition: "background 0.15s" }}>
+    <Box sx={{
+      display: "flex", alignItems: "center", gap: 2,
+      p: "10px 16px", bgcolor: "#fff",
+      border: `1px solid ${C.border}`, borderRadius: "8px",
+      "&:hover": { bgcolor: "#F9FAFB" }, transition: "background 0.15s",
+    }}>
       <Avatar sx={{ width: 38, height: 38, bgcolor: user.avatarBg, fontSize: 13, fontWeight: 700 }}>
         {user.initials}
       </Avatar>
+
       <Box sx={{ flex: 1, minWidth: 0 }}>
         <Typography sx={{ fontSize: 13, fontWeight: 700, color: C.textPrimary }}>{user.name}</Typography>
         <Box sx={{ display: "flex", alignItems: "center", gap: 0.8, mt: 0.2 }}>
-          <Chip label={user.role} size="small" sx={{ bgcolor: user.roleBg, color: user.roleColor, fontWeight: 600, fontSize: 10, height: 18, border: `1px solid ${user.roleColor}22` }} />
+          <Chip
+            label={user.role}
+            size="small"
+            sx={{ bgcolor: user.roleBg, color: user.roleColor, fontWeight: 600, fontSize: 10, height: 18, border: `1px solid ${user.roleColor}22` }}
+          />
           <Typography sx={{ fontSize: 11, color: C.textSecondary }}>· {user.location}</Typography>
         </Box>
       </Box>
-      <Chip label={user.status} size="small" sx={{ bgcolor: isBlocked ? "#FEF2F2" : "#F0FDF4", color: isBlocked ? "#DC2626" : "#16A34A", border: `1px solid ${isBlocked ? "#FECACA" : "#BBF7D0"}`, fontWeight: 700, fontSize: 11, height: 22 }} />
-      <Tooltip title={isBlocked ? "Unblock User" : "Block User"}>
-        <IconButton size="small" onClick={() => onToggle(user.id)}
-          sx={{ bgcolor: isBlocked ? "#F0FDF4" : "#FEF2F2", color: isBlocked ? "#16A34A" : "#DC2626", "&:hover": { bgcolor: isBlocked ? "#DCFCE7" : "#FEE2E2" }, width: 26, height: 26, borderRadius: "6px" }}>
-          {isBlocked ? <CheckCircle sx={{ fontSize: 13 }} /> : <Block sx={{ fontSize: 13 }} />}
-        </IconButton>
-      </Tooltip>
+
+      {/* ── Status badge ── */}
+      <Chip
+        label={isBlocked ? "Blocked" : "Active"}
+        size="small"
+        sx={{
+          fontWeight: 600,
+          fontSize: 11,
+          height: 22,
+          borderRadius: "6px",
+          bgcolor: isBlocked ? "#FEF2F2" : "#F0FDF4",
+          color:   isBlocked ? "#DC2626"  : "#16A34A",
+          border:  `1px solid ${isBlocked ? "#FECACA" : "#BBF7D0"}`,
+          flexShrink: 0,
+        }}
+      />
     </Box>
   );
 }
@@ -162,14 +177,24 @@ export default function AdminOverview() {
 
   const showToast = (msg, severity = "success") => setToast({ open: true, msg, severity });
 
-  const activeCount  = users.filter((u) => u.status !== "Blocked").length;
-  const blockedCount = users.filter((u) => u.status === "Blocked").length;
+  const activeCount = users.length;
 
   const handleSaveLocation = (form) => {
     const code = form.code.replace(/[^A-Za-z0-9]/g, "").toUpperCase().slice(0, 5);
     const exists = locations.filter((l) => l.code === code).length;
     const num = String(exists + 1).padStart(2, "0");
-    const newLoc = { id: `${code}-${num}`, name: form.name, type: form.type.toUpperCase(), inCharge: form.inCharge || "—", phone: form.phone || "", address: form.address || "", notes: form.notes || "", users: 0, skus: 0, code };
+    const newLoc = {
+      id: `${code}-${num}`,
+      name: form.name,
+      type: form.type.toUpperCase(),
+      inCharge: form.inCharge || "—",
+      phone: form.phone || "",
+      address: form.address || "",
+      notes: form.notes || "",
+      users: 0,
+      skus: 0,
+      code,
+    };
     setLocations((p) => [...p, newLoc]);
     setAddLocOpen(false);
     showToast(`"${form.name}" added to Locations.`);
@@ -178,22 +203,25 @@ export default function AdminOverview() {
   const handleSaveUser = (form) => {
     const rc = ROLE_COLORS[form.role] || ROLE_COLORS["Nurse"];
     const initials = form.fullName.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
-    const newUser = { id: initials + Date.now(), name: form.fullName, role: form.role, roleBg: rc.bg, roleColor: rc.color, avatarBg: rc.avatarBg, location: form.location, status: "Active", initials, email: form.email, phone: form.phone, department: form.department, permissions: form.permissions };
+    const newUser = {
+      id: initials + Date.now(),
+      name: form.fullName,
+      role: form.role,
+      roleBg: rc.bg,
+      roleColor: rc.color,
+      avatarBg: rc.avatarBg,
+      location: form.location,
+      initials,
+      email: form.email,
+      phone: form.phone,
+      department: form.department,
+      permissions: form.permissions,
+      status: "active", // new users default to active
+    };
     setUsers((p) => [...p, newUser]);
     setLocations((p) => p.map((l) => l.name === form.location ? { ...l, users: l.users + 1 } : l));
     setAddUserOpen(false);
     showToast(`"${form.fullName}" added to Users.`);
-  };
-
-  const toggleBlock = (id) => {
-    setUsers((p) =>
-      p.map((u) => {
-        if (u.id !== id) return u;
-        const next = u.status === "Blocked" ? "Active" : "Blocked";
-        showToast(`${u.name} ${next === "Blocked" ? "blocked" : "unblocked"}.`, next === "Blocked" ? "warning" : "success");
-        return { ...u, status: next };
-      }),
-    );
   };
 
   // ── Stat cards config ──────────────────────────────────────────────────────
@@ -201,7 +229,7 @@ export default function AdminOverview() {
     {
       label:  "Active Users",
       value:  activeCount,
-      sub:    `${blockedCount} blocked`,
+      sub:    "Total registered users",
       iconBg: "#7c3aed",
       icon: (
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -308,7 +336,7 @@ export default function AdminOverview() {
     </Box>
   );
 
-  // ── Shared button sx (Figma-matched: same as Export / Raise Replacement) ──
+  // ── Button styles ──────────────────────────────────────────────────────────
   const outlinedBtnSx = {
     height: 32,
     px: "12px",
@@ -353,21 +381,17 @@ export default function AdminOverview() {
             <Typography sx={{ fontSize: 13, color: C.textSecondary, mt: 0.3 }}>System health — all locations and master data</Typography>
           </Box>
 
-          {/* ── Buttons — Figma-matched (same as Export / Raise Replacement) ── */}
           <Stack direction="row" spacing={1.5} alignItems="center">
-            {/* Add User — outlined #015DFF */}
             <Button
-              startIcon={<PersonAdd sx={{ fontSize: "14px !important" }} />}
+              startIcon={<AddIcon sx={{ fontSize: "14px" }} />}
               variant="outlined"
               onClick={() => setAddUserOpen(true)}
               sx={outlinedBtnSx}
             >
               Add User
             </Button>
-
-            {/* Add Location — filled #015DFF */}
             <Button
-              startIcon={<AddLocation sx={{ fontSize: "14px !important" }} />}
+              startIcon={<AddIcon sx={{ fontSize: "14px" }} />}
               variant="contained"
               onClick={() => setAddLocOpen(true)}
               sx={containedBtnSx}
@@ -411,7 +435,7 @@ export default function AdminOverview() {
             </Button>
           </Box>
           <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 1.5 }}>
-            {users.map((user) => <UserCard key={user.id} user={user} onToggle={toggleBlock} />)}
+            {users.map((user) => <UserCard key={user.id} user={user} />)}
           </Box>
         </CardContent>
 

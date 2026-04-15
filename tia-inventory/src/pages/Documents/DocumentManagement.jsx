@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Typography, Box } from "@mui/material";
+import DocumentUploadModal from "./DocumentUploadModal";
 
 const C = {
   bg:            "#F8FAFC",
@@ -408,7 +409,11 @@ export default function DocumentManagement() {
   return (
     <div>
       {toast        && <Toast msg={toast.msg} type={toast.type} />}
-      {showUpload   && <UploadModal onClose={() => setShowUpload(false)} onUpload={handleUpload} />}
+      <DocumentUploadModal
+      open={showUpload}
+      onClose={() => setShowUpload(false)}
+      onSave={handleUpload}
+      />
       {deleteTarget && <DeleteModal doc={deleteTarget} onClose={() => setDeleteTarget(null)} onConfirm={handleDelete} />}
 
       {/* ── Header ── */}

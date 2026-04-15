@@ -512,7 +512,6 @@ const Suppliers = () => {
         </Button>
       </Box>
 
-      {/* MAIN OUTER CARD - Light grey/white card wrapper */}
       <Card sx={{ 
         width: '100%',
         borderRadius: { xs: 2, sm: 3 },

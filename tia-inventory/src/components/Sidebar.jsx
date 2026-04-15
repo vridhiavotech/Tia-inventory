@@ -133,7 +133,6 @@ export default function Sidebar() {
                 {item.icon}
               </Box>
 
-              {/* Label — takes all remaining space */}
               <Typography
                 className="nav-label"
                 sx={{
@@ -148,7 +147,6 @@ export default function Sidebar() {
                 {item.label}
               </Typography>
 
-              {/* Badge — pinned to the right */}
               {item.badge && (
                 <Box
                   sx={{
@@ -174,10 +172,8 @@ export default function Sidebar() {
           );
         })}
 
-        {/* ── Divider ── */}
         <Divider sx={{ mx: 2.5, my: 1.5 }} />
 
-        {/* ── Admin Nav ── */}
         {adminItems.map((item) => {
           const active = isActive(item.path);
           return (

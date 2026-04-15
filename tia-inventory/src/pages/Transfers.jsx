@@ -253,18 +253,7 @@ export default function Transfers() {
         </svg>
       ),
     },
-    {
-      label:  "Rejected",
-      value:  rejected,
-      sub:    "Declined transfers",
-      iconBg: "#ef4444",
-      icon: (
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-          <line x1="18" y1="6" x2="6" y2="18"/>
-          <line x1="6" y1="6" x2="18" y2="18"/>
-        </svg>
-      ),
-    },
+ 
   ];
 
   return (
@@ -289,7 +278,7 @@ export default function Transfers() {
           <Typography sx={{ fontSize: 20, fontWeight: 700, color: "#111827" }}>Stock Transfers</Typography>
           <Typography sx={{ fontSize: 13, color: "#94a3b8", mt: 0.5 }}>
             Inter-location stock movements —{" "}
-            <Box component="span" sx={{ color: "#d97706", fontWeight: 600 }}>{pending} pending approval</Box>
+            <Box component="span" sx={{ color: "#94a3b8",}}>{pending} pending approval</Box>
           </Typography>
         </Box>
         <Button

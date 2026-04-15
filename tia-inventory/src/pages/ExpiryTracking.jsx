@@ -244,9 +244,9 @@ export default function ExpiryTracking() {
         <Box>
           <Typography sx={{ fontSize:20, fontWeight:700, color:"#111827" }}>Expiry Tracking</Typography>
           <Typography sx={{ fontSize:12, color:"#94a3b8", mt:0.5 }}>
-            <Box component="span" sx={{ color:"#ef4444", fontWeight:600 }}>{expired.length} expired</Box>
+            <Box component="span" sx={{ color:"#9CA3AF", fontWeight:600 }}>{expired.length} expired</Box>
             <Box component="span" sx={{ mx:0.75 }}>·</Box>
-            <Box component="span" sx={{ color:"#d97706", fontWeight:600 }}>{expiringSoon.length} expiring within 60 days</Box>
+            <Box component="span" sx={{ color:"#9CA3AF", fontWeight:600 }}>{expiringSoon.length} expiring within 60 days</Box>
           </Typography>
         </Box>
         {/* ── Export — Replacement style ── */}
@@ -336,7 +336,7 @@ export default function ExpiryTracking() {
             </colgroup>
             <TableHead>
               <TableRow sx={{ background:"#EBF1FE" }}>
-                {["Item","NDC","Location","Lot #","QTY","Expiry Date","Days Left","Status","Action"].map((h) => (
+                {["Item","NDC","Location","Lot #","Qty","Expiry Date","Days Left","Status","Action"].map((h) => (
                   <TableCell key={h} sx={{ py:"12px", px:"10px", fontSize:11, fontWeight:500, color:"#373B4D", letterSpacing:"0.05em", whiteSpace:"nowrap", borderBottom:"1px solid #f3f4f6", borderRight:"1px solid #BED3FC", "&:last-child":{ borderRight:"none" } }}>{h}</TableCell>
                 ))}
               </TableRow>

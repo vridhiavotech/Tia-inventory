@@ -1,8 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import { useInventory } from "../InventoryItems/useInventory";
 
 // ─── Custom Back Arrow ────────────────────────────────────────────────────────
@@ -36,8 +35,8 @@ function BackArrow() {
   );
 }
 
-// ─── Custom QR / Scan Icon ────────────────────────────────────────────────────
-function QrScanIcon() {
+// ─── Custom QR / Scan Icon — clickable, opens device scanner ─────────────────
+function QrScanIcon({ onClick }) {
   return (
     <svg
       width="16"
@@ -45,9 +44,26 @@ function QrScanIcon() {
       viewBox="0 0 16 16"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      onClick={onClick}
+      style={{ cursor: onClick ? "pointer" : "default", display: "block" }}
     >
       <path
         d="M5.33333 2H3.33333C2.97971 2 2.64057 2.14048 2.39052 2.39052C2.14048 2.64057 2 2.97971 2 3.33333V5.33333M14 5.33333V3.33333C14 2.97971 13.8595 2.64057 13.6095 2.39052C13.3594 2.14048 13.0203 2 12.6667 2H10.6667M10.6667 14H12.6667C13.0203 14 13.3594 13.8595 13.6095 13.6095C13.8595 13.3594 14 13.0203 14 12.6667V10.6667M2 10.6667V12.6667C2 13.0203 2.14048 13.3594 2.39052 13.6095C2.64057 13.8595 2.97971 14 3.33333 14H5.33333"
+        stroke="#8F9098"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+// ─── Custom Calendar Icon ─────────────────────────────────────────────────────
+function CalendarIcon() {
+  return (
+    <svg width="14" height="15" viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M9.41667 0.75V3.41667M4.08333 0.75V3.41667M0.75 6.08333H12.75M2.08333 2.08333H11.4167C12.153 2.08333 12.75 2.68029 12.75 3.41667V12.75C12.75 13.4864 12.153 14.0833 11.4167 14.0833H2.08333C1.34695 14.0833 0.75 13.4864 0.75 12.75V3.41667C0.75 2.68029 1.34695 2.08333 2.08333 2.08333Z"
         stroke="#8F9098"
         strokeWidth="1.5"
         strokeLinecap="round"
@@ -66,7 +82,7 @@ function Label({ children, required }) {
         fontSize: 13,
         fontWeight: 600,
         color: "#2F3036",
-        marginBottom: 6,
+        marginBottom: 2,
         display: "block",
       }}
     >
@@ -78,11 +94,12 @@ function Label({ children, required }) {
 
 const inputStyle = {
   width: "100%",
-  padding: "10px 12px",
+  height: 48,
+  padding: "12px 16px",
   fontSize: 13,
   color: "#111827",
-  border: "1px solid #e5e7eb",
-  borderRadius: 8,
+  border: "1px solid #C5C6CC",
+  borderRadius: 12,
   outline: "none",
   boxSizing: "border-box",
   background: "#f9fafb",
@@ -90,7 +107,14 @@ const inputStyle = {
   transition: "background-color 0.2s",
 };
 
-function TextInput({ placeholder, value, onChange, icon }) {
+// ─── Text Input — scan icon is clickable via hidden file input ────────────────
+function TextInput({ placeholder, value, onChange, icon, onScan }) {
+  const fileRef = useRef(null);
+
+  const handleScanClick = () => {
+    if (fileRef.current) fileRef.current.click();
+  };
+
   return (
     <div style={{ position: "relative" }}>
       <input
@@ -99,66 +123,93 @@ function TextInput({ placeholder, value, onChange, icon }) {
         placeholder={placeholder}
         style={{
           ...inputStyle,
-          padding: icon ? "10px 36px 10px 12px" : "10px 12px",
+          padding: icon ? "12px 40px 12px 16px" : "12px 16px",
         }}
       />
       {icon && (
         <span
+          onClick={handleScanClick}
           style={{
             position: "absolute",
-            right: 10,
+            right: 12,
             top: "50%",
             transform: "translateY(-50%)",
-            color: "#C5C6CC",
             display: "flex",
             alignItems: "center",
+            cursor: "pointer",
+            zIndex: 1,
           }}
         >
           {icon}
         </span>
       )}
+      {/* Hidden camera/file input for barcode scanning */}
+      {onScan && (
+        <input
+          ref={fileRef}
+          type="file"
+          accept="image/*"
+          capture="environment"
+          style={{ display: "none" }}
+          onChange={onScan}
+        />
+      )}
     </div>
   );
 }
 
+// ─── Date Input — custom icon, picker opens downward ─────────────────────────
 function DateInput({ value, onChange }) {
+  const nativeRef = useRef(null);
+
+  const openPicker = () => {
+    if (nativeRef.current) nativeRef.current.showPicker?.();
+  };
+
   return (
     <div style={{ position: "relative" }}>
+      {/* Visible styled input */}
       <input
+        readOnly
+        value={value ? value.split("-").reverse().join("/") : ""}
+        placeholder="DD/MM/YYYY"
+        onClick={openPicker}
+        style={{
+          ...inputStyle,
+          padding: "12px 40px 12px 16px",
+          cursor: "pointer",
+          color: value ? "#111827" : "#9ca3af",
+        }}
+      />
+      {/* Native date input anchored at bottom edge so picker drops downward */}
+      <input
+        ref={nativeRef}
         type="date"
         value={value}
         onChange={onChange}
         style={{
-          ...inputStyle,
-          padding: "10px 36px 10px 12px",
-          colorScheme: "light",
-          color: value ? "#111827" : "#9ca3af",
+          position: "absolute",
+          left: 0,
+          top: "100%",
+          width: "100%",
+          height: 0,
+          opacity: 0,
+          pointerEvents: "none",
+          border: "none",
+          padding: 0,
         }}
-        onFocus={(e) => { e.target.style.background = "#f3f4f6"; }}
-        onBlur={(e)  => { e.target.style.background = "#f9fafb"; }}
       />
-      <style>{`
-        input[type="date"]::-webkit-calendar-picker-indicator {
-          display: none;
-          pointer-events: none;
-        }
-      `}</style>
-      <CalendarMonthIcon
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          setTimeout(() => {
-            const inputs = document.querySelectorAll('input[type="date"]');
-            if (inputs && inputs.length > 0) inputs[inputs.length - 1].showPicker?.();
-          }, 0);
-        }}
+      {/* Custom calendar icon */}
+      <span
+        onClick={openPicker}
         style={{
-          position: "absolute", right: 10, top: "50%",
-          transform: "translateY(-50%)", color: "#3b82f6",
-          fontSize: 18, cursor: "pointer", userSelect: "none",
-          pointerEvents: "auto", zIndex: 10,
+          position: "absolute", right: 12, top: "50%",
+          transform: "translateY(-50%)",
+          cursor: "pointer", display: "flex", alignItems: "center", zIndex: 1,
         }}
-      />
+      >
+        <CalendarIcon />
+      </span>
     </div>
   );
 }
@@ -171,7 +222,7 @@ function SelectInput({ placeholder, value, onChange, options = [], icon: Icon, i
         onChange={onChange}
         style={{
           ...inputStyle,
-          padding: Icon ? "10px 36px 10px 36px" : "10px 36px 10px 12px",
+          padding: Icon ? "12px 40px 12px 40px" : "12px 40px 12px 16px",
           appearance: "none",
           cursor: "pointer",
           color: value ? "#111827" : "#9ca3af",
@@ -185,7 +236,7 @@ function SelectInput({ placeholder, value, onChange, options = [], icon: Icon, i
       {Icon && (
         <span
           style={{
-            position: "absolute", left: 10, top: "50%",
+            position: "absolute", left: 12, top: "50%",
             transform: "translateY(-50%)", color: iconColor || "#9ca3af",
             display: "flex", pointerEvents: "none",
           }}
@@ -195,7 +246,7 @@ function SelectInput({ placeholder, value, onChange, options = [], icon: Icon, i
       )}
       <KeyboardArrowDownIcon
         style={{
-          position: "absolute", right: 10, top: "50%",
+          position: "absolute", right: 12, top: "50%",
           transform: "translateY(-50%)", color: "#9ca3af",
           pointerEvents: "none", fontSize: 20,
         }}
@@ -217,11 +268,11 @@ function NumberSpinInput({ value, onChange, placeholder, step = 1, min = 0 }) {
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        style={{ ...inputStyle, padding: "10px 36px 10px 12px" }}
+        style={{ ...inputStyle, padding: "12px 40px 12px 16px" }}
       />
       <div
         style={{
-          position: "absolute", right: 8, top: "50%",
+          position: "absolute", right: 10, top: "50%",
           transform: "translateY(-50%)", display: "flex",
           flexDirection: "column", gap: 0,
         }}
@@ -239,23 +290,35 @@ function NumberSpinInput({ value, onChange, placeholder, step = 1, min = 0 }) {
   );
 }
 
-// ─── Section Card ─────────────────────────────────────────────────────────────
 function SectionCard({ title, children }) {
   return (
     <div
       style={{
-        background: "#fff", borderRadius: 14,
+        background: "#fff",
+        borderRadius: 14,
         border: "1px solid #f0f0f0",
         boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
-        overflow: "hidden", marginBottom: 16,
+        overflow: "hidden",
+        marginBottom: 16,
       }}
     >
-      <div style={{ display: "flex", alignItems: "center", padding: "14px 28px" }}>
-        <h3 style={{ margin: 0, fontSize: 13, fontWeight: 800, color: "#111827", letterSpacing: "0.05em" }}>
+      <div style={{ display: "flex", alignItems: "center", padding: "12px 28px" }}>
+        <h3
+          style={{
+            margin: 0,
+            fontSize: 13,
+            fontWeight: 800,
+            color: "#111827",
+            letterSpacing: "0.05em",
+          }}
+        >
           {title}
         </h3>
       </div>
-      <div style={{ padding: "24px 28px" }}>{children}</div>
+
+      <div style={{ padding: "12px 28px" }}>
+        {children}
+      </div>
     </div>
   );
 }
@@ -284,7 +347,6 @@ const EMPTY_FORM = {
   itemStatus: "Active", deaSchedule: "None — Not Controlled",
 };
 
-// ─── Main Component ───────────────────────────────────────────────────────────
 export default function AddItem() {
   const navigate = useNavigate();
   const { items: inventoryItems, addItem, updateItem } = useInventory();
@@ -366,33 +428,33 @@ export default function AddItem() {
   const isConsumable = itemType === "consumable" || isEdit;
 
   return (
-    <div style={{ maxWidth: 860, margin: "0 auto" }}>
+    <div style={{ maxWidth: 860, margin: "0 auto", position: "relative", overflow: "visible" }}>
 
       {/* ── Page Header ── */}
-      <div style={{ display: "flex", alignItems: "flex-start", gap: 10, marginBottom: 28 }}>
-
-        {/* Back button — 32×32 container matches Figma frame size */}
+      <div style={{ position: "relative", marginBottom: 28 }}>
         <button
           onClick={() => navigate("/admin/inventory/items")}
           style={{
+            position: "absolute",
+            left: -48,
+            top: "50%",
+            transform: "translateY(-50%)",
             background: "none", border: "none", cursor: "pointer",
             padding: 0, display: "flex", alignItems: "center",
-            justifyContent: "center", marginTop: 2, outline: "none",
+            justifyContent: "center", outline: "none",
           }}
         >
           <BackArrow />
         </button>
 
-        <div>
-          <h2 style={{ margin: 0, fontSize: 20, fontWeight: 700, color: "#111827" }}>
-            {isEdit ? "Edit Item" : "Add to Inventory"}
-          </h2>
-          <p style={{ margin: "4px 0 0", fontSize: 13, color: "#1A1A1A" }}>
-            {isEdit
-              ? "Update the item details below."
-              : "Complete the provider profile, credentials and location assignment.."}
-          </p>
-        </div>
+        <h2 style={{ margin: 5, fontSize: 20, fontWeight: 700, color: "#111827" }}>
+          {isEdit ? "Edit Item" : "Add to Inventory"}
+        </h2>
+        <p style={{ margin: "5px 0 0", fontSize: 13, color: "#1A1A1A" }}>
+          {isEdit
+            ? "Update the item details below."
+            : "Complete the provider profile, credentials and location assignment.."}
+        </p>
       </div>
 
       {/* ── Item Details Card ── */}
@@ -408,7 +470,6 @@ export default function AddItem() {
             {errors.itemName && <span style={{ fontSize: 11, color: "#ef4444" }}>Required</span>}
           </div>
 
-          {/* NDC / Barcode — uses custom QR scan SVG on the right */}
           <div>
             <Label required>NDC / SKU / Barcode</Label>
             <TextInput
@@ -416,6 +477,13 @@ export default function AddItem() {
               value={form.ndc}
               onChange={set("ndc")}
               icon={<QrScanIcon />}
+              onScan={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  // file is ready for barcode processing via a library
+                  console.log("Scan file:", file.name);
+                }
+              }}
             />
             {errors.ndc && <span style={{ fontSize: 11, color: "#ef4444" }}>Required</span>}
           </div>
@@ -475,8 +543,6 @@ export default function AddItem() {
       {/* ── Stock & Pricing Card ── */}
       {(isConsumable || itemType === "equipment" || itemType === "device") && (
         <SectionCard title="STOCK &amp; PRICING">
-
-          {/* Row 1: QTY · PAR · Unit Cost */}
           <Row cols={3}>
             <div>
               <Label required>QTY in Hand</Label>
@@ -492,8 +558,7 @@ export default function AddItem() {
             </div>
           </Row>
 
-          {/* Row 2: Supplier · Location — equal width, side by side */}
-          <Row cols={2}>
+          <Row cols={3}>
             <div>
               <Label>Supplier</Label>
               <SelectInput
@@ -513,14 +578,12 @@ export default function AddItem() {
               />
             </div>
           </Row>
-
         </SectionCard>
       )}
 
-      {/* ── Lot & Expiry Card (consumable only) ── */}
       {isConsumable && (
         <SectionCard title="LOT &amp; EXPIRY">
-          <Row cols={2}>
+          <Row cols={3}>
             <div>
               <Label>LOT Number</Label>
               <TextInput placeholder="LOT2025A" value={form.lotNumber} onChange={set("lotNumber")} />
@@ -538,8 +601,8 @@ export default function AddItem() {
               placeholder="Type here"
               rows={1}
               style={{
-                width: "100%", padding: "10px 12px", fontSize: 13,
-                border: "1px solid #e5e7eb", borderRadius: 8, outline: "none",
+                width: "100%", padding: "12px 16px", fontSize: 13,
+                border: "1px solid #C5C6CC", borderRadius: 12, outline: "none",
                 resize: "vertical", color: "#111827", backgroundColor: "#f9fafb",
                 boxSizing: "border-box",
               }}
@@ -548,7 +611,6 @@ export default function AddItem() {
         </SectionCard>
       )}
 
-      {/* Notes for equipment/device */}
       {(itemType === "equipment" || itemType === "device") && !isEdit && (
         <SectionCard title="NOTES">
           <div>
@@ -559,8 +621,8 @@ export default function AddItem() {
               placeholder="Type here"
               rows={3}
               style={{
-                width: "100%", padding: "10px 12px", fontSize: 13,
-                border: "1px solid #e5e7eb", borderRadius: 8, outline: "none",
+                width: "100%", padding: "12px 16px", fontSize: 13,
+                border: "1px solid #C5C6CC", borderRadius: 12, outline: "none",
                 resize: "vertical", color: "#111827", backgroundColor: "#f9fafb",
                 boxSizing: "border-box",
               }}
@@ -574,21 +636,24 @@ export default function AddItem() {
         <button
           onClick={() => navigate("/admin/inventory/items")}
           style={{
-            padding: "10px 24px", fontSize: 13, fontWeight: 600,
-            border: "1px solid #e5e7eb", borderRadius: 8,
-            background: "#fff", color: "#374151", cursor: "pointer", outline: "none",
+            height: 48, padding: "12px 24px", fontSize: 16, fontWeight: 600,
+            fontFamily: "Inter, sans-serif", border: "1px solid #3182CE",
+            borderRadius: 12, background: "#fff", color: "#3182CE",
+            cursor: "pointer", outline: "none", lineHeight: "24px",
           }}
         >
           Cancel
         </button>
+
         <button
           onClick={handleSave}
           disabled={saving}
           style={{
-            padding: "10px 24px", fontSize: 13, fontWeight: 600, border: "none",
-            borderRadius: 8, background: saving ? "#93c5fd" : "#2563eb",
-            color: "#fff", cursor: saving ? "not-allowed" : "pointer",
-            boxShadow: "0 2px 8px rgba(37,99,235,0.25)", outline: "none",
+            height: 48, padding: "12px 24px", fontSize: 16, fontWeight: 600,
+            fontFamily: "Inter, sans-serif", border: "none", borderRadius: 12,
+            background: saving ? "#93c5fd" : "#2563eb", color: "#fff",
+            cursor: saving ? "not-allowed" : "pointer",
+            boxShadow: "0 2px 8px rgba(37,99,235,0.25)", outline: "none", lineHeight: "24px",
           }}
         >
           {saving ? "Saving…" : isEdit ? "Update Item" : "Save Item"}

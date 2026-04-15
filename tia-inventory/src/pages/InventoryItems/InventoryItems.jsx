@@ -172,7 +172,7 @@ function QtyBar({ qty, par }) {
           backgroundColor: "#f3f4f6",
           "& .MuiLinearProgress-bar": {
             borderRadius: 3,
-            backgroundColor: isLow ? "#f97316" : "#22c55e",
+            backgroundColor: isLow ? "#DC2626" : "#22c55e",
           },
         }}
       />

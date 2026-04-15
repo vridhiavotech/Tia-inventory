@@ -183,8 +183,8 @@ const nowStr = () =>
 function StatusChip({ status }) {
   const map = {
     Issued: { bg: "#dcfce7", color: "#16a34a" },
-    Pending: { bg: "#e0f2fe", color: "#0284c7" },
-    Rejected: { bg: "#fef9c3", color: "#ca8a04" },
+    Pending: {bg: "#fef9c3", color: "#ca8a04" },
+    Rejected: { bg: "#c52f02", color: "#DC2626" },
   };
   const s = map[status] || map.Pending;
   return (
@@ -205,12 +205,12 @@ function StatusChip({ status }) {
 function TypeChip({ type }) {
   const map = {
     "Ward Requisition": { bg: "#eff6ff", color: "#1d4ed8", border: "#bfdbfe" },
-    "Emergency Issue": { bg: "#fff1f2", color: "#be123c", border: "#fecdd3" },
-    "OT Request": { bg: "#faf5ff", color: "#7e22ce", border: "#e9d5ff" },
+    "Emergency Issue": { bg: "#eff6ff", color: "#1d4ed8", border: "#bfdbfe"  },
+    "OT Request": { bg: "#eff6ff", color: "#1d4ed8", border: "#bfdbfe"  },
     "Patient Dispensing": {
       bg: "#dcfce7",
-      color: "#15803d",
-      border: "#bbf7d0",
+      color: "#1d4ed8",
+      border: "#bfdbfe",
     },
   };
   const c = map[type] || { bg: "#f3f4f6", color: "#374151", border: "#e5e7eb" };
@@ -231,8 +231,8 @@ function TypeChip({ type }) {
 }
 function DeptChip({ dept }) {
   const map = {
-    ICU: { bg: "#fff7ed", color: "#c2410c", border: "#fed7aa" },
-    "OR / Surgery": { bg: "#faf5ff", color: "#7e22ce", border: "#e9d5ff" },
+    ICU: { bg: "#fff7ed", color: "#1d4ed8", border: "#bfdbfe" },
+    "OR / Surgery": { bg: "#faf5ff", color: "#DC2626", border: "#e93204" },
   };
   const c = map[dept] || { bg: "#eff6ff", color: "#1d4ed8", border: "#bfdbfe" };
   return (
@@ -535,19 +535,18 @@ export default function StockIssue() {
     showToast("Exported successfully.");
   };
 
-  const HEADS = [
-    { label: "ISSUE #", width: 110 },
-    { label: "TYPE", width: 148 },
-    { label: "FROM", width: 72 },
-    { label: "TO (DEPT)", width: 130 },
-    { label: "ITEMS", width: 80 },
-    { label: "TOTAL VALUE", width: 100 },
-    { label: "REQUESTED BY", width: 120 },
-    { label: "DATE & TIME", width: 140 },
-    { label: "STATUS", width: 82 },
-    { label: "ACTIONS", width: 96 },
-  ];
-
+ const HEADS = [
+  { label: "Issue #", width: 110 },
+  { label: "Type", width: 148 },
+  { label: "From", width: 90 },
+  { label: "To (Dept)", width: 130 },
+  { label: "Items", width: 80 },
+  { label: "Total Value", width: 100 },
+  { label: "Requested By", width: 120 },
+  { label: "Date & Time", width: 140 },
+  { label: "Status", width: 100 },
+  { label: "Actions", width: 96 },
+];
   return (
     <>
       <style>{`@keyframes rowFlash { 0%{background-color:#dbeafe} 40%{background-color:#bfdbfe} 100%{background-color:transparent} } .row-highlight{animation:rowFlash 3s ease-out forwards}`}</style>

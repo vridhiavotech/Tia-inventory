@@ -206,7 +206,6 @@ function PendingCard({ title, value, subtitle }) {
   );
 }
 
-// ─── Custom Donut Label ────────────────────────────────────────────────────────
 
 function DonutCenter({ cx, cy, total }) {
   return (
@@ -216,7 +215,7 @@ function DonutCenter({ cx, cy, total }) {
         dy="-8"
         style={{ fontSize: 28, fontWeight: 700, fill: "#111827" }}
       >
-        {total.toLocaleString()}
+        {total.toString()}
       </tspan>
       <tspan
         x={cx}
@@ -228,8 +227,6 @@ function DonutCenter({ cx, cy, total }) {
     </text>
   );
 }
-
-// ─── Dashboard ────────────────────────────────────────────────────────────────
 
 export default function Dashboard() {
   const today = new Date().toLocaleDateString("en-US", {

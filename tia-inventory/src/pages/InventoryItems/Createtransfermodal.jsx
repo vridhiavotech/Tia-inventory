@@ -82,14 +82,22 @@ const noSpinnerSx = {
   "& input[type=number]::-webkit-inner-spin-button": { WebkitAppearance: "none", margin: 0 },
 };
 
-function FieldLabel({ children, required }) {
+function FieldLabel({ children }) {
   return (
-    <Typography sx={{ fontSize: 11, fontWeight: 600, color: "#6b7280", letterSpacing: "0.04em", mb: "6px", textTransform: "uppercase" }}>
-      {children}{required && <span style={{ color: "#ef4444", marginLeft: 2 }}>*</span>}
+    <Typography
+      sx={{
+        fontSize: 11,
+        fontWeight: 600,
+        color: "#6b7280",
+        letterSpacing: "0.04em",
+        mb: "6px",
+        textTransform: "uppercase",
+      }}
+    >
+      {children}
     </Typography>
   );
 }
-
 function PriorityIcon({ priority }) {
   if (priority === "Critical") return <ErrorOutlineIcon sx={{ fontSize: 14 }} />;
   if (priority === "Urgent")   return <WarningAmberIcon sx={{ fontSize: 14 }} />;
@@ -328,6 +336,17 @@ export default function CreateTransferModal({ open, onClose, onSave, prefillItem
               <Typography sx={{ fontSize: 12, color: "#2563eb", fontWeight: 600 }}>{toLocation}</Typography>
             </Box>
           )}
+           
+            {/* Reason / Notes */}
+          <Box>
+            <FieldLabel>Reason / Notes</FieldLabel>
+            <TextField fullWidth multiline rows={3} placeholder="e.g. ICU surge — urgent restock request..."
+              value={notes} onChange={e => setNotes(e.target.value)} disabled={loading}
+              sx={{ "& .MuiOutlinedInput-root": { fontSize: 13, borderRadius: "8px", background: "#f9fafb",
+                "& fieldset": { borderColor: "#e5e7eb" }, "&:hover fieldset": { borderColor: "#d1d5db" },
+                "&.Mui-focused fieldset": { borderColor: "#2563eb" } } }} />
+          </Box>
+
 
           {/* Items to Transfer */}
           <Box sx={{ mb: "16px" }}>
@@ -336,7 +355,7 @@ export default function CreateTransferModal({ open, onClose, onSave, prefillItem
             </Typography>
 
             <Box sx={{ display: "grid", gridTemplateColumns: "1fr 72px 88px 72px 32px", gap: "8px", mb: "8px", px: "2px" }}>
-              {["ITEM", "AVAIL.", "LOT #", "QTY", ""].map(h => (
+              {["ITEM", "AVAIL.", "QTY", ""].map(h => (
                 <Typography key={h} sx={{ fontSize: 10, fontWeight: 600, color: "#9ca3af", letterSpacing: "0.04em", textTransform: "uppercase" }}>{h}</Typography>
               ))}
             </Box>
@@ -362,9 +381,7 @@ export default function CreateTransferModal({ open, onClose, onSave, prefillItem
                         sx={{ "& .MuiOutlinedInput-root": { fontSize: 13, borderRadius: "8px", background: "#f3f4f6", "& fieldset": { borderColor: "#e5e7eb" } },
                           "& input": { textAlign: "center", color: "#374151", fontWeight: 600, py: "7px" } }} />
 
-                      <TextField size="small" value={data ? data.lot : ""} placeholder="LOT #" disabled
-                        sx={{ "& .MuiOutlinedInput-root": { fontSize: 12, borderRadius: "8px", background: "#f3f4f6", "& fieldset": { borderColor: "#e5e7eb" } },
-                          "& input": { py: "7px" } }} />
+             
 
                       <TextField size="small" placeholder="Qty" type="number"
                         value={row.qty} onChange={e => updateItem(row.id, "qty", e.target.value)}
@@ -428,15 +445,7 @@ export default function CreateTransferModal({ open, onClose, onSave, prefillItem
 
           <Divider sx={{ mb: "16px" }} />
 
-          {/* Reason / Notes */}
-          <Box>
-            <FieldLabel>Reason / Notes</FieldLabel>
-            <TextField fullWidth multiline rows={3} placeholder="e.g. ICU surge — urgent restock request..."
-              value={notes} onChange={e => setNotes(e.target.value)} disabled={loading}
-              sx={{ "& .MuiOutlinedInput-root": { fontSize: 13, borderRadius: "8px", background: "#f9fafb",
-                "& fieldset": { borderColor: "#e5e7eb" }, "&:hover fieldset": { borderColor: "#d1d5db" },
-                "&.Mui-focused fieldset": { borderColor: "#2563eb" } } }} />
-          </Box>
+         
         </DialogContent>
 
         {/* ── Footer ── */}

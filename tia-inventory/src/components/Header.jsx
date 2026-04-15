@@ -28,12 +28,11 @@ export default function Header() {
         gap: 2, flexShrink: 0,
       }}
     >
-      {/* Search */}
       <Box sx={{ display: "flex", alignItems: "center", gap: 1, bgcolor: "#f9fafb",
-        border: "1px solid #e5e7eb", borderRadius: "10px", px: 1.5, py: 0.8, width: 480, flexShrink: 0 }}>
+        border: "1px solid #F0F0F0", borderRadius: "10px", px: 1.5, py: 0.8, width: 480, flexShrink: 0 }}>
         <SearchOutlinedIcon sx={{ color: "#bbb", fontSize: 16 }} />
         <InputBase placeholder="Search"
-          sx={{ fontSize: 13, color: "#555", "& input::placeholder": { color: "#bbb" }, flex: 1 }} />
+          sx={{ fontSize: 13, color: "#7F7F7F", "& input::placeholder": { color: "#F2F2F7" }, flex: 1 }} />
       </Box>
 
       {/* Right Controls */}
