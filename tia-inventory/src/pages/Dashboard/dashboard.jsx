@@ -206,7 +206,6 @@ function PendingCard({ title, value, subtitle }) {
   );
 }
 
-
 function DonutCenter({ cx, cy, total }) {
   return (
     <text x={cx} y={cy} textAnchor="middle" dominantBaseline="middle">
@@ -237,33 +236,31 @@ export default function Dashboard() {
   });
 
   // Add this custom tooltip component above Dashboard
-const CustomPieTooltip = ({ active, payload }) => {
-  if (active && payload && payload.length) {
-    const data = payload[0];
-    return (
-      <div
-        style={{
-          background: "#fff",
-          border: "1px solid #f0f0f0",
-          borderRadius: 8,
-          padding: "8px 12px",
-          boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
-          fontSize: 13,
-          fontWeight: 600,
-          color: data.payload.color,
-        }}
-      >
-         {data.value}%
-      </div>
-    );
-  }
-  return null;
-};
+  const CustomPieTooltip = ({ active, payload }) => {
+    if (active && payload && payload.length) {
+      const data = payload[0];
+      return (
+        <div
+          style={{
+            background: "#fff",
+            border: "1px solid #f0f0f0",
+            borderRadius: 8,
+            padding: "8px 12px",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
+            fontSize: 13,
+            fontWeight: 600,
+            color: data.payload.color,
+          }}
+        >
+          {data.value}%
+        </div>
+      );
+    }
+    return null;
+  };
   const navigate = useNavigate();
   return (
-    <div
-   
-    >
+    <div>
       {/* ── Header ── */}
       <div
         style={{
@@ -291,27 +288,27 @@ const CustomPieTooltip = ({ active, payload }) => {
         </div>
         <button
           onClick={() => navigate("/admin/inventory/add")}
-         style={{
-  display: "inline-flex",
-  alignItems: "center",
-  justifyContent: "center",
-  gap: "6px",
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "6px",
 
-  background: "#2563eb",
-  color: "#ffffff",
+            background: "#2563eb",
+            color: "#ffffff",
 
-  border: "none",
-  borderRadius: "12px",
+            border: "none",
+            borderRadius: "12px",
 
-  padding: "6px 12px",   
-  fontSize: "12px",      
-  fontWeight: 500,       
+            padding: "6px 12px",
+            fontSize: "12px",
+            fontWeight: 500,
 
-  cursor: "pointer",
-  lineHeight: 1,
+            cursor: "pointer",
+            lineHeight: 1,
 
-  boxShadow: "0 1px 4px rgba(37, 99, 235, 0.25)",
-}}
+            boxShadow: "0 1px 4px rgba(37, 99, 235, 0.25)",
+          }}
         >
           <AddIcon sx={{ fontSize: 16 }} />
           Add Item
@@ -388,33 +385,40 @@ const CustomPieTooltip = ({ active, payload }) => {
             Stock Status
           </p>
           <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
-         <PieChart width={180} height={180}>
-  <Pie
-    data={stockStatusData}
-    cx={85}
-    cy={85}
-    innerRadius={70}
-    outerRadius={82}
-    paddingAngle={2}
-    dataKey="value"
-    startAngle={90}
-    endAngle={-270}
-    label={({ cx, cy, midAngle, innerRadius, outerRadius, value }) => {
-      const RADIAN = Math.PI / 180;
-      const radius = innerRadius + (outerRadius - innerRadius) * 2.2;
-      const x = cx + radius * Math.cos(-midAngle * RADIAN);
-      const y = cy + radius * Math.sin(-midAngle * RADIAN);
-      
-    }}
-    labelLine={false}
-  >
-    {stockStatusData.map((entry, i) => (
-      <Cell key={i} fill={entry.color} />
-    ))}
-  </Pie>
-  <Tooltip content={<CustomPieTooltip />} />
-  <DonutCenter cx={90} cy={95} total={3986} />
-</PieChart>
+            <PieChart width={180} height={180}>
+              <Pie
+                data={stockStatusData}
+                cx={85}
+                cy={85}
+                innerRadius={70}
+                outerRadius={82}
+                paddingAngle={2}
+                dataKey="value"
+                startAngle={90}
+                endAngle={-270}
+                label={({
+                  cx,
+                  cy,
+                  midAngle,
+                  innerRadius,
+                  outerRadius,
+                  value,
+                }) => {
+                  const RADIAN = Math.PI / 180;
+                  const radius =
+                    innerRadius + (outerRadius - innerRadius) * 2.2;
+                  const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                  const y = cy + radius * Math.sin(-midAngle * RADIAN);
+                }}
+                labelLine={false}
+              >
+                {stockStatusData.map((entry, i) => (
+                  <Cell key={i} fill={entry.color} />
+                ))}
+              </Pie>
+              <Tooltip content={<CustomPieTooltip />} />
+              <DonutCenter cx={90} cy={95} total={3986} />
+            </PieChart>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               {stockStatusData.map((s) => (
                 <div
@@ -521,7 +525,7 @@ const CustomPieTooltip = ({ active, payload }) => {
             border: "1px solid #f0f0f0",
             boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
             flex: 2,
-             minHeight: 240, // 👈 increase card height
+            minHeight: 240, // 👈 increase card height
           }}
         >
           <p
@@ -535,7 +539,11 @@ const CustomPieTooltip = ({ active, payload }) => {
             Category Distribution
           </p>
           <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={categoryData} barSize={18}   margin={{ top: 10, right: 10, left: 20, bottom: 5 }} >
+            <BarChart
+              data={categoryData}
+              barSize={18}
+              margin={{ top: 10, right: 10, left: 20, bottom: 5 }}
+            >
               <CartesianGrid vertical={false} stroke="#f3f4f6" />
               <XAxis
                 dataKey="name"

@@ -658,13 +658,7 @@ const Manufacturers = () => {
       </Box>
 
       {/* MAIN OUTER CARD - Light grey/white card wrapper */}
-      <Card sx={{ 
-        width: '100%',
-        borderRadius: { xs: 2, sm: 3 },
-        overflow: 'hidden',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
-        border: '1px solid #e2e8f0',
-      }}>
+   
         <CardContent sx={{ 
           p: { xs: 2, sm: 3, md: 4 },
           '&:last-child': { pb: { xs: 2, sm: 3, md: 4 } },
@@ -801,7 +795,7 @@ const Manufacturers = () => {
             </>
           )}
         </CardContent>
-      </Card>
+     
 
       <ManufacturerModal
         open={modalOpen}

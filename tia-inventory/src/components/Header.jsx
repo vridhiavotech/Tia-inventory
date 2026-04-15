@@ -28,12 +28,38 @@ export default function Header() {
         gap: 2, flexShrink: 0,
       }}
     >
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1, bgcolor: "#f9fafb",
+      {/* <Box sx={{ display: "flex", alignItems: "center", gap: 1, bgcolor: "#f9fafb",
         border: "1px solid #F0F0F0", borderRadius: "10px", px: 1.5, py: 0.8, width: 480, flexShrink: 0 }}>
         <SearchOutlinedIcon sx={{ color: "#bbb", fontSize: 16 }} />
         <InputBase placeholder="Search"
           sx={{ fontSize: 13, color: "#7F7F7F", "& input::placeholder": { color: "#F2F2F7" }, flex: 1 }} />
-      </Box>
+      </Box> */}
+      <Box sx={{ 
+  display: "flex", 
+  alignItems: "center", 
+  gap: 1, 
+  bgcolor: "#f5f6fa",  // Changed from #f9fafb to a slightly darker gray
+  border: "1px solid #D0D0D0",  // Slightly darker border
+  borderRadius: "10px", 
+  px: 1.5, 
+  py: 0.8, 
+  width: 480, 
+  flexShrink: 0 
+}}>
+  <SearchOutlinedIcon sx={{ color: "#888", fontSize: 16 }} />  {/* Slightly darker icon */}
+  <InputBase 
+    placeholder="Search"  // Changed from "Search" to "search"
+    sx={{ 
+      fontSize: 13, 
+      color: "#333",  // Darker text color
+      "& input::placeholder": { 
+        color: "#999",  // Darker placeholder color
+        opacity: 0.8
+      }, 
+      flex: 1 
+    }} 
+  />
+</Box>
 
       {/* Right Controls */}
       <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
